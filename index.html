@@ -3,16 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión de Lotes</title>
+  <title>Gestión Ganadera</title>
   <style>
-    :root {
-      --verde-oscuro: #1B4D3E;
-      --verde-claro: #2C6B56;
-      --fondo: #F4F7F5;
-      --texto: #2D3748;
-      --borde: #E2E8F0;
-    }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--fondo); color: var(--texto); margin: 0; padding: 20px; }
+    :root { --verde-oscuro: #1B4D3E; --verde-claro: #2C6B56; --fondo: #F4F7F5; --texto: #2D3748; --borde: #E2E8F0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--fondo); color: var(--texto); margin: 0; padding: 20px; padding-bottom: 80px; }
+
+    /* Sistema de Vistas */
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     h1 { color: var(--verde-oscuro); margin: 0; font-size: 24px; }
     button { background-color: var(--verde-oscuro); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; }
@@ -20,7 +19,7 @@
     .filtros { margin-bottom: 20px; }
     select, input { padding: 8px; border: 1px solid var(--borde); border-radius: 6px; width: 100%; box-sizing: border-box; margin-top: 5px; }
 
-    /* Tarjetas de Lotes */
+    /* Tarjetas */
     .grid-lotes { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
     .tarjeta { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--borde); cursor: pointer; transition: transform 0.2s; }
     .tarjeta:hover { transform: translateY(-3px); border-color: var(--verde-claro); }
@@ -29,108 +28,145 @@
     .estado-badge { font-size: 12px; padding: 3px 8px; border-radius: 12px; background: #C6F6D5; color: #22543D; }
     .estado-vendido { background: #FED7D7; color: #822727; }
 
-    /* Modal Formulario */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-    .modal { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
+    /* Modales */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 2000; }
+    .modal { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
     .form-group { margin-bottom: 15px; }
     .form-group label { font-size: 13px; font-weight: bold; }
     .modal-botones { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
     .btn-cancelar { background-color: #A0AEC0; }
     .btn-cancelar:hover { background-color: #718096; }
-
     #cargando { text-align: center; margin: 20px 0; font-weight: bold; color: var(--verde-claro); }
+
+    /* Vista Detallada */
+    .modal-detalles { max-width: 600px; }
+    .grid-detalles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+    .detalle-item { background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid var(--borde); }
+    .detalle-label { font-size: 11px; color: #718096; text-transform: uppercase; font-weight: bold; }
+    .detalle-valor { font-size: 14px; font-weight: bold; color: var(--texto); margin-top: 4px; }
+    .seccion-titulo { grid-column: 1 / -1; font-size: 14px; color: var(--verde-oscuro); border-bottom: 1px solid var(--verde-claro); padding-bottom: 5px; margin-top: 10px; margin-bottom: 5px; font-weight: bold; }
+
+    /* Menú Inferior */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
+    .nav-item { text-align: center; color: #A0AEC0; font-size: 12px; font-weight: bold; cursor: pointer; flex: 1; display: flex; flex-direction: column; align-items: center; transition: color 0.3s; }
+    .nav-item.active { color: var(--verde-oscuro); }
+    .nav-icon { font-size: 20px; margin-bottom: 4px; }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>Mis Lotes</h1>
-    <button onclick="abrirModal()">+ Agregar Lote</button>
+  <!-- VISTA 1: LOTES -->
+  <div id="vista-lotes" class="view-section active">
+    <div class="header">
+      <h1>Mis Lotes</h1>
+      <button onclick="abrirModalNuevo()">+ Agregar Lote</button>
+    </div>
+
+    <div class="filtros">
+      <label style="font-size: 13px; font-weight: bold;">Filtrar por Estado:</label>
+      <select id="filtroEstado" onchange="renderizarLotes()" style="width: 200px;">
+        <option value="Todos">Todos los Lotes</option>
+        <option value="Activo" selected>Activos</option>
+        <option value="Liquidado">Vendidos / Liquidados</option>
+      </select>
+    </div>
+
+    <div id="cargando">Cargando lotes desde Google Sheets...</div>
+    <div class="grid-lotes" id="contenedorLotes"></div>
   </div>
 
-  <div class="filtros">
-    <label style="font-size: 13px; font-weight: bold;">Filtrar por Estado:</label>
-    <select id="filtroEstado" onchange="renderizarLotes()" style="width: 200px;">
-      <option value="Todos">Todos los Lotes</option>
-      <option value="Activo" selected>Activos</option>
-      <option value="Liquidado">Vendidos / Liquidados</option>
-    </select>
+  <!-- VISTA 2: COMPRAS -->
+  <div id="vista-compras" class="view-section">
+    <div class="header">
+      <h1>Registro de Compras</h1>
+      <button onclick="alert('Próximamente: Formulario para ingresar animales')">+ Ingresar Animal</button>
+    </div>
+
+    <div style="background: white; padding: 30px; text-align: center; border-radius: 8px; border: 1px dashed var(--borde); margin-top: 20px;">
+      <span style="font-size: 40px; display: block; margin-bottom: 10px;">🐄</span>
+      <h3 style="color: var(--verde-oscuro); margin: 0;">Módulo de Compras</h3>
+      <p style="color: #718096; font-size: 14px;">Aquí construiremos el formulario y la tabla para registrar cada animal.</p>
+    </div>
   </div>
 
-  <div id="cargando">Cargando lotes desde Google Sheets...</div>
-
-  <div class="grid-lotes" id="contenedorLotes">
-    <!-- Aquí se inyectan las tarjetas por JavaScript -->
+  <!-- VISTA 3: REPESAS -->
+  <div id="vista-repesas" class="view-section">
+    <div class="header">
+      <h1>Control de Pesos</h1>
+    </div>
+    <p style="text-align:center; color:#718096; margin-top:40px;">Módulo en construcción...</p>
   </div>
 
-  <!-- Modal para Agregar Lote -->
+  <!-- Menú Inferior -->
+  <div class="bottom-nav">
+    <div class="nav-item active" id="nav-lotes" onclick="cambiarVista('lotes')">
+      <span class="nav-icon">📁</span>
+      <span>Lotes</span>
+    </div>
+    <div class="nav-item" id="nav-compras" onclick="cambiarVista('compras')">
+      <span class="nav-icon">🐄</span>
+      <span>Compras</span>
+    </div>
+    <div class="nav-item" id="nav-repesas" onclick="cambiarVista('repesas')">
+      <span class="nav-icon">⚖️</span>
+      <span>Repesas</span>
+    </div>
+  </div>
+
+  <!-- Modal Nuevo Lote -->
   <div class="modal-overlay" id="modalLote">
     <div class="modal">
       <h2 style="margin-top:0; color: var(--verde-oscuro);">Nuevo Lote</h2>
-
-      <div class="form-group">
-        <label>Nombre del Lote / Proveedor *</label>
-        <input type="text" id="nombreLote" placeholder="Ej. Don Mesho" required>
-      </div>
-
-      <div class="form-group">
-        <label>Fecha de Compra *</label>
-        <input type="date" id="fechaCompra" required>
-      </div>
-
-      <div class="form-group">
-        <label>Estado</label>
-        <select id="estado">
-          <option value="Activo">Activo</option>
-          <option value="Liquidado">Vendido / Liquidado</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Raza Predominante (Opcional)</label>
-        <input type="text" id="raza" placeholder="Ej. Brahman">
-      </div>
-
-      <div class="form-group">
-        <label>Ganancia Meta en lbs (Opcional)</label>
-        <input type="number" id="meta" placeholder="Ej. 300">
-      </div>
-
+      <div class="form-group"><label>Nombre del Lote / Proveedor *</label><input type="text" id="nombreLote" required></div>
+      <div class="form-group"><label>Fecha de Compra *</label><input type="date" id="fechaCompra" required></div>
+      <div class="form-group"><label>Estado</label><select id="estado"><option value="Activo">Activo</option><option value="Liquidado">Vendido / Liquidado</option></select></div>
+      <div class="form-group"><label>Raza Predominante (Opcional)</label><input type="text" id="raza"></div>
+      <div class="form-group"><label>Ganancia Meta en lbs (Opcional)</label><input type="number" id="meta"></div>
       <div class="modal-botones">
-        <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn-cancelar" onclick="cerrarModalNuevo()">Cancelar</button>
         <button onclick="guardarLote()" id="btnGuardar">Guardar Lote</button>
       </div>
     </div>
   </div>
 
-  <script>
-    // TU ENLACE SECRETO DE GOOGLE SHEETS
-    const API_URL = "https://script.google.com/macros/s/AKfycbw1oyRZf14txxIu__LqTp4TAcT6NiaF4aHcKVyZHojrZhXi9vD-LYzYyTeS5B4ty5nNuQ/exec";
+  <!-- Modal Detalles del Lote -->
+  <div class="modal-overlay" id="modalDetalles">
+    <div class="modal modal-detalles">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="margin: 0; color: var(--verde-oscuro);" id="detTitulo">Lote</h2>
+        <button class="btn-cancelar" onclick="cerrarDetalles()">X</button>
+      </div>
+      <div class="grid-detalles" id="detGrid"></div>
+    </div>
+  </div>
 
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbw1oyRZf14txxIu__LqTp4TAcT6NiaF4aHcKVyZHojrZhXi9vD-LYzYyTeS5B4ty5nNuQ/exec";
     let lotesData = [];
 
-    // Cargar datos al abrir la página
     window.onload = function() {
-      // Poner fecha de hoy por defecto en el formulario
       document.getElementById('fechaCompra').valueAsDate = new Date();
       cargarLotes();
     };
 
+    // Lógica para cambiar de pantallas (SPA)
+    function cambiarVista(vista) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.getElementById('vista-' + vista).classList.add('active');
+      document.getElementById('nav-' + vista).classList.add('active');
+    }
+
     function cargarLotes() {
       document.getElementById('cargando').style.display = 'block';
       document.getElementById('contenedorLotes').innerHTML = '';
-
       fetch(API_URL)
-        .then(respuesta => respuesta.json())
+        .then(res => res.json())
         .then(datos => {
-          lotesData = datos; // Guardamos en memoria
+          lotesData = datos;
           renderizarLotes();
           document.getElementById('cargando').style.display = 'none';
-        })
-        .catch(error => {
-          document.getElementById('cargando').innerText = "Error al cargar los datos.";
-          console.error(error);
-        });
+        }).catch(err => console.error(err));
     }
 
     function renderizarLotes() {
@@ -139,16 +175,12 @@
       contenedor.innerHTML = '';
 
       lotesData.forEach(lote => {
-        // Lógica del filtro
-        if (filtro !== "Todos" && lote.estado !== filtro && !(filtro === "Liquidado" && lote.estado === "Vendido")) {
-          return; // Salta este lote si no cumple el filtro
-        }
+        if (filtro !== "Todos" && lote.estado !== filtro && !(filtro === "Liquidado" && lote.estado === "Vendido")) return;
 
         const claseBadge = (lote.estado === 'Activo') ? 'estado-badge' : 'estado-badge estado-vendido';
-
         const tarjeta = document.createElement('div');
         tarjeta.className = 'tarjeta';
-        tarjeta.onclick = () => alert("Más adelante aquí se abrirá la información completa del " + lote.idLote);
+        tarjeta.onclick = () => abrirDetalles(lote.idLote);
 
         tarjeta.innerHTML = `
           <h3>${lote.idLote} <span class="${claseBadge}">${lote.estado}</span></h3>
@@ -163,27 +195,51 @@
       }
     }
 
-    function abrirModal() {
-      document.getElementById('modalLote').style.display = 'flex';
-    }
+    function abrirModalNuevo() { document.getElementById('modalLote').style.display = 'flex'; }
+    function cerrarModalNuevo() { document.getElementById('modalLote').style.display = 'none'; }
+    function cerrarDetalles() { document.getElementById('modalDetalles').style.display = 'none'; }
 
-    function cerrarModal() {
-      document.getElementById('modalLote').style.display = 'none';
+    function abrirDetalles(idLote) {
+      const lote = lotesData.find(l => l.idLote === idLote);
+      if(!lote) return;
+
+      document.getElementById('detTitulo').innerText = `${lote.idLote} - ${lote.nombreLote}`;
+
+      const formatQ = (val) => 'Q ' + parseFloat(val || 0).toFixed(2);
+      const formatLbs = (val) => parseFloat(val || 0).toFixed(2) + ' lbs';
+
+      const html = `
+        <div class="seccion-titulo">Información General</div>
+        <div class="detalle-item"><div class="detalle-label">Estado</div><div class="detalle-valor">${lote.estado}</div></div>
+        <div class="detalle-item"><div class="detalle-label">Fecha Compra</div><div class="detalle-valor">${lote.fechaCompra}</div></div>
+        <div class="detalle-item"><div class="detalle-label">Raza</div><div class="detalle-valor">${lote.raza || '-'}</div></div>
+        <div class="detalle-item"><div class="detalle-label">Días Transcurridos</div><div class="detalle-valor">${lote.diasTranscurridos}</div></div>
+
+        <div class="seccion-titulo">Inventario Animales</div>
+        <div class="detalle-item"><div class="detalle-label">Cant. Inicial</div><div class="detalle-valor">${lote.cantInicial}</div></div>
+        <div class="detalle-item"><div class="detalle-label">Cant. Activos</div><div class="detalle-valor">${lote.cantActivos}</div></div>
+
+        <div class="seccion-titulo">Finanzas y Pesos (Entrada)</div>
+        <div class="detalle-item"><div class="detalle-label">Peso Total Compra</div><div class="detalle-valor">${formatLbs(lote.pesoTotalCompra)}</div></div>
+        <div class="detalle-item"><div class="detalle-label">Peso Prom. Compra</div><div class="detalle-valor">${formatLbs(lote.pesoPromCompra)}</div></div>
+        <div class="detalle-item" style="grid-column: 1 / -1;"><div class="detalle-label">Total Compra (Ganado)</div><div class="detalle-valor">${formatQ(lote.totalCompra)}</div></div>
+
+        <div class="seccion-titulo">Proyección y Salida</div>
+        <div class="detalle-item"><div class="detalle-label">Ganancia Meta</div><div class="detalle-valor">${lote.gananciaMeta ? lote.gananciaMeta + ' lbs' : '-'}</div></div>
+        <div class="detalle-item"><div class="detalle-label">Total Generado</div><div class="detalle-valor">${formatQ(lote.totalGenerado)}</div></div>
+      `;
+
+      document.getElementById('detGrid').innerHTML = html;
+      document.getElementById('modalDetalles').style.display = 'flex';
     }
 
     function guardarLote() {
       const nombre = document.getElementById('nombreLote').value.trim();
       const fecha = document.getElementById('fechaCompra').value;
-
-      // Validación de campos obligatorios
-      if (!nombre || !fecha) {
-        alert("Por favor, llena el Nombre del Lote y la Fecha de Compra.");
-        return;
-      }
+      if (!nombre || !fecha) { alert("Llene Nombre y Fecha"); return; }
 
       const boton = document.getElementById('btnGuardar');
-      boton.innerText = "Guardando...";
-      boton.disabled = true;
+      boton.innerText = "Guardando..."; boton.disabled = true;
 
       const nuevoLote = {
         accion: "CREAR",
@@ -194,26 +250,16 @@
         gananciaMeta: document.getElementById('meta').value
       };
 
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify(nuevoLote)
-      })
+      fetch(API_URL, { method: 'POST', body: JSON.stringify(nuevoLote) })
       .then(res => res.json())
       .then(respuesta => {
-        cerrarModal();
-        boton.innerText = "Guardar Lote";
-        boton.disabled = false;
-
-        // Limpiar formulario opcional
+        cerrarModalNuevo();
+        boton.innerText = "Guardar Lote"; boton.disabled = false;
         document.getElementById('nombreLote').value = "";
-
-        // Recargar los lotes para ver el nuevo
         cargarLotes();
-      })
-      .catch(error => {
-        alert("Hubo un error al guardar.");
-        boton.innerText = "Guardar Lote";
-        boton.disabled = false;
+      }).catch(error => {
+        alert("Error al guardar.");
+        boton.innerText = "Guardar Lote"; boton.disabled = false;
       });
     }
   </script>
