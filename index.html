@@ -19,7 +19,7 @@
     .filtros { margin-bottom: 20px; }
     select, input { padding: 8px; border: 1px solid var(--borde); border-radius: 6px; width: 100%; box-sizing: border-box; margin-top: 5px; }
 
-    /* Tarjetas */
+    /* Tarjetas Lotes */
     .grid-lotes { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
     .tarjeta { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--borde); cursor: pointer; transition: transform 0.2s; }
     .tarjeta:hover { transform: translateY(-3px); border-color: var(--verde-claro); }
@@ -27,6 +27,15 @@
     .tarjeta p { margin: 5px 0; font-size: 14px; color: #4A5568; }
     .estado-badge { font-size: 12px; padding: 3px 8px; border-radius: 12px; background: #C6F6D5; color: #22543D; }
     .estado-vendido { background: #FED7D7; color: #822727; }
+
+    /* Estilos Tabla Compras */
+    .tabla-compras { width: 100%; border-collapse: collapse; min-width: 600px; margin-top: 10px; }
+    .tabla-compras th { background-color: var(--verde-claro); color: white; padding: 10px; text-align: left; font-size: 13px; }
+    .tabla-compras td { border-bottom: 1px solid var(--borde); padding: 8px; }
+    .tabla-compras input, .tabla-compras select { margin-top: 0; border: 1px solid transparent; background: #f8fafc; }
+    .tabla-compras input:focus, .tabla-compras select:focus { border: 1px solid var(--verde-claro); outline: none; background: white; }
+    .btn-eliminar { background-color: #E53E3E; padding: 6px 10px; font-size: 12px; }
+    .btn-eliminar:hover { background-color: #C53030; }
 
     /* Modales */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 2000; }
@@ -78,14 +87,72 @@
   <!-- VISTA 2: COMPRAS -->
   <div id="vista-compras" class="view-section">
     <div class="header">
-      <h1>Registro de Compras</h1>
-      <button onclick="alert('Próximamente: Formulario para ingresar animales')">+ Ingresar Animal</button>
+      <h1>Ingreso de Compra</h1>
     </div>
 
-    <div style="background: white; padding: 30px; text-align: center; border-radius: 8px; border: 1px dashed var(--borde); margin-top: 20px;">
-      <span style="font-size: 40px; display: block; margin-bottom: 10px;">🐄</span>
-      <h3 style="color: var(--verde-oscuro); margin: 0;">Módulo de Compras</h3>
-      <p style="color: #718096; font-size: 14px;">Aquí construiremos el formulario y la tabla para registrar cada animal.</p>
+    <!-- PASO 1: Datos Generales -->
+    <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 20px;">
+      <h3 style="margin-top: 0; color: var(--verde-oscuro); border-bottom: 1px solid var(--borde); padding-bottom: 10px;">1. Datos Generales</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
+        <div>
+          <label style="font-size: 12px; font-weight: bold; color: #4A5568;">Lote Asignado *</label>
+          <select id="compraLote"><option value="">Cargando...</option></select>
+        </div>
+        <div>
+          <label style="font-size: 12px; font-weight: bold; color: #4A5568;">Fecha de Compra *</label>
+          <input type="date" id="compraFecha">
+        </div>
+        <div>
+          <label style="font-size: 12px; font-weight: bold; color: #4A5568;">Destino General</label>
+          <select id="compraDestino">
+            <option value="Engorde">Engorde</option>
+            <option value="Levante">Levante</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 12px; font-weight: bold; color: #4A5568;">Modalidad *</label>
+          <select id="compraModalidad">
+            <option value="Pesado">Pesado (por lb)</option>
+            <option value="Precio Fijo">Precio Fijo</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 12px; font-weight: bold; color: #4A5568;">Precio Pactado (Q) *</label>
+          <input type="number" id="compraPrecio" placeholder="Ej. 12.00">
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2: Animales -->
+    <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+        <h3 style="margin: 0; color: var(--verde-oscuro);">2. Lista de Animales</h3>
+        <div>
+          <button onclick="alert('Próximamente: Integración con la cámara e IA')" style="background-color: #2b6cb0; margin-right: 5px;">📷 Leer Libreta (IA)</button>
+          <button onclick="agregarFilaAnimal()">+ Fila Manual</button>
+        </div>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="tabla-compras">
+          <thead>
+            <tr>
+              <th>Arete / Origen</th>
+              <th>Sexo</th>
+              <th>Características</th>
+              <th>Peso (lbs)</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaAnimalesBody">
+            <!-- Filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="text-align: right; margin-bottom: 20px;">
+      <button id="btnGuardarCompra" onclick="guardarCompra()" style="padding: 12px 25px; font-size: 16px; width: 100%; max-width: 300px;">💾 Guardar Compra en Inventario</button>
     </div>
   </div>
 
@@ -146,7 +213,11 @@
 
     window.onload = function() {
       document.getElementById('fechaCompra').valueAsDate = new Date();
+      document.getElementById('compraFecha').valueAsDate = new Date();
       cargarLotes();
+
+      // Agregar una fila vacía por defecto en la tabla de compras
+      agregarFilaAnimal();
     };
 
     // Lógica para cambiar de pantallas (SPA)
@@ -165,6 +236,7 @@
         .then(datos => {
           lotesData = datos;
           renderizarLotes();
+          llenarSelectLotes(); // Llena el desplegable del módulo de compras
           document.getElementById('cargando').style.display = 'none';
         }).catch(err => console.error(err));
     }
@@ -195,6 +267,43 @@
       }
     }
 
+    // Funciones del Módulo Compras
+    function llenarSelectLotes() {
+      const select = document.getElementById('compraLote');
+      select.innerHTML = '<option value="">-- Seleccione un Lote --</option>';
+      lotesData.forEach(lote => {
+        if(lote.estado === 'Activo') {
+          const opt = document.createElement('option');
+          opt.value = lote.idLote;
+          opt.textContent = `${lote.idLote} - ${lote.nombreLote}`;
+          select.appendChild(opt);
+        }
+      });
+    }
+
+    function agregarFilaAnimal() {
+      const tbody = document.getElementById('tablaAnimalesBody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" placeholder="Ej. 4590" class="inp-arete"></td>
+        <td>
+          <select class="inp-sexo">
+            <option value="M">M</option>
+            <option value="H">H</option>
+          </select>
+        </td>
+        <td><input type="text" placeholder="Ej. Pinto" class="inp-rasgos"></td>
+        <td><input type="number" placeholder="Lbs" class="inp-peso"></td>
+        <td><button class="btn-eliminar" onclick="this.closest('tr').remove()">X</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function guardarCompra() {
+      alert("La interfaz está lista. El siguiente paso será conectar este botón con Google Sheets para guardar la compra de forma masiva.");
+    }
+
+    // Funciones de Modales Lotes
     function abrirModalNuevo() { document.getElementById('modalLote').style.display = 'flex'; }
     function cerrarModalNuevo() { document.getElementById('modalLote').style.display = 'none'; }
     function cerrarDetalles() { document.getElementById('modalDetalles').style.display = 'none'; }
@@ -204,7 +313,6 @@
       if(!lote) return;
 
       document.getElementById('detTitulo').innerText = `${lote.idLote} - ${lote.nombreLote}`;
-
       const formatQ = (val) => 'Q ' + parseFloat(val || 0).toFixed(2);
       const formatLbs = (val) => parseFloat(val || 0).toFixed(2) + ' lbs';
 
