@@ -8,7 +8,6 @@
     :root { --verde-oscuro: #1B4D3E; --verde-claro: #2C6B56; --fondo: #F4F7F5; --texto: #2D3748; --borde: #E2E8F0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--fondo); color: var(--texto); margin: 0; padding: 20px; padding-bottom: 80px; }
     
-    /* ESTO CONTROLA LAS VISTAS */
     .view-section { display: none; }
     .view-section.active { display: block; }
     
@@ -18,14 +17,12 @@
     button:hover { background-color: var(--verde-claro); }
     select, input, textarea { padding: 8px; border: 1px solid var(--borde); border-radius: 6px; width: 100%; box-sizing: border-box; margin-top: 5px; font-family: inherit; }
     
-    /* TARJETAS DE LOTES */
     .grid-lotes { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
     .tarjeta { background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); cursor: pointer; }
     .tarjeta h3 { margin: 0 0 10px 0; color: var(--verde-oscuro); display: flex; justify-content: space-between; }
     .tarjeta p { margin: 5px 0; font-size: 14px; color: #4A5568; }
     .estado-badge { font-size: 12px; padding: 3px 8px; border-radius: 12px; background: #C6F6D5; color: #22543D; }
 
-    /* TABLA COMPRAS */
     .tabla-compras { width: 100%; border-collapse: collapse; min-width: 800px; margin-top: 10px; }
     .tabla-compras th { background-color: var(--verde-claro); color: white; padding: 10px; text-align: left; font-size: 13px; }
     .tabla-compras td { border-bottom: 1px solid var(--borde); padding: 6px; }
@@ -52,22 +49,13 @@
 </head>
 <body>
 
-  <!-- 1. VISTA LOTES (Restaurada) -->
   <div id="vista-lotes" class="view-section">
-    <div class="header">
-      <h1>Control de Lotes</h1>
-      <button>+ Nuevo Lote</button>
-    </div>
-    <div class="grid-lotes" id="contenedorLotes">
-      <p style="text-align:center; width:100%;">Cargando lotes...</p>
-    </div>
+    <div class="header"><h1>Control de Lotes</h1><button>+ Nuevo Lote</button></div>
+    <div class="grid-lotes" id="contenedorLotes"><p style="text-align:center; width:100%;">Cargando...</p></div>
   </div>
 
-  <!-- 2. VISTA COMPRAS -->
   <div id="vista-compras" class="view-section active">
-    <div class="header">
-      <h1>Ingreso de Compra</h1>
-    </div>
+    <div class="header"><h1>Ingreso de Compra</h1></div>
     
     <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 20px;">
       <h3 style="margin-top: 0; color: var(--verde-oscuro); border-bottom: 1px solid var(--borde); padding-bottom: 10px;">1. Datos Generales</h3>
@@ -83,12 +71,8 @@
     <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
         <h3 style="margin: 0; color: var(--verde-oscuro);">2. Lista de Animales</h3>
-        <div>
-          <button onclick="abrirModalPegado()" style="background-color: #d69e2e; margin-right: 5px;">📋 Pegar Datos</button>
-          <button onclick="agregarFilaAnimal()">+ Fila Manual</button>
-        </div>
+        <div><button onclick="abrirModalPegado()" style="background-color: #d69e2e; margin-right: 5px;">📋 Pegar Datos</button><button onclick="agregarFilaAnimal()">+ Fila Manual</button></div>
       </div>
-      
       <div style="overflow-x: auto;">
         <table class="tabla-compras">
           <thead>
@@ -112,7 +96,7 @@
       <div class="resumen-item">Total Libras<span class="resumen-valor" id="resLbs">0.00</span></div>
       <div class="resumen-item">Peso Promedio<span class="resumen-valor" id="resPesoProm">0.00 lbs</span></div>
       <div class="resumen-item">Precio Promedio<span class="resumen-valor" id="resProm">Q 0.00</span></div>
-      <div class="resumen-item">Total a Pagar<span class="resumen-valor" id="resPagar" style="color: #E53E3E;">Q 0.00</span></div>
+      <div class="resumen-item">Total Compra<span class="resumen-valor" id="resPagar" style="color: #E53E3E;">Q 0.00</span></div>
     </div>
 
     <div style="text-align: right; margin-bottom: 20px;">
@@ -120,38 +104,36 @@
     </div>
   </div>
 
-  <!-- 3. VISTA REPESAS (Placeholder) -->
-  <div id="vista-repesas" class="view-section">
-    <div class="header">
-      <h1>Repesas</h1>
-    </div>
-    <p>Pantalla de repesas en construcción...</p>
-  </div>
+  <div id="vista-repesas" class="view-section"><div class="header"><h1>Repesas</h1></div><p>Pantalla en construcción...</p></div>
 
-  <!-- MODALES DE COMPRA Y LOGÍSTICA -->
+  <!-- MODALES -->
   <div class="modal-overlay" id="modalPegado">
     <div class="modal">
-      <h2 style="margin-top:0; color: var(--verde-oscuro);">Pegado Mágico</h2>
-      <p style="font-size: 13px;">Pega la tabla (Orden: Arete, Sexo, Características, Peso).</p>
+      <h2 style="margin-top:0;">Pegado Mágico</h2>
       <textarea id="textoPegado" rows="8"></textarea>
       <div class="modal-botones">
-        <button class="btn-cancelar" onclick="cerrarModalPegado()">Cancelar</button>
-        <button onclick="procesarPegado()" style="background-color: var(--verde-claro);">Crear Filas</button>
+        <button class="btn-cancelar" onclick="cerrarModalPegado()">Cancelar</button><button onclick="procesarPegado()">Crear Filas</button>
       </div>
     </div>
   </div>
 
+  <!-- MODAL DE LOGÍSTICA ACTUALIZADO (Camiones dinámicos) -->
   <div class="modal-overlay" id="modalLogistica">
     <div class="modal">
       <h2 style="margin-top:0; color: var(--verde-oscuro);">Generar Orden de Compra</h2>
-      <p style="font-size: 13px; margin-top:0; color: #718096;">La compra ya se guardó. Llena estos datos para generar los PDFs al correo.</p>
-      <div class="form-group"><label>Vendedor *</label><input type="text" id="ordVendedor" required></div>
+      <p style="font-size: 13px; margin-top:0; color: #718096;">Llena estos datos para generar los PDFs formales.</p>
+      
+      <div class="form-group"><label>Nombre del Vendedor *</label><input type="text" id="ordVendedor" required></div>
       <div class="form-group"><label>Finca de Origen *</label><input type="text" id="ordFinca" required></div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div class="form-group"><label>Cant. Camiones</label><input type="number" id="ordCamiones"></div>
-        <div class="form-group"><label>Placas</label><input type="text" id="ordPlacas" placeholder="Ej. C123BXX"></div>
+      
+      <div class="form-group">
+        <label>Cantidad de Camiones</label>
+        <input type="number" id="ordCantCamiones" value="1" min="1" onchange="generarCamposTransporte()" style="width: 80px; display: block;">
       </div>
-      <div class="form-group"><label>Pilotos</label><textarea id="ordPilotos" rows="2"></textarea></div>
+      
+      <!-- Contenedor dinámico para placas y pilotos -->
+      <div id="contenedorTransporte"></div>
+
       <div class="modal-botones">
         <button class="btn-cancelar" onclick="cerrarTodo()">Saltar</button>
         <button onclick="generarOrdenes()" id="btnGenerarPDF" style="background-color: var(--verde-claro);">Enviar PDFs</button>
@@ -159,7 +141,6 @@
     </div>
   </div>
 
-  <!-- BARRA DE NAVEGACIÓN INFERIOR (Restaurada) -->
   <div class="bottom-nav">
     <div class="nav-item" onclick="cambiarVista('vista-lotes', this)"><span class="nav-icon">📁</span><span>Lotes</span></div>
     <div class="nav-item active" onclick="cambiarVista('vista-compras', this)"><span class="nav-icon">🐄</span><span>Compras</span></div>
@@ -168,76 +149,56 @@
 
   <script>
     // 👇👇 REEMPLAZA ESTO POR TU ENLACE REAL /exec 👇👇
-    const API_URL = "https://script.google.com/macros/s/AKfycbw1oyRZf14txxIu__LqTp4TAcT6NiaF4aHcKVyZHojrZhXi9vD-LYzYyTeS5B4ty5nNuQ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbz_-dBAyfQKRIMTcR-GAjqMWqG33LnhTuL_pKdaaE9PuPHWZaHJSHw6H_jGbhGzIGJFBw/exec";
 
     let datosGlobalesAnimales = []; 
     let totalesGlobales = {};
 
     window.onload = function() {
       document.getElementById('compraFecha').valueAsDate = new Date();
-      cargarLotes();
-      agregarFilaAnimal();
+      cargarLotes(); agregarFilaAnimal(); generarCamposTransporte();
     };
 
-    // FUNCIÓN PARA CAMBIAR ENTRE PANTALLAS
-    function cambiarVista(vistaId, elementoNav) {
+    function cambiarVista(vistaId, elNav) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById(vistaId).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      elementoNav.classList.add('active');
+      elNav.classList.add('active');
     }
 
-    // FUNCIÓN PARA CARGAR LOS LOTES EN SELECT Y EN TARJETAS
     function cargarLotes() {
       fetch(API_URL).then(res => res.json()).then(datos => {
           const select = document.getElementById('compraLote');
           const contenedorLotes = document.getElementById('contenedorLotes');
-          
           select.innerHTML = '<option value="">-- Selecciona un Lote --</option>';
           contenedorLotes.innerHTML = '';
-
           datos.forEach(lote => {
             if(lote.estado === 'Activo') {
               const opt = document.createElement('option');
               opt.value = lote.idLote; opt.textContent = `${lote.idLote} - ${lote.nombreLote}`;
               select.appendChild(opt);
             }
-            
-            // Dibuja las tarjetas de lotes
-            const tarjeta = document.createElement('div');
-            tarjeta.className = 'tarjeta';
-            tarjeta.innerHTML = `
-              <h3>${lote.idLote} <span class="estado-badge">${lote.estado}</span></h3>
-              <p><strong>Nombre:</strong> ${lote.nombreLote}</p>
-              <p><strong>Fecha Creación:</strong> ${lote.fechaCompra}</p>
-            `;
-            contenedorLotes.appendChild(tarjeta);
+            contenedorLotes.innerHTML += `<div class="tarjeta"><h3>${lote.idLote} <span class="estado-badge">${lote.estado}</span></h3><p><strong>Nombre:</strong> ${lote.nombreLote}</p></div>`;
           });
-        }).catch(err => {
-          document.getElementById('contenedorLotes').innerHTML = '<p>Error cargando lotes.</p>';
-        });
+        }).catch(err => document.getElementById('contenedorLotes').innerHTML = '<p>Error.</p>');
     }
 
     function agregarFilaAnimal(datos = {}) {
       const tbody = document.getElementById('tablaAnimalesBody');
       const tr = document.createElement('tr');
       const arete = datos.arete || ''; const peso = datos.peso || '';
-      const precioGral = document.getElementById('compraPrecio').value || '';
-      const precio = datos.precio || precioGral;
-      const idAnimal = datos.idAnimal || '';
+      const precio = datos.precio || document.getElementById('compraPrecio').value || '';
       const sexo = (datos.sexo || 'M').toUpperCase() === 'H' ? 'H' : 'M';
-      const rasgos = datos.rasgos || '';
       tr.innerHTML = `
         <td><input type="text" placeholder="Origen" class="inp-arete" value="${arete}"></td>
         <td><input type="number" placeholder="Lbs" class="inp-peso" value="${peso}" oninput="recalcularResumen()"></td>
         <td><input type="number" placeholder="Q" class="inp-precio" value="${precio}" oninput="recalcularResumen()"></td>
         <td><input type="text" placeholder="ID Interno" class="inp-id"></td>
-        <td><select class="inp-sexo"><option value="M" ${sexo==='M'?'selected':''}>M</option><option value="H" ${sexo==='H'?'selected':''}>H</option></select></td>
-        <td><input type="text" placeholder="Rasgos" class="inp-rasgos" value="${rasgos}"></td>
+        <td><select class="inp-sexo" onchange="recalcularResumen()"><option value="M" ${sexo==='M'?'selected':''}>M</option><option value="H" ${sexo==='H'?'selected':''}>H</option></select></td>
+        <td><input type="text" placeholder="Rasgos" class="inp-rasgos" value="${datos.rasgos || ''}"></td>
         <td><button class="btn-eliminar" onclick="eliminarFila(this)">X</button></td>
       `;
-      tbody.appendChild(tr);
-      recalcularResumen();
+      tbody.appendChild(tr); recalcularResumen();
     }
 
     function eliminarFila(btn) { btn.closest('tr').remove(); recalcularResumen(); }
@@ -245,24 +206,31 @@
     function recalcularResumen() {
       const filas = document.querySelectorAll('#tablaAnimalesBody tr');
       const modalidad = document.getElementById('compraModalidad').value;
-      let cant = 0, totalLbs = 0, sumaPrecios = 0, totalPagar = 0;
+      let cant = 0, totalLbs = 0, sumaPrecios = 0, totalPagar = 0, machos = 0, hembras = 0;
+      
       filas.forEach(fila => {
         const peso = parseFloat(fila.querySelector('.inp-peso').value) || 0;
         const precio = parseFloat(fila.querySelector('.inp-precio').value) || 0;
         const arete = fila.querySelector('.inp-arete').value.trim();
+        const sexo = fila.querySelector('.inp-sexo').value;
+
         if(peso > 0 || arete !== "") {
           cant++; totalLbs += peso; sumaPrecios += precio;
+          if(sexo === 'M') machos++; else if(sexo === 'H') hembras++;
           if (modalidad === 'Pesado') totalPagar += (peso * precio); else totalPagar += precio;
         }
       });
+
       const prom = cant > 0 ? (sumaPrecios / cant) : 0;
       const pesoProm = cant > 0 ? (totalLbs / cant) : 0; 
+      
       document.getElementById('resCant').innerText = cant;
-      document.getElementById('resLbs').innerText = totalLbs.toFixed(2);
-      document.getElementById('resPesoProm').innerText = pesoProm.toFixed(2) + " lbs";
-      document.getElementById('resProm').innerText = "Q " + prom.toFixed(2);
-      document.getElementById('resPagar').innerText = "Q " + totalPagar.toFixed(2);
-      totalesGlobales = { cant, totalLbs, pesoProm, prom, totalPagar };
+      document.getElementById('resLbs').innerText = totalLbs.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+      document.getElementById('resPesoProm').innerText = pesoProm.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) + " lbs";
+      document.getElementById('resProm').innerText = "Q " + prom.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+      document.getElementById('resPagar').innerText = "Q " + totalPagar.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+      
+      totalesGlobales = { cant, totalLbs, pesoProm, prom, totalPagar, machos, hembras };
     }
 
     function abrirModalPegado() { document.getElementById('modalPegado').style.display = 'flex'; }
@@ -278,6 +246,24 @@
       cerrarModalPegado();
     }
 
+    // Generador dinámico de campos de camiones
+    function generarCamposTransporte() {
+      const cant = parseInt(document.getElementById('ordCantCamiones').value) || 1;
+      const contenedor = document.getElementById('contenedorTransporte');
+      contenedor.innerHTML = '';
+      for(let i=1; i<=cant; i++) {
+        contenedor.innerHTML += `
+          <div style="background: #f8fafc; padding: 10px; border: 1px solid var(--borde); border-radius: 6px; margin-bottom: 10px;">
+            <strong style="font-size: 12px; color: var(--verde-oscuro);">Camión ${i}</strong>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px;">
+              <div><input type="text" class="placa-camion" placeholder="Placa (Ej. C123BXX)"></div>
+              <div><input type="text" class="piloto-camion" placeholder="Nombre del Piloto"></div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
     function guardarCompra() {
       const loteId = document.getElementById('compraLote').value;
       const fecha = document.getElementById('compraFecha').value;
@@ -289,33 +275,25 @@
         const arete = fila.querySelector('.inp-arete').value.trim();
         const peso = parseFloat(fila.querySelector('.inp-peso').value) || 0;
         const precio = parseFloat(fila.querySelector('.inp-precio').value) || 0;
-        const idAnimal = fila.querySelector('.inp-id').value.trim();
         let costo = modalidad === 'Pesado' ? (peso * precio) : precio;
         if (arete || peso) {
           datosGlobalesAnimales.push({
             areteOrigen: arete, peso: peso, precio: precio, costo: costo,
-            idAnimal: idAnimal, sexo: fila.querySelector('.inp-sexo').value, rasgos: fila.querySelector('.inp-rasgos').value.trim()
+            idAnimal: fila.querySelector('.inp-id').value.trim(), 
+            sexo: fila.querySelector('.inp-sexo').value === 'M' ? 'Macho' : 'Hembra', 
+            rasgos: fila.querySelector('.inp-rasgos').value.trim()
           });
         }
       });
       if (datosGlobalesAnimales.length === 0) { alert("Agrega al menos un animal."); return; }
 
-      const boton = document.getElementById('btnGuardarCompra');
-      boton.innerText = "Guardando..."; boton.disabled = true;
+      const boton = document.getElementById('btnGuardarCompra'); boton.innerText = "Guardando..."; boton.disabled = true;
 
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ accion: "CREAR_COMPRA", loteId: loteId, fechaCompra: fecha, destino: document.getElementById('compraDestino').value, modalidad: modalidad, animales: datosGlobalesAnimales })
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: "CREAR_COMPRA", loteId: loteId, fechaCompra: fecha, destino: document.getElementById('compraDestino').value, modalidad: modalidad, animales: datosGlobalesAnimales })
       }).then(res => res.json()).then(res => {
-        if(res.error) {
-          alert("Error de Google Sheets: " + res.error);
-        } else {
-          document.getElementById('modalLogistica').style.display = 'flex';
-        }
+        if(res.error) alert("Error: " + res.error); else document.getElementById('modalLogistica').style.display = 'flex';
         boton.innerText = "💾 Guardar Compra en Inventario"; boton.disabled = false;
-      }).catch(err => {
-        alert("Error de conexión al guardar."); boton.innerText = "💾 Guardar Compra en Inventario"; boton.disabled = false;
-      });
+      }).catch(err => { alert("Error de red."); boton.disabled = false; });
     }
 
     function generarOrdenes() {
@@ -323,32 +301,36 @@
       const finca = document.getElementById('ordFinca').value;
       if(!vendedor || !finca) { alert("Vendedor y Finca son obligatorios."); return; }
 
-      const boton = document.getElementById('btnGenerarPDF');
-      boton.innerText = "Generando PDFs..."; boton.disabled = true;
+      // Extraer datos de todos los camiones
+      const camionesData = [];
+      document.querySelectorAll('#contenedorTransporte > div').forEach(div => {
+        camionesData.push({
+          placa: div.querySelector('.placa-camion').value.trim() || 'N/A',
+          piloto: div.querySelector('.piloto-camion').value.trim() || 'No asignado'
+        });
+      });
+
+      const boton = document.getElementById('btnGenerarPDF'); boton.innerText = "Generando PDFs..."; boton.disabled = true;
 
       fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify({
           accion: "GENERAR_PDF", fecha: document.getElementById('compraFecha').value,
           loteId: document.getElementById('compraLote').options[document.getElementById('compraLote').selectedIndex].text,
-          vendedor: vendedor, finca: finca, camiones: document.getElementById('ordCamiones').value,
-          placas: document.getElementById('ordPlacas').value, pilotos: document.getElementById('ordPilotos').value,
+          vendedor: vendedor, finca: finca, 
+          camiones: camionesData, // Ahora enviamos un arreglo de camiones
           animales: datosGlobalesAnimales, totales: totalesGlobales
         })
       }).then(res => res.json()).then(res => {
-        alert("¡PDFs enviados al correo!"); cerrarTodo();
-        boton.innerText = "Enviar PDFs"; boton.disabled = false;
-      }).catch(err => {
-        alert("Error al generar PDFs."); boton.innerText = "Enviar PDFs"; boton.disabled = false;
-      });
+        alert("¡PDFs enviados al correo!"); cerrarTodo(); boton.innerText = "Enviar PDFs"; boton.disabled = false;
+      }).catch(err => { alert("Error al generar PDFs."); boton.innerText = "Enviar PDFs"; boton.disabled = false; });
     }
 
     function cerrarTodo() {
       document.getElementById('modalLogistica').style.display = 'none';
       document.getElementById('tablaAnimalesBody').innerHTML = ''; 
       document.getElementById('ordVendedor').value = ''; document.getElementById('ordFinca').value = '';
-      document.getElementById('ordCamiones').value = ''; document.getElementById('ordPlacas').value = '';
-      document.getElementById('ordPilotos').value = '';
+      document.getElementById('ordCantCamiones').value = 1; generarCamposTransporte();
       agregarFilaAnimal(); 
     }
   </script>
