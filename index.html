@@ -8,6 +8,7 @@
     :root { --verde-oscuro: #1B4D3E; --verde-claro: #2C6B56; --fondo: #F4F7F5; --texto: #2D3748; --borde: #E2E8F0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--fondo); color: var(--texto); margin: 0; padding: 20px; padding-bottom: 80px; }
     
+    /* ESTO CONTROLA LAS VISTAS */
     .view-section { display: none; }
     .view-section.active { display: block; }
     
@@ -17,6 +18,14 @@
     button:hover { background-color: var(--verde-claro); }
     select, input, textarea { padding: 8px; border: 1px solid var(--borde); border-radius: 6px; width: 100%; box-sizing: border-box; margin-top: 5px; font-family: inherit; }
     
+    /* TARJETAS DE LOTES */
+    .grid-lotes { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+    .tarjeta { background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); cursor: pointer; }
+    .tarjeta h3 { margin: 0 0 10px 0; color: var(--verde-oscuro); display: flex; justify-content: space-between; }
+    .tarjeta p { margin: 5px 0; font-size: 14px; color: #4A5568; }
+    .estado-badge { font-size: 12px; padding: 3px 8px; border-radius: 12px; background: #C6F6D5; color: #22543D; }
+
+    /* TABLA COMPRAS */
     .tabla-compras { width: 100%; border-collapse: collapse; min-width: 800px; margin-top: 10px; }
     .tabla-compras th { background-color: var(--verde-claro); color: white; padding: 10px; text-align: left; font-size: 13px; }
     .tabla-compras td { border-bottom: 1px solid var(--borde); padding: 6px; }
@@ -32,7 +41,6 @@
     .modal { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
     .modal-botones { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
     .btn-cancelar { background-color: #A0AEC0; }
-    
     .form-group { margin-bottom: 15px; }
     .form-group label { font-size: 13px; font-weight: bold; color: #4A5568; }
 
@@ -44,7 +52,18 @@
 </head>
 <body>
 
-  <!-- VISTA COMPRAS -->
+  <!-- 1. VISTA LOTES (Restaurada) -->
+  <div id="vista-lotes" class="view-section">
+    <div class="header">
+      <h1>Control de Lotes</h1>
+      <button>+ Nuevo Lote</button>
+    </div>
+    <div class="grid-lotes" id="contenedorLotes">
+      <p style="text-align:center; width:100%;">Cargando lotes...</p>
+    </div>
+  </div>
+
+  <!-- 2. VISTA COMPRAS -->
   <div id="vista-compras" class="view-section active">
     <div class="header">
       <h1>Ingreso de Compra</h1>
@@ -53,11 +72,11 @@
     <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 20px;">
       <h3 style="margin-top: 0; color: var(--verde-oscuro); border-bottom: 1px solid var(--borde); padding-bottom: 10px;">1. Datos Generales</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
-        <div><label style="font-size: 12px; font-weight: bold;">Lote Asignado *</label><select id="compraLote"><option value="">Cargando...</option></select></div>
-        <div><label style="font-size: 12px; font-weight: bold;">Fecha *</label><input type="date" id="compraFecha"></div>
-        <div><label style="font-size: 12px; font-weight: bold;">Destino</label><select id="compraDestino"><option value="Engorde">Engorde</option><option value="Levante">Levante</option></select></div>
-        <div><label style="font-size: 12px; font-weight: bold;">Modalidad *</label><select id="compraModalidad" onchange="recalcularResumen()"><option value="Pesado">Pesado (por lb)</option><option value="Precio Fijo">Precio Fijo</option></select></div>
-        <div><label style="font-size: 12px; font-weight: bold;">Precio Ref. (Q) *</label><input type="number" id="compraPrecio" placeholder="Ej. 12.00" oninput="recalcularResumen()"></div>
+        <div><label>Lote Asignado *</label><select id="compraLote"><option value="">Cargando...</option></select></div>
+        <div><label>Fecha *</label><input type="date" id="compraFecha"></div>
+        <div><label>Destino</label><select id="compraDestino"><option value="Engorde">Engorde</option><option value="Levante">Levante</option></select></div>
+        <div><label>Modalidad *</label><select id="compraModalidad" onchange="recalcularResumen()"><option value="Pesado">Pesado (por lb)</option><option value="Precio Fijo">Precio Fijo</option></select></div>
+        <div><label>Precio Ref. (Q) *</label><input type="number" id="compraPrecio" placeholder="Ej. 12.00" oninput="recalcularResumen()"></div>
       </div>
     </div>
 
@@ -88,7 +107,6 @@
       </div>
     </div>
 
-    <!-- Panel de Resumen en Vivo -->
     <div class="panel-resumen">
       <div class="resumen-item">Animales<span class="resumen-valor" id="resCant">0</span></div>
       <div class="resumen-item">Total Libras<span class="resumen-valor" id="resLbs">0.00</span></div>
@@ -98,11 +116,19 @@
     </div>
 
     <div style="text-align: right; margin-bottom: 20px;">
-      <button id="btnGuardarCompra" onclick="guardarCompra()" style="padding: 12px 25px; font-size: 16px; width: 100%; max-width: 300px;">💾 Guardar Compra</button>
+      <button id="btnGuardarCompra" onclick="guardarCompra()" style="padding: 12px 25px; font-size: 16px; width: 100%; max-width: 300px;">💾 Guardar Compra en Inventario</button>
     </div>
   </div>
 
-  <!-- Modal Pegado Mágico -->
+  <!-- 3. VISTA REPESAS (Placeholder) -->
+  <div id="vista-repesas" class="view-section">
+    <div class="header">
+      <h1>Repesas</h1>
+    </div>
+    <p>Pantalla de repesas en construcción...</p>
+  </div>
+
+  <!-- MODALES DE COMPRA Y LOGÍSTICA -->
   <div class="modal-overlay" id="modalPegado">
     <div class="modal">
       <h2 style="margin-top:0; color: var(--verde-oscuro);">Pegado Mágico</h2>
@@ -115,40 +141,36 @@
     </div>
   </div>
 
-  <!-- NUEVO: Modal Logística para Orden de Compra -->
   <div class="modal-overlay" id="modalLogistica">
     <div class="modal">
       <h2 style="margin-top:0; color: var(--verde-oscuro);">Generar Orden de Compra</h2>
-      <p style="font-size: 13px; margin-top:0; color: #718096;">La compra ya se guardó en el inventario. Llena estos datos para generar los PDFs y enviarlos a tu correo.</p>
-      
-      <div class="form-group"><label>Nombre del Vendedor *</label><input type="text" id="ordVendedor" required></div>
+      <p style="font-size: 13px; margin-top:0; color: #718096;">La compra ya se guardó. Llena estos datos para generar los PDFs al correo.</p>
+      <div class="form-group"><label>Vendedor *</label><input type="text" id="ordVendedor" required></div>
       <div class="form-group"><label>Finca de Origen *</label><input type="text" id="ordFinca" required></div>
-      
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <div class="form-group"><label>Cant. Camiones</label><input type="number" id="ordCamiones"></div>
-        <div class="form-group"><label>Placas</label><input type="text" id="ordPlacas" placeholder="Ej. C123BXX, C456DZZ"></div>
+        <div class="form-group"><label>Placas</label><input type="text" id="ordPlacas" placeholder="Ej. C123BXX"></div>
       </div>
-      
-      <div class="form-group"><label>Nombres de Pilotos</label><textarea id="ordPilotos" rows="2" placeholder="Nombres de los encargados del transporte..."></textarea></div>
-
+      <div class="form-group"><label>Pilotos</label><textarea id="ordPilotos" rows="2"></textarea></div>
       <div class="modal-botones">
-        <button class="btn-cancelar" onclick="cerrarTodo()">Saltar (No Generar)</button>
-        <button onclick="generarOrdenes()" id="btnGenerarPDF" style="background-color: var(--verde-claro);">Enviar PDFs al Correo</button>
+        <button class="btn-cancelar" onclick="cerrarTodo()">Saltar</button>
+        <button onclick="generarOrdenes()" id="btnGenerarPDF" style="background-color: var(--verde-claro);">Enviar PDFs</button>
       </div>
     </div>
   </div>
 
+  <!-- BARRA DE NAVEGACIÓN INFERIOR (Restaurada) -->
   <div class="bottom-nav">
-    <div class="nav-item"><span class="nav-icon">📁</span><span>Lotes</span></div>
-    <div class="nav-item active"><span class="nav-icon">🐄</span><span>Compras</span></div>
-    <div class="nav-item"><span class="nav-icon">⚖️</span><span>Repesas</span></div>
+    <div class="nav-item" onclick="cambiarVista('vista-lotes', this)"><span class="nav-icon">📁</span><span>Lotes</span></div>
+    <div class="nav-item active" onclick="cambiarVista('vista-compras', this)"><span class="nav-icon">🐄</span><span>Compras</span></div>
+    <div class="nav-item" onclick="cambiarVista('vista-repesas', this)"><span class="nav-icon">⚖️</span><span>Repesas</span></div>
   </div>
 
   <script>
     // 👇👇 REEMPLAZA ESTO POR TU ENLACE REAL /exec 👇👇
-    const API_URL = "https://script.google.com/macros/s/AKfycbz_-dBAyfQKRIMTcR-GAjqMWqG33LnhTuL_pKdaaE9PuPHWZaHJSHw6H_jGbhGzIGJFBw/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbw1oyRZf14txxIu__LqTp4TAcT6NiaF4aHcKVyZHojrZhXi9vD-LYzYyTeS5B4ty5nNuQ/exec";
 
-    let datosGlobalesAnimales = []; // Para guardar los datos antes de enviarlos al PDF
+    let datosGlobalesAnimales = []; 
     let totalesGlobales = {};
 
     window.onload = function() {
@@ -157,31 +179,54 @@
       agregarFilaAnimal();
     };
 
+    // FUNCIÓN PARA CAMBIAR ENTRE PANTALLAS
+    function cambiarVista(vistaId, elementoNav) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.getElementById(vistaId).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      elementoNav.classList.add('active');
+    }
+
+    // FUNCIÓN PARA CARGAR LOS LOTES EN SELECT Y EN TARJETAS
     function cargarLotes() {
       fetch(API_URL).then(res => res.json()).then(datos => {
           const select = document.getElementById('compraLote');
+          const contenedorLotes = document.getElementById('contenedorLotes');
+          
+          select.innerHTML = '<option value="">-- Selecciona un Lote --</option>';
+          contenedorLotes.innerHTML = '';
+
           datos.forEach(lote => {
             if(lote.estado === 'Activo') {
               const opt = document.createElement('option');
               opt.value = lote.idLote; opt.textContent = `${lote.idLote} - ${lote.nombreLote}`;
               select.appendChild(opt);
             }
+            
+            // Dibuja las tarjetas de lotes
+            const tarjeta = document.createElement('div');
+            tarjeta.className = 'tarjeta';
+            tarjeta.innerHTML = `
+              <h3>${lote.idLote} <span class="estado-badge">${lote.estado}</span></h3>
+              <p><strong>Nombre:</strong> ${lote.nombreLote}</p>
+              <p><strong>Fecha Creación:</strong> ${lote.fechaCompra}</p>
+            `;
+            contenedorLotes.appendChild(tarjeta);
           });
-        }).catch(err => console.log(err));
+        }).catch(err => {
+          document.getElementById('contenedorLotes').innerHTML = '<p>Error cargando lotes.</p>';
+        });
     }
 
     function agregarFilaAnimal(datos = {}) {
       const tbody = document.getElementById('tablaAnimalesBody');
       const tr = document.createElement('tr');
-      
-      const arete = datos.arete || '';
-      const peso = datos.peso || '';
+      const arete = datos.arete || ''; const peso = datos.peso || '';
       const precioGral = document.getElementById('compraPrecio').value || '';
       const precio = datos.precio || precioGral;
       const idAnimal = datos.idAnimal || '';
       const sexo = (datos.sexo || 'M').toUpperCase() === 'H' ? 'H' : 'M';
       const rasgos = datos.rasgos || '';
-      
       tr.innerHTML = `
         <td><input type="text" placeholder="Origen" class="inp-arete" value="${arete}"></td>
         <td><input type="number" placeholder="Lbs" class="inp-peso" value="${peso}" oninput="recalcularResumen()"></td>
@@ -201,40 +246,31 @@
       const filas = document.querySelectorAll('#tablaAnimalesBody tr');
       const modalidad = document.getElementById('compraModalidad').value;
       let cant = 0, totalLbs = 0, sumaPrecios = 0, totalPagar = 0;
-
       filas.forEach(fila => {
         const peso = parseFloat(fila.querySelector('.inp-peso').value) || 0;
         const precio = parseFloat(fila.querySelector('.inp-precio').value) || 0;
         const arete = fila.querySelector('.inp-arete').value.trim();
-        
         if(peso > 0 || arete !== "") {
           cant++; totalLbs += peso; sumaPrecios += precio;
-          if (modalidad === 'Pesado') totalPagar += (peso * precio);
-          else totalPagar += precio;
+          if (modalidad === 'Pesado') totalPagar += (peso * precio); else totalPagar += precio;
         }
       });
-
       const prom = cant > 0 ? (sumaPrecios / cant) : 0;
       const pesoProm = cant > 0 ? (totalLbs / cant) : 0; 
-      
       document.getElementById('resCant').innerText = cant;
       document.getElementById('resLbs').innerText = totalLbs.toFixed(2);
       document.getElementById('resPesoProm').innerText = pesoProm.toFixed(2) + " lbs";
       document.getElementById('resProm').innerText = "Q " + prom.toFixed(2);
       document.getElementById('resPagar').innerText = "Q " + totalPagar.toFixed(2);
-      
-      // Guardar totales globales para usarlos en el PDF
       totalesGlobales = { cant, totalLbs, pesoProm, prom, totalPagar };
     }
 
     function abrirModalPegado() { document.getElementById('modalPegado').style.display = 'flex'; }
     function cerrarModalPegado() { document.getElementById('modalPegado').style.display = 'none'; document.getElementById('textoPegado').value = ''; }
-
     function procesarPegado() {
       const texto = document.getElementById('textoPegado').value.trim();
       if(!texto) return;
-      const filas = texto.split('\n');
-      filas.forEach(filaTexto => {
+      texto.split('\n').forEach(filaTexto => {
         if(filaTexto.trim() === '') return;
         let cols = filaTexto.split('\t'); if (cols.length === 1) cols = filaTexto.split(',');
         agregarFilaAnimal({ arete: (cols[0] || '').trim(), sexo: (cols[1] || '').trim(), rasgos: (cols[2] || '').trim(), peso: (cols[3] || '').replace(/[^0-9.]/g, '').trim() });
@@ -242,36 +278,30 @@
       cerrarModalPegado();
     }
 
-    // LÓGICA DE GUARDAR COMPRA (Fase 1: Inventario)
     function guardarCompra() {
       const loteId = document.getElementById('compraLote').value;
       const fecha = document.getElementById('compraFecha').value;
       const modalidad = document.getElementById('compraModalidad').value;
-
       if (!loteId || !fecha) { alert("Lote y Fecha son obligatorios."); return; }
 
-      datosGlobalesAnimales = []; // Limpiamos y guardamos la info actual
+      datosGlobalesAnimales = []; 
       document.querySelectorAll('#tablaAnimalesBody tr').forEach(fila => {
         const arete = fila.querySelector('.inp-arete').value.trim();
         const peso = parseFloat(fila.querySelector('.inp-peso').value) || 0;
         const precio = parseFloat(fila.querySelector('.inp-precio').value) || 0;
         const idAnimal = fila.querySelector('.inp-id').value.trim();
-        
         let costo = modalidad === 'Pesado' ? (peso * precio) : precio;
-
         if (arete || peso) {
           datosGlobalesAnimales.push({
             areteOrigen: arete, peso: peso, precio: precio, costo: costo,
-            idAnimal: idAnimal, sexo: fila.querySelector('.inp-sexo').value, 
-            rasgos: fila.querySelector('.inp-rasgos').value.trim()
+            idAnimal: idAnimal, sexo: fila.querySelector('.inp-sexo').value, rasgos: fila.querySelector('.inp-rasgos').value.trim()
           });
         }
       });
-
       if (datosGlobalesAnimales.length === 0) { alert("Agrega al menos un animal."); return; }
 
       const boton = document.getElementById('btnGuardarCompra');
-      boton.innerText = "Guardando en Inventario..."; boton.disabled = true;
+      boton.innerText = "Guardando..."; boton.disabled = true;
 
       fetch(API_URL, {
         method: 'POST',
@@ -279,60 +309,45 @@
       }).then(res => res.json()).then(res => {
         if(res.error) {
           alert("Error de Google Sheets: " + res.error);
-          boton.innerText = "💾 Guardar Compra"; boton.disabled = false;
         } else {
-          // Si guardó bien en inventario, abrimos el modal de Logística
           document.getElementById('modalLogistica').style.display = 'flex';
-          boton.innerText = "💾 Guardar Compra"; boton.disabled = false;
         }
+        boton.innerText = "💾 Guardar Compra en Inventario"; boton.disabled = false;
       }).catch(err => {
-        alert("Error de conexión al guardar."); boton.innerText = "💾 Guardar Compra"; boton.disabled = false;
+        alert("Error de conexión al guardar."); boton.innerText = "💾 Guardar Compra en Inventario"; boton.disabled = false;
       });
     }
 
-    // LÓGICA DE GENERAR ÓRDENES (Fase 2: PDFs)
     function generarOrdenes() {
       const vendedor = document.getElementById('ordVendedor').value;
       const finca = document.getElementById('ordFinca').value;
-      
-      if(!vendedor || !finca) { alert("El Nombre del Vendedor y Finca son obligatorios."); return; }
+      if(!vendedor || !finca) { alert("Vendedor y Finca son obligatorios."); return; }
 
       const boton = document.getElementById('btnGenerarPDF');
       boton.innerText = "Generando PDFs..."; boton.disabled = true;
 
-      const payloadPDF = {
-        accion: "GENERAR_PDF",
-        fecha: document.getElementById('compraFecha').value,
-        loteId: document.getElementById('compraLote').options[document.getElementById('compraLote').selectedIndex].text,
-        vendedor: vendedor,
-        finca: finca,
-        camiones: document.getElementById('ordCamiones').value,
-        placas: document.getElementById('ordPlacas').value,
-        pilotos: document.getElementById('ordPilotos').value,
-        animales: datosGlobalesAnimales,
-        totales: totalesGlobales
-      };
-
       fetch(API_URL, {
         method: 'POST',
-        body: JSON.stringify(payloadPDF)
+        body: JSON.stringify({
+          accion: "GENERAR_PDF", fecha: document.getElementById('compraFecha').value,
+          loteId: document.getElementById('compraLote').options[document.getElementById('compraLote').selectedIndex].text,
+          vendedor: vendedor, finca: finca, camiones: document.getElementById('ordCamiones').value,
+          placas: document.getElementById('ordPlacas').value, pilotos: document.getElementById('ordPilotos').value,
+          animales: datosGlobalesAnimales, totales: totalesGlobales
+        })
       }).then(res => res.json()).then(res => {
-        alert("¡Órdenes de compra generadas y enviadas a tu correo!");
-        cerrarTodo();
-        boton.innerText = "Enviar PDFs al Correo"; boton.disabled = false;
+        alert("¡PDFs enviados al correo!"); cerrarTodo();
+        boton.innerText = "Enviar PDFs"; boton.disabled = false;
       }).catch(err => {
-        alert("Hubo un error al generar los PDFs, pero la compra sí se guardó en el inventario.");
-        boton.innerText = "Enviar PDFs al Correo"; boton.disabled = false;
+        alert("Error al generar PDFs."); boton.innerText = "Enviar PDFs"; boton.disabled = false;
       });
     }
 
     function cerrarTodo() {
       document.getElementById('modalLogistica').style.display = 'none';
-      document.getElementById('tablaAnimalesBody').innerHTML = ''; // Limpiamos tabla para nueva compra
-      document.getElementById('ordVendedor').value = '';
-      document.getElementById('ordFinca').value = '';
-      document.getElementById('ordCamiones').value = '';
-      document.getElementById('ordPlacas').value = '';
+      document.getElementById('tablaAnimalesBody').innerHTML = ''; 
+      document.getElementById('ordVendedor').value = ''; document.getElementById('ordFinca').value = '';
+      document.getElementById('ordCamiones').value = ''; document.getElementById('ordPlacas').value = '';
       document.getElementById('ordPilotos').value = '';
       agregarFilaAnimal(); 
     }
