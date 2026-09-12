@@ -8,7 +8,6 @@
     :root { --verde-oscuro: #1B4D3E; --verde-claro: #2C6B56; --fondo: #F4F7F5; --texto: #2D3748; --borde: #E2E8F0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--fondo); color: var(--texto); margin: 0; padding: 20px; padding-bottom: 80px; }
     
-    /* Sistema de Vistas */
     .view-section { display: none; }
     .view-section.active { display: block; }
     
@@ -19,116 +18,62 @@
     .filtros { margin-bottom: 20px; }
     select, input, textarea { padding: 8px; border: 1px solid var(--borde); border-radius: 6px; width: 100%; box-sizing: border-box; margin-top: 5px; font-family: inherit; }
     
-    /* Tarjetas Lotes */
     .grid-lotes { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-    .tarjeta { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--borde); cursor: pointer; transition: transform 0.2s; }
-    .tarjeta:hover { transform: translateY(-3px); border-color: var(--verde-claro); }
+    .tarjeta { background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); cursor: pointer; }
     .tarjeta h3 { margin: 0 0 10px 0; color: var(--verde-oscuro); display: flex; justify-content: space-between; }
     .tarjeta p { margin: 5px 0; font-size: 14px; color: #4A5568; }
     .estado-badge { font-size: 12px; padding: 3px 8px; border-radius: 12px; background: #C6F6D5; color: #22543D; }
-    .estado-vendido { background: #FED7D7; color: #822727; }
 
-    /* Estilos Tabla Compras */
-    .tabla-compras { width: 100%; border-collapse: collapse; min-width: 600px; margin-top: 10px; }
+    .tabla-compras { width: 100%; border-collapse: collapse; min-width: 800px; margin-top: 10px; }
     .tabla-compras th { background-color: var(--verde-claro); color: white; padding: 10px; text-align: left; font-size: 13px; }
-    .tabla-compras td { border-bottom: 1px solid var(--borde); padding: 8px; }
-    .tabla-compras input, .tabla-compras select { margin-top: 0; border: 1px solid transparent; background: #f8fafc; }
-    .tabla-compras input:focus, .tabla-compras select:focus { border: 1px solid var(--verde-claro); outline: none; background: white; }
+    .tabla-compras td { border-bottom: 1px solid var(--borde); padding: 6px; }
+    .tabla-compras input, .tabla-compras select { margin-top: 0; border: 1px solid transparent; background: #f8fafc; font-size: 13px; padding: 6px; }
+    .tabla-compras input:focus, .tabla-compras select:focus { border: 1px solid var(--verde-claro); background: white; }
     .btn-eliminar { background-color: #E53E3E; padding: 6px 10px; font-size: 12px; }
-    .btn-eliminar:hover { background-color: #C53030; }
+    
+    .panel-resumen { background: #E6FFFA; padding: 15px; border-radius: 8px; border: 1px solid var(--verde-claro); display: flex; justify-content: space-around; flex-wrap: wrap; margin-bottom: 20px; font-weight: bold; color: var(--verde-oscuro); font-size: 15px; }
+    .resumen-item { margin: 5px 10px; text-align: center; }
+    .resumen-valor { font-size: 20px; color: #1B4D3E; display: block; margin-top: 5px; }
 
-    /* Modales */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 2000; }
     .modal { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
     .form-group { margin-bottom: 15px; }
     .form-group label { font-size: 13px; font-weight: bold; }
     .modal-botones { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
     .btn-cancelar { background-color: #A0AEC0; }
-    .btn-cancelar:hover { background-color: #718096; }
-    #cargando { text-align: center; margin: 20px 0; font-weight: bold; color: var(--verde-claro); }
 
-    /* Vista Detallada */
-    .modal-detalles { max-width: 600px; }
-    .grid-detalles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-    .detalle-item { background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid var(--borde); }
-    .detalle-label { font-size: 11px; color: #718096; text-transform: uppercase; font-weight: bold; }
-    .detalle-valor { font-size: 14px; font-weight: bold; color: var(--texto); margin-top: 4px; }
-    .seccion-titulo { grid-column: 1 / -1; font-size: 14px; color: var(--verde-oscuro); border-bottom: 1px solid var(--verde-claro); padding-bottom: 5px; margin-top: 10px; margin-bottom: 5px; font-weight: bold; }
-
-    /* Menú Inferior */
     .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
-    .nav-item { text-align: center; color: #A0AEC0; font-size: 12px; font-weight: bold; cursor: pointer; flex: 1; display: flex; flex-direction: column; align-items: center; transition: color 0.3s; }
+    .nav-item { text-align: center; color: #A0AEC0; font-size: 12px; font-weight: bold; cursor: pointer; flex: 1; display: flex; flex-direction: column; align-items: center; }
     .nav-item.active { color: var(--verde-oscuro); }
     .nav-icon { font-size: 20px; margin-bottom: 4px; }
   </style>
 </head>
 <body>
 
-  <!-- VISTA 1: LOTES -->
-  <div id="vista-lotes" class="view-section active">
-    <div class="header">
-      <h1>Mis Lotes</h1>
-      <button onclick="abrirModalNuevo()">+ Agregar Lote</button>
-    </div>
-
-    <div class="filtros">
-      <label style="font-size: 13px; font-weight: bold;">Filtrar por Estado:</label>
-      <select id="filtroEstado" onchange="renderizarLotes()" style="width: 200px;">
-        <option value="Todos">Todos los Lotes</option>
-        <option value="Activo" selected>Activos</option>
-        <option value="Liquidado">Vendidos / Liquidados</option>
-      </select>
-    </div>
-
-    <div id="cargando">Cargando lotes desde Google Sheets...</div>
-    <div class="grid-lotes" id="contenedorLotes"></div>
-  </div>
-
-  <!-- VISTA 2: COMPRAS -->
-  <div id="vista-compras" class="view-section">
+  <!-- VISTA COMPRAS -->
+  <div id="vista-compras" class="view-section active">
     <div class="header">
       <h1>Ingreso de Compra</h1>
     </div>
     
-    <!-- PASO 1: Datos Generales -->
+    <!-- 1. Datos Generales -->
     <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 20px;">
       <h3 style="margin-top: 0; color: var(--verde-oscuro); border-bottom: 1px solid var(--borde); padding-bottom: 10px;">1. Datos Generales</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
-        <div>
-          <label style="font-size: 12px; font-weight: bold; color: #4A5568;">Lote Asignado *</label>
-          <select id="compraLote"><option value="">Cargando...</option></select>
-        </div>
-        <div>
-          <label style="font-size: 12px; font-weight: bold; color: #4A5568;">Fecha de Compra *</label>
-          <input type="date" id="compraFecha">
-        </div>
-        <div>
-          <label style="font-size: 12px; font-weight: bold; color: #4A5568;">Destino General</label>
-          <select id="compraDestino">
-            <option value="Engorde">Engorde</option>
-            <option value="Levante">Levante</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size: 12px; font-weight: bold; color: #4A5568;">Modalidad *</label>
-          <select id="compraModalidad">
-            <option value="Pesado">Pesado (por lb)</option>
-            <option value="Precio Fijo">Precio Fijo</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size: 12px; font-weight: bold; color: #4A5568;">Precio Pactado (Q) *</label>
-          <input type="number" id="compraPrecio" placeholder="Ej. 12.00">
-        </div>
+        <div><label style="font-size: 12px; font-weight: bold;">Lote Asignado *</label><select id="compraLote"><option value="">Cargando...</option></select></div>
+        <div><label style="font-size: 12px; font-weight: bold;">Fecha *</label><input type="date" id="compraFecha"></div>
+        <div><label style="font-size: 12px; font-weight: bold;">Destino</label><select id="compraDestino"><option value="Engorde">Engorde</option><option value="Levante">Levante</option></select></div>
+        <div><label style="font-size: 12px; font-weight: bold;">Modalidad *</label><select id="compraModalidad" onchange="recalcularResumen()"><option value="Pesado">Pesado (por lb)</option><option value="Precio Fijo">Precio Fijo</option></select></div>
+        <div><label style="font-size: 12px; font-weight: bold;">Precio Ref. (Q) *</label><input type="number" id="compraPrecio" placeholder="Ej. 12.00" oninput="recalcularResumen()"></div>
       </div>
     </div>
 
-    <!-- PASO 2: Animales -->
+    <!-- 2. Lista de Animales -->
     <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
         <h3 style="margin: 0; color: var(--verde-oscuro);">2. Lista de Animales</h3>
         <div>
-          <button onclick="abrirModalPegado()" style="background-color: #d69e2e; margin-right: 5px; color: white;">📋 Pegar Datos de IA</button>
+          <button onclick="abrirModalPegado()" style="background-color: #d69e2e; margin-right: 5px;">📋 Pegar Datos</button>
           <button onclick="agregarFilaAnimal()">+ Fila Manual</button>
         </div>
       </div>
@@ -137,46 +82,30 @@
         <table class="tabla-compras">
           <thead>
             <tr>
-              <th>Arete / Origen</th>
-              <th>Sexo</th>
-              <th>Características</th>
-              <th>Peso (lbs)</th>
-              <th>Acción</th>
+              <th style="width: 12%;">Arete/Origen</th>
+              <th style="width: 12%;">Peso (lbs)</th>
+              <th style="width: 12%;">Precio (Q)</th>
+              <th style="width: 12%;">ID Animal</th>
+              <th style="width: 10%;">Sexo</th>
+              <th style="width: 32%;">Características</th>
+              <th style="width: 10%;">Acción</th>
             </tr>
           </thead>
-          <tbody id="tablaAnimalesBody">
-            <!-- Filas dinámicas -->
-          </tbody>
+          <tbody id="tablaAnimalesBody"></tbody>
         </table>
       </div>
     </div>
 
+    <!-- 3. Panel de Resumen en Vivo -->
+    <div class="panel-resumen">
+      <div class="resumen-item">Animales<span class="resumen-valor" id="resCant">0</span></div>
+      <div class="resumen-item">Total Libras<span class="resumen-valor" id="resLbs">0.00</span></div>
+      <div class="resumen-item">Precio Promedio<span class="resumen-valor" id="resProm">Q 0.00</span></div>
+      <div class="resumen-item">Total a Pagar<span class="resumen-valor" id="resPagar" style="color: #E53E3E;">Q 0.00</span></div>
+    </div>
+
     <div style="text-align: right; margin-bottom: 20px;">
-      <button id="btnGuardarCompra" onclick="guardarCompra()" style="padding: 12px 25px; font-size: 16px; width: 100%; max-width: 300px;">💾 Guardar Compra en Inventario</button>
-    </div>
-  </div>
-
-  <!-- VISTA 3: REPESAS -->
-  <div id="vista-repesas" class="view-section">
-    <div class="header">
-      <h1>Control de Pesos</h1>
-    </div>
-    <p style="text-align:center; color:#718096; margin-top:40px;">Módulo en construcción...</p>
-  </div>
-
-  <!-- Modal Nuevo Lote -->
-  <div class="modal-overlay" id="modalLote">
-    <div class="modal">
-      <h2 style="margin-top:0; color: var(--verde-oscuro);">Nuevo Lote</h2>
-      <div class="form-group"><label>Nombre del Lote / Proveedor *</label><input type="text" id="nombreLote" required></div>
-      <div class="form-group"><label>Fecha de Compra *</label><input type="date" id="fechaCompra" required></div>
-      <div class="form-group"><label>Estado</label><select id="estado"><option value="Activo">Activo</option><option value="Liquidado">Vendido / Liquidado</option></select></div>
-      <div class="form-group"><label>Raza Predominante (Opcional)</label><input type="text" id="raza"></div>
-      <div class="form-group"><label>Ganancia Meta en lbs (Opcional)</label><input type="number" id="meta"></div>
-      <div class="modal-botones">
-        <button class="btn-cancelar" onclick="cerrarModalNuevo()">Cancelar</button>
-        <button onclick="guardarLote()" id="btnGuardar">Guardar Lote</button>
-      </div>
+      <button id="btnGuardarCompra" onclick="guardarCompra()" style="padding: 12px 25px; font-size: 16px; width: 100%; max-width: 300px;">💾 Guardar Compra</button>
     </div>
   </div>
 
@@ -184,8 +113,8 @@
   <div class="modal-overlay" id="modalPegado">
     <div class="modal">
       <h2 style="margin-top:0; color: var(--verde-oscuro);">Pegado Mágico</h2>
-      <p style="font-size: 13px; color: #4A5568;">Copia la tabla que te generó la IA y pégala en este cuadro. (Orden esperado: Arete, Sexo, Características, Peso).</p>
-      <textarea id="textoPegado" rows="8" placeholder="Pega los datos aquí..."></textarea>
+      <p style="font-size: 13px;">Pega la tabla (Orden: Arete, Sexo, Características, Peso).</p>
+      <textarea id="textoPegado" rows="8"></textarea>
       <div class="modal-botones">
         <button class="btn-cancelar" onclick="cerrarModalPegado()">Cancelar</button>
         <button onclick="procesarPegado()" style="background-color: var(--verde-claro);">Crear Filas</button>
@@ -193,102 +122,35 @@
     </div>
   </div>
 
-  <!-- Modal Detalles del Lote -->
-  <div class="modal-overlay" id="modalDetalles">
-    <div class="modal modal-detalles">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="margin: 0; color: var(--verde-oscuro);" id="detTitulo">Lote</h2>
-        <button class="btn-cancelar" onclick="cerrarDetalles()">X</button>
-      </div>
-      <div class="grid-detalles" id="detGrid"></div>
-    </div>
-  </div>
-
-  <!-- Menú Inferior -->
+  <!-- Menú Inferior (Simulado) -->
   <div class="bottom-nav">
-    <div class="nav-item active" id="nav-lotes" onclick="cambiarVista('lotes')">
-      <span class="nav-icon">📁</span>
-      <span>Lotes</span>
-    </div>
-    <div class="nav-item" id="nav-compras" onclick="cambiarVista('compras')">
-      <span class="nav-icon">🐄</span>
-      <span>Compras</span>
-    </div>
-    <div class="nav-item" id="nav-repesas" onclick="cambiarVista('repesas')">
-      <span class="nav-icon">⚖️</span>
-      <span>Repesas</span>
-    </div>
+    <div class="nav-item"><span class="nav-icon">📁</span><span>Lotes</span></div>
+    <div class="nav-item active"><span class="nav-icon">🐄</span><span>Compras</span></div>
+    <div class="nav-item"><span class="nav-icon">⚖️</span><span>Repesas</span></div>
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbz_-dBAyfQKRIMTcR-GAjqMWqG33LnhTuL_pKdaaE9PuPHWZaHJSHw6H_jGbhGzIGJFBw/exec";
-    let lotesData = [];
+    const API_URL = "https://script.google.com/macros/s/AKfycbw1oyRZf14txxIu__LqTp4TAcT6NiaF4aHcKVyZHojrZhXi9vD-LYzYyTeS5B4ty5nNuQ/exec";
 
     window.onload = function() {
-      document.getElementById('fechaCompra').valueAsDate = new Date();
       document.getElementById('compraFecha').valueAsDate = new Date();
       cargarLotes();
       agregarFilaAnimal();
     };
 
-    function cambiarVista(vista) {
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      document.getElementById('vista-' + vista).classList.add('active');
-      document.getElementById('nav-' + vista).classList.add('active');
-    }
-
     function cargarLotes() {
-      document.getElementById('cargando').style.display = 'block';
-      document.getElementById('contenedorLotes').innerHTML = '';
       fetch(API_URL)
         .then(res => res.json())
         .then(datos => {
-          lotesData = datos;
-          renderizarLotes();
-          llenarSelectLotes();
-          document.getElementById('cargando').style.display = 'none';
-        }).catch(err => console.error(err));
-    }
-
-    function renderizarLotes() {
-      const contenedor = document.getElementById('contenedorLotes');
-      const filtro = document.getElementById('filtroEstado').value;
-      contenedor.innerHTML = '';
-
-      lotesData.forEach(lote => {
-        if (filtro !== "Todos" && lote.estado !== filtro && !(filtro === "Liquidado" && lote.estado === "Vendido")) return;
-
-        const claseBadge = (lote.estado === 'Activo') ? 'estado-badge' : 'estado-badge estado-vendido';
-        const tarjeta = document.createElement('div');
-        tarjeta.className = 'tarjeta';
-        tarjeta.onclick = () => abrirDetalles(lote.idLote);
-        
-        tarjeta.innerHTML = `
-          <h3>${lote.idLote} <span class="${claseBadge}">${lote.estado}</span></h3>
-          <p><strong>Nombre:</strong> ${lote.nombreLote}</p>
-          <p><strong>Fecha:</strong> ${lote.fechaCompra}</p>
-        `;
-        contenedor.appendChild(tarjeta);
-      });
-      
-      if(contenedor.innerHTML === '') {
-        contenedor.innerHTML = '<p style="color: #718096; grid-column: 1 / -1;">No hay lotes para mostrar en esta categoría.</p>';
-      }
-    }
-
-    // Funciones del Módulo Compras
-    function llenarSelectLotes() {
-      const select = document.getElementById('compraLote');
-      select.innerHTML = '<option value="">-- Seleccione un Lote --</option>';
-      lotesData.forEach(lote => {
-        if(lote.estado === 'Activo') {
-          const opt = document.createElement('option');
-          opt.value = lote.idLote;
-          opt.textContent = `${lote.idLote} - ${lote.nombreLote}`;
-          select.appendChild(opt);
-        }
-      });
+          const select = document.getElementById('compraLote');
+          datos.forEach(lote => {
+            if(lote.estado === 'Activo') {
+              const opt = document.createElement('option');
+              opt.value = lote.idLote; opt.textContent = `${lote.idLote} - ${lote.nombreLote}`;
+              select.appendChild(opt);
+            }
+          });
+        }).catch(err => console.log(err));
     }
 
     function agregarFilaAnimal(datos = {}) {
@@ -296,192 +158,116 @@
       const tr = document.createElement('tr');
       
       const arete = datos.arete || '';
-      const sexo = (datos.sexo || 'M').toUpperCase();
-      const rasgos = datos.rasgos || '';
       const peso = datos.peso || '';
-      
-      const sexoValido = (sexo === 'H' || sexo === 'HEMBRA') ? 'H' : 'M';
+      const precioGral = document.getElementById('compraPrecio').value || '';
+      const precio = datos.precio || precioGral;
+      const idAnimal = datos.idAnimal || '';
+      const sexo = (datos.sexo || 'M').toUpperCase() === 'H' ? 'H' : 'M';
+      const rasgos = datos.rasgos || '';
       
       tr.innerHTML = `
-        <td><input type="text" placeholder="Ej. 4590" class="inp-arete" value="${arete}"></td>
-        <td>
-          <select class="inp-sexo">
-            <option value="M" ${sexoValido === 'M' ? 'selected' : ''}>M</option>
-            <option value="H" ${sexoValido === 'H' ? 'selected' : ''}>H</option>
-          </select>
-        </td>
-        <td><input type="text" placeholder="Ej. Pinto" class="inp-rasgos" value="${rasgos}"></td>
-        <td><input type="number" placeholder="Lbs" class="inp-peso" value="${peso}"></td>
-        <td><button class="btn-eliminar" onclick="this.closest('tr').remove()">X</button></td>
+        <td><input type="text" placeholder="Origen" class="inp-arete" value="${arete}"></td>
+        <td><input type="number" placeholder="Lbs" class="inp-peso" value="${peso}" oninput="recalcularResumen()"></td>
+        <td><input type="number" placeholder="Q" class="inp-precio" value="${precio}" oninput="recalcularResumen()"></td>
+        <td><input type="text" placeholder="ID Interno" class="inp-id"></td>
+        <td><select class="inp-sexo"><option value="M" ${sexo==='M'?'selected':''}>M</option><option value="H" ${sexo==='H'?'selected':''}>H</option></select></td>
+        <td><input type="text" placeholder="Rasgos" class="inp-rasgos" value="${rasgos}"></td>
+        <td><button class="btn-eliminar" onclick="eliminarFila(this)">X</button></td>
       `;
       tbody.appendChild(tr);
+      recalcularResumen();
     }
 
-    // Modal de Pegado Masivo
-    function abrirModalPegado() { document.getElementById('modalPegado').style.display = 'flex'; }
-    function cerrarModalPegado() { 
-      document.getElementById('modalPegado').style.display = 'none'; 
-      document.getElementById('textoPegado').value = ''; 
+    function eliminarFila(btn) {
+      btn.closest('tr').remove();
+      recalcularResumen();
     }
+
+    function recalcularResumen() {
+      const filas = document.querySelectorAll('#tablaAnimalesBody tr');
+      const modalidad = document.getElementById('compraModalidad').value;
+      let cant = 0, totalLbs = 0, sumaPrecios = 0, totalPagar = 0;
+
+      filas.forEach(fila => {
+        const peso = parseFloat(fila.querySelector('.inp-peso').value) || 0;
+        const precio = parseFloat(fila.querySelector('.inp-precio').value) || 0;
+        const arete = fila.querySelector('.inp-arete').value.trim();
+        
+        if(peso > 0 || arete !== "") {
+          cant++;
+          totalLbs += peso;
+          sumaPrecios += precio;
+          if (modalidad === 'Pesado') totalPagar += (peso * precio);
+          else totalPagar += precio;
+        }
+      });
+
+      const prom = cant > 0 ? (sumaPrecios / cant) : 0;
+      
+      document.getElementById('resCant').innerText = cant;
+      document.getElementById('resLbs').innerText = totalLbs.toFixed(2);
+      document.getElementById('resProm').innerText = "Q " + prom.toFixed(2);
+      document.getElementById('resPagar').innerText = "Q " + totalPagar.toFixed(2);
+    }
+
+    function abrirModalPegado() { document.getElementById('modalPegado').style.display = 'flex'; }
+    function cerrarModalPegado() { document.getElementById('modalPegado').style.display = 'none'; document.getElementById('textoPegado').value = ''; }
 
     function procesarPegado() {
       const texto = document.getElementById('textoPegado').value.trim();
-      if(!texto) { alert("Pega algún texto primero."); return; }
-      
+      if(!texto) return;
       const filas = texto.split('\n');
       filas.forEach(filaTexto => {
         if(filaTexto.trim() === '') return;
-        
-        let columnas = filaTexto.split('\t');
-        if (columnas.length === 1) columnas = filaTexto.split(',');
-        
-        const datosFila = {
-          arete: (columnas[0] || '').trim(),
-          sexo: (columnas[1] || '').trim(),
-          rasgos: (columnas[2] || '').trim(),
-          peso: (columnas[3] || '').replace(/[^0-9.]/g, '').trim()
-        };
-        agregarFilaAnimal(datosFila);
+        let cols = filaTexto.split('\t'); if (cols.length === 1) cols = filaTexto.split(',');
+        agregarFilaAnimal({
+          arete: (cols[0] || '').trim(), sexo: (cols[1] || '').trim(),
+          rasgos: (cols[2] || '').trim(), peso: (cols[3] || '').replace(/[^0-9.]/g, '').trim()
+        });
       });
       cerrarModalPegado();
     }
 
-    // ==========================================
-    // LÓGICA PRINCIPAL PARA GUARDAR COMPRA
-    // ==========================================
     function guardarCompra() {
       const loteId = document.getElementById('compraLote').value;
       const fecha = document.getElementById('compraFecha').value;
-      const destino = document.getElementById('compraDestino').value;
       const modalidad = document.getElementById('compraModalidad').value;
-      const precio = document.getElementById('compraPrecio').value;
 
-      if (!loteId || !fecha || !modalidad || !precio) {
-        alert("Por favor, llena los Datos Generales obligatorios (Lote, Fecha y Precio).");
-        return;
-      }
+      if (!loteId || !fecha) { alert("Lote y Fecha son obligatorios."); return; }
 
-      const filas = document.querySelectorAll('#tablaAnimalesBody tr');
       const animalesData = [];
-
-      filas.forEach(fila => {
+      document.querySelectorAll('#tablaAnimalesBody tr').forEach(fila => {
         const arete = fila.querySelector('.inp-arete').value.trim();
-        const sexo = fila.querySelector('.inp-sexo').value;
-        const rasgos = fila.querySelector('.inp-rasgos').value.trim();
         const peso = fila.querySelector('.inp-peso').value.trim();
-
-        if (arete || rasgos || peso) {
+        const precio = fila.querySelector('.inp-precio').value.trim();
+        const idAnimal = fila.querySelector('.inp-id').value.trim();
+        
+        if (arete || peso) {
           animalesData.push({
-            arete: arete,
-            sexo: sexo,
-            rasgos: rasgos,
-            peso: peso ? parseFloat(peso) : ""
+            areteOrigen: arete,
+            peso: peso ? parseFloat(peso) : 0,
+            precio: precio ? parseFloat(precio) : 0,
+            idAnimal: idAnimal,
+            sexo: fila.querySelector('.inp-sexo').value,
+            rasgos: fila.querySelector('.inp-rasgos').value.trim()
           });
         }
       });
 
-      if (animalesData.length === 0) {
-        alert("Debes agregar al menos un animal a la lista.");
-        return;
-      }
+      if (animalesData.length === 0) { alert("Agrega al menos un animal."); return; }
 
       const boton = document.getElementById('btnGuardarCompra');
-      boton.innerText = "Enviando al Inventario...";
-      boton.disabled = true;
-
-      const payload = {
-        accion: "CREAR_COMPRA",
-        loteId: loteId,
-        fechaCompra: fecha,
-        destino: destino,
-        modalidad: modalidad,
-        precio: parseFloat(precio),
-        animales: animalesData
-      };
+      boton.innerText = "Enviando..."; boton.disabled = true;
 
       fetch(API_URL, {
         method: 'POST',
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(respuesta => {
-        alert("¡Compra registrada exitosamente en Google Sheets!");
-        
-        // Limpiar el formulario
-        document.getElementById('compraPrecio').value = "";
+        body: JSON.stringify({ accion: "CREAR_COMPRA", loteId: loteId, fechaCompra: fecha, destino: document.getElementById('compraDestino').value, modalidad: modalidad, animales: animalesData })
+      }).then(res => res.json()).then(res => {
+        alert("¡Compra guardada!");
         document.getElementById('tablaAnimalesBody').innerHTML = '';
-        agregarFilaAnimal(); 
-        
-        boton.innerText = "💾 Guardar Compra en Inventario";
-        boton.disabled = false;
-      })
-      .catch(error => {
-        alert("Hubo un error al guardar. Intenta de nuevo.");
-        boton.innerText = "💾 Guardar Compra en Inventario";
-        boton.disabled = false;
-        console.error(error);
-      });
-    }
-
-    // Funciones de Modales Lotes (reutilizado)
-    function abrirDetalles(idLote) {
-      const lote = lotesData.find(l => l.idLote === idLote);
-      if(!lote) return;
-      document.getElementById('detTitulo').innerText = `${lote.idLote} - ${lote.nombreLote}`;
-      const formatQ = (val) => 'Q ' + parseFloat(val || 0).toFixed(2);
-      const formatLbs = (val) => parseFloat(val || 0).toFixed(2) + ' lbs';
-      
-      const html = `
-        <div class="seccion-titulo">Información General</div>
-        <div class="detalle-item"><div class="detalle-label">Estado</div><div class="detalle-valor">${lote.estado}</div></div>
-        <div class="detalle-item"><div class="detalle-label">Fecha Compra</div><div class="detalle-valor">${lote.fechaCompra}</div></div>
-        <div class="detalle-item"><div class="detalle-label">Raza</div><div class="detalle-valor">${lote.raza || '-'}</div></div>
-        <div class="detalle-item"><div class="detalle-label">Días Transcurridos</div><div class="detalle-valor">${lote.diasTranscurridos}</div></div>
-        <div class="seccion-titulo">Inventario Animales</div>
-        <div class="detalle-item"><div class="detalle-label">Cant. Inicial</div><div class="detalle-valor">${lote.cantInicial}</div></div>
-        <div class="detalle-item"><div class="detalle-label">Cant. Activos</div><div class="detalle-valor">${lote.cantActivos}</div></div>
-        <div class="seccion-titulo">Finanzas y Pesos (Entrada)</div>
-        <div class="detalle-item"><div class="detalle-label">Peso Total Compra</div><div class="detalle-valor">${formatLbs(lote.pesoTotalCompra)}</div></div>
-        <div class="detalle-item"><div class="detalle-label">Peso Prom. Compra</div><div class="detalle-valor">${formatLbs(lote.pesoPromCompra)}</div></div>
-        <div class="detalle-item" style="grid-column: 1 / -1;"><div class="detalle-label">Total Compra (Ganado)</div><div class="detalle-valor">${formatQ(lote.totalCompra)}</div></div>
-        <div class="seccion-titulo">Proyección y Salida</div>
-        <div class="detalle-item"><div class="detalle-label">Ganancia Meta</div><div class="detalle-valor">${lote.gananciaMeta ? lote.gananciaMeta + ' lbs' : '-'}</div></div>
-        <div class="detalle-item"><div class="detalle-label">Total Generado</div><div class="detalle-valor">${formatQ(lote.totalGenerado)}</div></div>
-      `;
-      document.getElementById('detGrid').innerHTML = html;
-      document.getElementById('modalDetalles').style.display = 'flex';
-    }
-
-    function abrirModalNuevo() { document.getElementById('modalLote').style.display = 'flex'; }
-    function cerrarModalNuevo() { document.getElementById('modalLote').style.display = 'none'; }
-    function cerrarDetalles() { document.getElementById('modalDetalles').style.display = 'none'; }
-
-    function guardarLote() {
-      const nombre = document.getElementById('nombreLote').value.trim();
-      const fecha = document.getElementById('fechaCompra').value;
-      if (!nombre || !fecha) { alert("Llene Nombre y Fecha"); return; }
-      const boton = document.getElementById('btnGuardar');
-      boton.innerText = "Guardando..."; boton.disabled = true;
-
-      const nuevoLote = {
-        accion: "CREAR",
-        nombreLote: nombre,
-        fechaCompra: fecha,
-        estado: document.getElementById('estado').value,
-        raza: document.getElementById('raza').value,
-        gananciaMeta: document.getElementById('meta').value
-      };
-
-      fetch(API_URL, { method: 'POST', body: JSON.stringify(nuevoLote) })
-      .then(res => res.json())
-      .then(respuesta => {
-        cerrarModalNuevo();
-        boton.innerText = "Guardar Lote"; boton.disabled = false;
-        document.getElementById('nombreLote').value = "";
-        cargarLotes();
-      }).catch(error => {
-        alert("Error al guardar.");
-        boton.innerText = "Guardar Lote"; boton.disabled = false;
+        agregarFilaAnimal(); boton.innerText = "💾 Guardar Compra"; boton.disabled = false;
+      }).catch(err => {
+        alert("Error al guardar."); boton.innerText = "💾 Guardar Compra"; boton.disabled = false;
       });
     }
   </script>
