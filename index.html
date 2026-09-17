@@ -177,14 +177,21 @@
 
       <div style="background: #E6FFFA; padding: 15px; border: 1px solid var(--verde-claro); border-radius: 6px; margin-bottom: 15px;">
         <p style="margin: 0 0 10px 0; font-weight: bold; font-size: 13px; color: var(--verde-oscuro);">Resumen Operativo (Automático)</p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; color: #2D3748;">
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; color: #2D3748; margin-bottom: 10px; border-bottom: 1px solid #B2F5EA; padding-bottom: 10px;">
           <div><strong>Anim. Iniciales:</strong> <span id="vlCantIni">0</span></div>
           <div><strong>Anim. Activos:</strong> <span id="vlCantAct">0</span></div>
-          <div><strong>Peso Total:</strong> <span id="vlPesoTot">0</span> lbs</div>
-          <div><strong>Peso Prom:</strong> <span id="vlPesoProm">0</span> lbs</div>
-          <div style="color: #E53E3E;"><strong>Total Compra:</strong> Q <span id="vlTotQ">0</span></div>
           <div><strong>Días en Finca:</strong> <span id="vlDias">0</span></div>
+          <div><strong>Meta (Resultado):</strong> <span id="vlMetaRes">0</span> lbs</div>
         </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; color: #2D3748;">
+          <div style="color: #2B6CB0;"><strong>Promedio Compra:</strong> <span id="vlPesoProm">0</span> lbs</div>
+          <div style="color: #2F855A;"><strong>Promedio Venta:</strong> <span id="vlPesoPromVenta">0</span> lbs</div>
+          <div style="color: #C53030;"><strong>Total Compra:</strong> Q <span id="vlTotQ">0</span></div>
+          <div style="color: #2F855A; font-weight: bold;"><strong>Total Generado:</strong> Q <span id="vlTotGenQ">0</span></div>
+        </div>
+
         <div style="margin-top: 15px; font-size: 13px; border-top: 1px solid #B2F5EA; padding-top: 10px;">
           <strong>Orden de Compra:</strong> 
           <a id="vlLinkPdf" href="#" target="_blank" style="color: #2C6B56; text-decoration: underline; font-weight: bold; display: none;">Ver PDF</a>
