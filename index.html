@@ -395,7 +395,6 @@
               opt.value = lote.idLote; opt.textContent = `${lote.idLote} - ${lote.nombreLote}`;
               select.appendChild(opt);
             }
-            // La tarjeta envía el ID para abrir la mini oficina
             contenedorLotes.innerHTML += `<div class="tarjeta" onclick="abrirModalVerLote('${lote.idLote}')">
               <h3>${lote.idLote} <span class="estado-badge">${lote.estado}</span></h3>
               <p><strong>Nombre:</strong> ${lote.nombreLote}</p>
@@ -405,42 +404,9 @@
         }).catch(err => document.getElementById('contenedorLotes').innerHTML = '<p>Error de conexión.</p>');
     }
 
-    function abrirModalVerLote(id) {
-      const lote = datosGlobalesLotes.find(l => l.idLote === id);
-      if(!lote) return;
-
-      // Llenamos los datos editables
-      document.getElementById('vlIdTitulo').innerText = lote.idLote;
-      document.getElementById('vlId').value = lote.idLote;
-      document.getElementById('vlNombre').value = lote.nombreLote;
-      document.getElementById('vlEstado').value = lote.estado;
-      document.getElementById('vlFecha').value = lote.fechaCompra;
-      document.getElementById('vlRaza').value = lote.raza;
-      document.getElementById('vlMeta').value = lote.gananciaMeta;
-
-      // Llenamos la mini oficina financiera
-      document.getElementById('vlCantIni').innerText = lote.cantInicial || 0;
-      document.getElementById('vlCantAct').innerText = lote.cantActivos || 0;
-      document.getElementById('vlDias').innerText = lote.dias || 0;
-      document.getElementById('vlMetaRes').innerText = parseFloat(lote.metaResultado || 0).toLocaleString('en-US');
-
-      document.getElementById('vlPesoProm').innerText = parseFloat(lote.pesoPromedio || 0).toLocaleString('en-US');
-      document.getElementById('vlPesoPromVenta').innerText = parseFloat(lote.pesoPromVenta || 0).toLocaleString('en-US');
-      document.getElementById('vlTotQ').innerText = parseFloat(lote.totalCompraQ || 0).toLocaleString('en-US');
-      document.getElementById('vlTotGenQ').innerText = parseFloat(lote.totalGeneradoQ || 0).toLocaleString('en-US');
-
-      // Configurar el link del PDF
-      if(lote.linkPdf && (lote.linkPdf.startsWith('http') || lote.linkPdf.startsWith('www'))) {
-        document.getElementById('vlLinkPdf').href = lote.linkPdf;
-        document.getElementById('vlLinkPdf').style.display = 'inline';
-        document.getElementById('vlNoPdf').style.display = 'none';
-      } else {
-        document.getElementById('vlLinkPdf').style.display = 'none';
-        document.getElementById('vlNoPdf').style.display = 'inline';
-      }
-
-      // Finalmente, abrimos la ventana
-      document.getElementById('modalVerLote').style.display = 'flex';
+    function abrirModalNuevoLote() {
+      document.getElementById('modalNuevoLote').style.display = 'flex';
+      document.getElementById('nlFecha').valueAsDate = new Date();
     }
     
     function cerrarModalNuevoLote() {
@@ -489,10 +455,13 @@
 
       document.getElementById('vlCantIni').innerText = lote.cantInicial || 0;
       document.getElementById('vlCantAct').innerText = lote.cantActivos || 0;
-      document.getElementById('vlPesoTot').innerText = parseFloat(lote.pesoTotal || 0).toLocaleString('en-US');
-      document.getElementById('vlPesoProm').innerText = parseFloat(lote.pesoPromedio || 0).toLocaleString('en-US');
-      document.getElementById('vlTotQ').innerText = parseFloat(lote.totalCompraQ || 0).toLocaleString('en-US');
       document.getElementById('vlDias').innerText = lote.dias || 0;
+      document.getElementById('vlMetaRes').innerText = parseFloat(lote.metaResultado || 0).toLocaleString('en-US');
+
+      document.getElementById('vlPesoProm').innerText = parseFloat(lote.pesoPromedio || 0).toLocaleString('en-US');
+      document.getElementById('vlPesoPromVenta').innerText = parseFloat(lote.pesoPromVenta || 0).toLocaleString('en-US');
+      document.getElementById('vlTotQ').innerText = parseFloat(lote.totalCompraQ || 0).toLocaleString('en-US');
+      document.getElementById('vlTotGenQ').innerText = parseFloat(lote.totalGeneradoQ || 0).toLocaleString('en-US');
 
       if(lote.linkPdf && (lote.linkPdf.startsWith('http') || lote.linkPdf.startsWith('www'))) {
         document.getElementById('vlLinkPdf').href = lote.linkPdf;
