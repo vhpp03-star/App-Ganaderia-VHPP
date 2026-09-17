@@ -168,6 +168,44 @@
     </div>
   </div>
 
+  <!-- MODAL NUEVO LOTE -->
+  <div class="modal-overlay" id="modalNuevoLote">
+    <div class="modal">
+      <h2 style="margin-top:0; color: var(--verde-oscuro);">Crear Nuevo Lote</h2>
+      <p style="font-size: 13px; color: #718096; margin-top: -10px;">El ID se generará automáticamente (Ej. Lote-001).</p>
+      <div class="form-group"><label>Nombre del Lote *</label><input type="text" id="nlNombre" required></div>
+      <div class="form-group"><label>Fecha de Compra *</label><input type="date" id="nlFecha" required></div>
+      <div class="form-group"><label>Raza *</label><input type="text" id="nlRaza" required></div>
+      <div class="form-group"><label>Ganancia Meta (lbs) *</label><input type="number" id="nlMeta" required></div>
+      <div class="modal-botones">
+        <button class="btn-cancelar" onclick="cerrarModalNuevoLote()">Cancelar</button>
+        <button onclick="guardarLote()" id="btnGuardarLote" style="background-color: var(--verde-claro);">Guardar Lote</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VER/EDITAR LOTE -->
+  <div class="modal-overlay" id="modalVerLote">
+    <div class="modal">
+      <h2 style="margin-top:0; color: var(--verde-oscuro);" id="vlIdTitulo">Lote</h2>
+      <input type="hidden" id="vlId">
+      <div class="form-group"><label>Nombre del Lote</label><input type="text" id="vlNombre"></div>
+      <div class="form-group"><label>Estado</label>
+        <select id="vlEstado">
+          <option value="Activo">Activo</option>
+          <option value="Cerrado">Cerrado</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Fecha de Compra</label><input type="date" id="vlFecha"></div>
+      <div class="form-group"><label>Raza</label><input type="text" id="vlRaza"></div>
+      <div class="form-group"><label>Ganancia Meta (lbs)</label><input type="number" id="vlMeta"></div>
+      
+      <div class="modal-botones">
+        <button class="btn-cancelar" onclick="cerrarModalVerLote()">Cerrar</button>
+        <button onclick="actualizarLote()" id="btnActualizarLote" style="background-color: #d69e2e;">Actualizar Datos</button>
+      </div>
+    </div>
+  </div>
   <div class="bottom-nav">
     <div class="nav-item" onclick="cambiarVista('vista-lotes', this)"><span class="nav-icon">📁</span><span>Lotes</span></div>
     <div class="nav-item active" onclick="cambiarVista('vista-compras', this)"><span class="nav-icon">🐄</span><span>Compras</span></div>
@@ -204,12 +242,92 @@
               opt.value = lote.idLote; opt.textContent = `${lote.idLote} - ${lote.nombreLote}`;
               select.appendChild(opt);
             }
-            // INYECCIÓN 3: Se agregó el onclick para abrir el detalle del lote
-            contenedorLotes.innerHTML += `<div class="tarjeta" onclick="abrirModalVerLote('${lote.idLote}', '${lote.nombreLote}', '${lote.estado}', '${lote.fechaCompra}')"><h3>${lote.idLote} <span class="estado-badge">${lote.estado}</span></h3><p><strong>Nombre:</strong> ${lote.nombreLote}</p></div>`;
+            // Inyectamos el clic para abrir el modal con los datos exactos del lote
+            contenedorLotes.innerHTML += `<div class="tarjeta" onclick="abrirModalVerLote('${lote.idLote}', '${lote.nombreLote}', '${lote.estado}', '${lote.fechaCompra}', '${lote.raza}', '${lote.gananciaMeta}')">
+              <h3>${lote.idLote} <span class="estado-badge">${lote.estado}</span></h3>
+              <p><strong>Nombre:</strong> ${lote.nombreLote}</p>
+              <p><strong>Fecha:</strong> ${lote.fechaVisual}</p>
+            </div>`;
           });
         }).catch(err => document.getElementById('contenedorLotes').innerHTML = '<p>Error.</p>');
     }
 
+    function abrirModalNuevoLote() {
+      document.getElementById('modalNuevoLote').style.display = 'flex';
+      document.getElementById('nlFecha').valueAsDate = new Date();
+    }
+    
+    function cerrarModalNuevoLote() {
+      document.getElementById('modalNuevoLote').style.display = 'none';
+      document.getElementById('nlNombre').value = '';
+      document.getElementById('nlRaza').value = '';
+      document.getElementById('nlMeta').value = '';
+    }
+
+    function guardarLote() {
+      const nombreLote = document.getElementById('nlNombre').value.trim();
+      const fecha = document.getElementById('nlFecha').value;
+      const raza = document.getElementById('nlRaza').value.trim();
+      const meta = document.getElementById('nlMeta').value.trim();
+
+      if (!nombreLote || !fecha || !raza || !meta) { alert("Llene todos los campos obligatorios."); return; }
+
+      const boton = document.getElementById('btnGuardarLote');
+      boton.innerText = "Guardando..."; boton.disabled = true;
+
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ accion: "CREAR_LOTE", nombreLote: nombreLote, fecha: fecha, raza: raza, gananciaMeta: meta })
+      }).then(res => res.json()).then(res => {
+        alert("¡" + res.id + " creado exitosamente!");
+        cerrarModalNuevoLote();
+        cargarLotes(); 
+        boton.innerText = "Guardar Lote"; boton.disabled = false;
+      }).catch(err => {
+        alert("Error al guardar el lote.");
+        boton.innerText = "Guardar Lote"; boton.disabled = false;
+      });
+    }
+
+    function abrirModalVerLote(id, nombre, estado, fecha, raza, meta) {
+      document.getElementById('vlIdTitulo').innerText = id;
+      document.getElementById('vlId').value = id;
+      document.getElementById('vlNombre').value = nombre;
+      document.getElementById('vlEstado').value = estado;
+      document.getElementById('vlFecha').value = fecha;
+      document.getElementById('vlRaza').value = raza;
+      document.getElementById('vlMeta').value = meta;
+      document.getElementById('modalVerLote').style.display = 'flex';
+    }
+
+    function cerrarModalVerLote() {
+      document.getElementById('modalVerLote').style.display = 'none';
+    }
+
+    function actualizarLote() {
+      const boton = document.getElementById('btnActualizarLote');
+      boton.innerText = "Actualizando..."; boton.disabled = true;
+
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ 
+          accion: "EDITAR_LOTE", 
+          idLote: document.getElementById('vlId').value,
+          nombreLote: document.getElementById('vlNombre').value,
+          estado: document.getElementById('vlEstado').value,
+          fecha: document.getElementById('vlFecha').value,
+          raza: document.getElementById('vlRaza').value,
+          gananciaMeta: document.getElementById('vlMeta').value
+        })
+      }).then(res => res.json()).then(res => {
+        alert("¡Datos actualizados!");
+        cerrarModalVerLote();
+        cargarLotes(); 
+        boton.innerText = "Actualizar Datos"; boton.disabled = false;
+      }).catch(err => {
+        alert("Error de red."); boton.innerText = "Actualizar Datos"; boton.disabled = false;
+      });
+    }
     function agregarFilaAnimal(datos = {}) {
       const tbody = document.getElementById('tablaAnimalesBody');
       const tr = document.createElement('tr');
