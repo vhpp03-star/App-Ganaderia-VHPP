@@ -106,7 +106,7 @@
 
   <div id="vista-repesas" class="view-section"><div class="header"><h1>Repesas</h1></div><p>Pantalla en construcción...</p></div>
 
-  <!-- MODALES ORIGINALES INTACTOS -->
+  <!-- MODALES DE COMPRAS/LOGÍSTICA INTACTOS -->
   <div class="modal-overlay" id="modalPegado">
     <div class="modal">
       <h2 style="margin-top:0;">Pegado Mágico</h2>
@@ -155,21 +155,42 @@
     </div>
   </div>
 
-  <!-- MODAL VER/EDITAR LOTE -->
+  <!-- LA MINI OFICINA: MODAL VER/EDITAR LOTE -->
   <div class="modal-overlay" id="modalVerLote">
     <div class="modal">
       <h2 style="margin-top:0; color: var(--verde-oscuro);" id="vlIdTitulo">Lote</h2>
       <input type="hidden" id="vlId">
-      <div class="form-group"><label>Nombre del Lote</label><input type="text" id="vlNombre"></div>
-      <div class="form-group"><label>Estado</label>
-        <select id="vlEstado">
-          <option value="Activo">Activo</option>
-          <option value="Cerrado">Cerrado</option>
-        </select>
+      
+      <div style="background: #f8fafc; padding: 15px; border: 1px solid var(--borde); border-radius: 6px; margin-bottom: 15px;">
+        <p style="margin: 0 0 10px 0; font-weight: bold; font-size: 13px; color: #4A5568;">Datos Editables</p>
+        <div class="form-group"><label>Nombre del Lote</label><input type="text" id="vlNombre"></div>
+        <div class="form-group"><label>Estado</label>
+          <select id="vlEstado">
+            <option value="Activo">Activo</option>
+            <option value="Cerrado">Cerrado</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Fecha de Compra</label><input type="date" id="vlFecha"></div>
+        <div class="form-group"><label>Raza</label><input type="text" id="vlRaza"></div>
+        <div class="form-group"><label>Ganancia Meta (lbs)</label><input type="number" id="vlMeta"></div>
       </div>
-      <div class="form-group"><label>Fecha de Compra</label><input type="date" id="vlFecha"></div>
-      <div class="form-group"><label>Raza</label><input type="text" id="vlRaza"></div>
-      <div class="form-group"><label>Ganancia Meta (lbs)</label><input type="number" id="vlMeta"></div>
+
+      <div style="background: #E6FFFA; padding: 15px; border: 1px solid var(--verde-claro); border-radius: 6px; margin-bottom: 15px;">
+        <p style="margin: 0 0 10px 0; font-weight: bold; font-size: 13px; color: var(--verde-oscuro);">Resumen Operativo (Automático)</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; color: #2D3748;">
+          <div><strong>Anim. Iniciales:</strong> <span id="vlCantIni">0</span></div>
+          <div><strong>Anim. Activos:</strong> <span id="vlCantAct">0</span></div>
+          <div><strong>Peso Total:</strong> <span id="vlPesoTot">0</span> lbs</div>
+          <div><strong>Peso Prom:</strong> <span id="vlPesoProm">0</span> lbs</div>
+          <div style="color: #E53E3E;"><strong>Total Compra:</strong> Q <span id="vlTotQ">0</span></div>
+          <div><strong>Días en Finca:</strong> <span id="vlDias">0</span></div>
+        </div>
+        <div style="margin-top: 15px; font-size: 13px; border-top: 1px solid #B2F5EA; padding-top: 10px;">
+          <strong>Orden de Compra:</strong> 
+          <a id="vlLinkPdf" href="#" target="_blank" style="color: #2C6B56; text-decoration: underline; font-weight: bold; display: none;">Ver PDF</a>
+          <span id="vlNoPdf" style="color: #718096; font-style: italic;">Sin link asignado</span>
+        </div>
+      </div>
       
       <div class="modal-botones">
         <button class="btn-cancelar" onclick="cerrarModalVerLote()">Cerrar</button>
@@ -177,6 +198,7 @@
       </div>
     </div>
   </div>
+
   <div class="bottom-nav">
     <div class="nav-item" onclick="cambiarVista('vista-lotes', this)"><span class="nav-icon">📁</span><span>Lotes</span></div>
     <div class="nav-item active" onclick="cambiarVista('vista-compras', this)"><span class="nav-icon">🐄</span><span>Compras</span></div>
@@ -188,6 +210,7 @@
 
     let datosGlobalesAnimales = []; 
     let totalesGlobales = {};
+    let datosGlobalesLotes = []; // Guarda la info completa para la mini oficina
 
     window.onload = function() {
       document.getElementById('compraFecha').valueAsDate = new Date();
@@ -201,6 +224,7 @@
       elNav.classList.add('active');
     }
 
+    // --- FUNCIONES DE COMPRAS INTACTAS ---
     function agregarFilaAnimal(datos = {}) {
       const tbody = document.getElementById('tablaAnimalesBody');
       const tr = document.createElement('tr');
@@ -350,9 +374,10 @@
       agregarFilaAnimal(); 
     }
 
-    // --- FUNCIONES DE LOTES ---
+    // --- FUNCIONES DE LOTES Y MINI OFICINA ---
     function cargarLotes() {
       fetch(API_URL).then(res => res.json()).then(datos => {
+          datosGlobalesLotes = datos; // Guardamos todos los datos extraídos
           const select = document.getElementById('compraLote');
           const contenedorLotes = document.getElementById('contenedorLotes');
           select.innerHTML = '<option value="">-- Selecciona un Lote --</option>';
@@ -363,13 +388,13 @@
               opt.value = lote.idLote; opt.textContent = `${lote.idLote} - ${lote.nombreLote}`;
               select.appendChild(opt);
             }
-            contenedorLotes.innerHTML += `<div class="tarjeta" onclick="abrirModalVerLote('${lote.idLote}', '${lote.nombreLote}', '${lote.estado}', '${lote.fechaCompra}', '${lote.raza}', '${lote.gananciaMeta}')">
+            contenedorLotes.innerHTML += `<div class="tarjeta" onclick="abrirModalVerLote('${lote.idLote}')">
               <h3>${lote.idLote} <span class="estado-badge">${lote.estado}</span></h3>
               <p><strong>Nombre:</strong> ${lote.nombreLote}</p>
               <p><strong>Fecha:</strong> ${lote.fechaVisual}</p>
             </div>`;
           });
-        }).catch(err => document.getElementById('contenedorLotes').innerHTML = '<p>Error.</p>');
+        }).catch(err => document.getElementById('contenedorLotes').innerHTML = '<p>Error de conexión.</p>');
     }
 
     function abrirModalNuevoLote() {
@@ -409,14 +434,34 @@
       });
     }
 
-    function abrirModalVerLote(id, nombre, estado, fecha, raza, meta) {
-      document.getElementById('vlIdTitulo').innerText = id;
-      document.getElementById('vlId').value = id;
-      document.getElementById('vlNombre').value = nombre;
-      document.getElementById('vlEstado').value = estado;
-      document.getElementById('vlFecha').value = fecha;
-      document.getElementById('vlRaza').value = raza;
-      document.getElementById('vlMeta').value = meta;
+    function abrirModalVerLote(id) {
+      const lote = datosGlobalesLotes.find(l => l.idLote === id);
+      if(!lote) return;
+
+      document.getElementById('vlIdTitulo').innerText = lote.idLote;
+      document.getElementById('vlId').value = lote.idLote;
+      document.getElementById('vlNombre').value = lote.nombreLote;
+      document.getElementById('vlEstado').value = lote.estado;
+      document.getElementById('vlFecha').value = lote.fechaCompra;
+      document.getElementById('vlRaza').value = lote.raza;
+      document.getElementById('vlMeta').value = lote.gananciaMeta;
+
+      document.getElementById('vlCantIni').innerText = lote.cantInicial || 0;
+      document.getElementById('vlCantAct').innerText = lote.cantActivos || 0;
+      document.getElementById('vlPesoTot').innerText = parseFloat(lote.pesoTotal || 0).toLocaleString('en-US');
+      document.getElementById('vlPesoProm').innerText = parseFloat(lote.pesoPromedio || 0).toLocaleString('en-US');
+      document.getElementById('vlTotQ').innerText = parseFloat(lote.totalCompraQ || 0).toLocaleString('en-US');
+      document.getElementById('vlDias').innerText = lote.dias || 0;
+
+      if(lote.linkPdf && (lote.linkPdf.startsWith('http') || lote.linkPdf.startsWith('www'))) {
+        document.getElementById('vlLinkPdf').href = lote.linkPdf;
+        document.getElementById('vlLinkPdf').style.display = 'inline';
+        document.getElementById('vlNoPdf').style.display = 'none';
+      } else {
+        document.getElementById('vlLinkPdf').style.display = 'none';
+        document.getElementById('vlNoPdf').style.display = 'inline';
+      }
+
       document.getElementById('modalVerLote').style.display = 'flex';
     }
 
