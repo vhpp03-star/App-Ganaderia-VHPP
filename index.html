@@ -54,9 +54,11 @@
     <div class="grid-lotes" id="contenedorLotes"><p style="text-align:center; width:100%;">Cargando...</p></div>
   </div>
 
-  <div id="vista-compras" class="view-section active">
-    <div class="header"><h1>Ingreso de Compra</h1></div>
-    
+  <div class="header">
+      <h1>Ingreso de Compra</h1>
+      <button onclick="abrirModalPesoCompra()" style="background-color: #2B6CB0;">⚖️ Agregar Peso Compra</button>
+    </div>
+  
     <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 20px;">
       <h3 style="margin-top: 0; color: var(--verde-oscuro); border-bottom: 1px solid var(--borde); padding-bottom: 10px;">1. Datos Generales</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
@@ -155,6 +157,21 @@
     </div>
   </div>
 
+  <!-- MODAL ACTUALIZAR PESO COMPRA -->
+  <div class="modal-overlay" id="modalPesoCompra">
+    <div class="modal">
+      <h2 style="margin-top:0; color: #2B6CB0;">Ingresar Pesos de Báscula</h2>
+      <p style="font-size: 13px; color: #718096; margin-top: -10px;">Pega los datos al descargar el ganado. <br><strong>Orden requerido:</strong> ID Interno, Peso</p>
+      
+      <textarea id="textoPesoCompra" rows="8" placeholder="Ejemplo:&#10;5152, 455&#10;5153, 501"></textarea>
+      
+      <div class="modal-botones">
+        <button class="btn-cancelar" onclick="cerrarModalPesoCompra()">Cancelar</button>
+        <button onclick="procesarPesosCompra()" id="btnActualizarPesos" style="background-color: #2B6CB0;">Actualizar Pesos</button>
+      </div>
+    </div>
+  </div>
+  
   <!-- LA MINI OFICINA: MODAL VER/EDITAR LOTE -->
   <div class="modal-overlay" id="modalVerLote">
     <div class="modal">
@@ -501,6 +518,54 @@
         boton.innerText = "Actualizar Datos"; boton.disabled = false;
       }).catch(err => {
         alert("Error de red."); boton.innerText = "Actualizar Datos"; boton.disabled = false;
+      });
+    }
+
+    // --- ACTUALIZACIÓN MASIVA DE PESOS EN BÁSCULA ---
+    function abrirModalPesoCompra() {
+      document.getElementById('modalPesoCompra').style.display = 'flex';
+      document.getElementById('textoPesoCompra').value = '';
+    }
+
+    function cerrarModalPesoCompra() {
+      document.getElementById('modalPesoCompra').style.display = 'none';
+    }
+
+    function procesarPesosCompra() {
+      const texto = document.getElementById('textoPesoCompra').value.trim();
+      if(!texto) return;
+      
+      const pesosData = [];
+      texto.split('\n').forEach(filaTexto => {
+        if(filaTexto.trim() === '') return;
+        let cols = filaTexto.split('\t'); 
+        if (cols.length === 1) cols = filaTexto.split(','); // Soporta pegado desde Excel (tabs) o comas (chat)
+        
+        const id = (cols[0] || '').trim();
+        const peso = (cols[1] || '').replace(/[^0-9.]/g, '').trim();
+        
+        if (id && peso) {
+          pesosData.push({ idAnimal: id, peso: parseFloat(peso) });
+        }
+      });
+      
+      if (pesosData.length === 0) { alert("Formato incorrecto. Usa: ID, Peso"); return; }
+
+      const boton = document.getElementById('btnActualizarPesos');
+      boton.innerText = "Buscando y actualizando..."; boton.disabled = true;
+
+      fetch(API_URL, { 
+        method: 'POST', 
+        body: JSON.stringify({ accion: "ACTUALIZAR_PESOS_COMPRA", pesos: pesosData })
+      })
+      .then(res => res.json())
+      .then(res => {
+        alert(res.mensaje || "Error desconocido");
+        cerrarModalPesoCompra();
+        boton.innerText = "Actualizar Pesos"; boton.disabled = false;
+      }).catch(err => { 
+        alert("Error de red."); 
+        boton.innerText = "Actualizar Pesos"; boton.disabled = false; 
       });
     }
   </script>
