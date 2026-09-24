@@ -83,12 +83,13 @@
         <table class="tabla-compras">
           <thead>
             <tr>
-              <th style="width: 12%;">Arete/Origen</th>
-              <th style="width: 12%;">Peso (lbs)</th>
-              <th style="width: 12%;">Precio (Q)</th>
-              <th style="width: 12%;">ID Animal</th>
-              <th style="width: 10%;">Sexo</th>
-              <th style="width: 32%;">Características</th>
+              <th style="width: 11%;">Arete/Origen</th>
+              <th style="width: 10%;">Peso (lbs)</th>
+              <th style="width: 10%;">Precio (Q)</th>
+              <th style="width: 10%;">ID Animal</th>
+              <th style="width: 8%;">Sexo</th>
+              <th style="width: 24%;">Características</th>
+              <th style="width: 15%;">Ubicación</th>
               <th style="width: 10%;">Acción</th>
             </tr>
           </thead>
@@ -287,9 +288,10 @@
         <td><input type="text" placeholder="Origen" class="inp-arete" value="${arete}"></td>
         <td><input type="number" placeholder="Lbs" class="inp-peso" value="${peso}" oninput="recalcularResumen()"></td>
         <td><input type="number" placeholder="Q" class="inp-precio" value="${precio}" oninput="recalcularResumen()"></td>
-        <td><input type="text" placeholder="ID Interno" class="inp-id"></td>
+        <td><input type="text" placeholder="ID Interno" class="inp-id" value="${datos.id || ''}"></td>
         <td><select class="inp-sexo" onchange="recalcularResumen()"><option value="M" ${sexo==='M'?'selected':''}>M</option><option value="H" ${sexo==='H'?'selected':''}>H</option></select></td>
         <td><input type="text" placeholder="Rasgos" class="inp-rasgos" value="${datos.rasgos || ''}"></td>
+        <td><input type="text" placeholder="Ubicación" class="inp-ubicacion" value="${datos.ubicacion || ''}"></td>
         <td><button class="btn-eliminar" onclick="eliminarFila(this)">X</button></td>
       `;
       tbody.appendChild(tr); recalcularResumen();
@@ -327,6 +329,11 @@
       totalesGlobales = { cant, totalLbs, pesoProm, prom, totalPagar, machos, hembras };
     }
 
+    function _limpiarNA(v) {
+      const t = (v || '').trim();
+      return t.toUpperCase() === 'N/A' ? '' : t;
+    }
+
     function abrirModalPegado() { document.getElementById('modalPegado').style.display = 'flex'; }
     function cerrarModalPegado() { document.getElementById('modalPegado').style.display = 'none'; document.getElementById('textoPegado').value = ''; }
     function procesarPegado() {
@@ -334,8 +341,16 @@
       if(!texto) return;
       texto.split('\n').forEach(filaTexto => {
         if(filaTexto.trim() === '') return;
-        let cols = filaTexto.split('\t'); if (cols.length === 1) cols = filaTexto.split(',');
-        agregarFilaAnimal({ arete: (cols[0] || '').trim(), sexo: (cols[1] || '').trim(), rasgos: (cols[2] || '').trim(), peso: (cols[3] || '').replace(/[^0-9.]/g, '').trim() });
+        let cols = filaTexto.split(','); if (cols.length < 5) cols = filaTexto.split('\t');
+        // Orden del Gem: AreteOrigen, IDInterno, Sexo, Caracteristicas, Peso, Ubicacion
+        agregarFilaAnimal({
+          arete: _limpiarNA(cols[0]),
+          id: _limpiarNA(cols[1]),
+          sexo: _limpiarNA(cols[2]),
+          rasgos: _limpiarNA(cols[3]),
+          peso: (cols[4] || '').replace(/[^0-9.]/g, '').trim(),
+          ubicacion: _limpiarNA(cols[5])
+        });
       });
       cerrarModalPegado();
     }
@@ -374,7 +389,8 @@
             areteOrigen: arete, peso: peso, precio: precio, costo: costo,
             idAnimal: fila.querySelector('.inp-id').value.trim(), 
             sexo: fila.querySelector('.inp-sexo').value === 'M' ? 'Macho' : 'Hembra', 
-            rasgos: fila.querySelector('.inp-rasgos').value.trim()
+            rasgos: fila.querySelector('.inp-rasgos').value.trim(),
+            ubicacion: fila.querySelector('.inp-ubicacion').value.trim()
           });
         }
       });
