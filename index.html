@@ -74,7 +74,7 @@
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
         <h3 style="margin: 0; color: var(--verde-oscuro);">2. Lista de Animales</h3>
         <div>
-          <button onclick="abrirModalPesoCompra()" style="background-color: #2B6CB0; margin-right: 5px;">⚖️ Actualizar Ingreso</button>
+          <button onclick="abrirModalIngreso()" style="background-color: #2B6CB0; margin-right: 5px;">⚖️ Actualizar Ingreso</button>
           <button onclick="abrirModalPegado()" style="background-color: #d69e2e; margin-right: 5px;">📋 Pegar Datos</button>
           <button onclick="agregarFilaAnimal()">+ Fila Manual</button>
         </div>
@@ -172,6 +172,30 @@
       <div class="modal-botones">
         <button class="btn-cancelar" onclick="cerrarModalPesoCompra()">Cancelar</button>
         <button onclick="procesarPesosCompra()" id="btnActualizarPesos" style="background-color: #2B6CB0;">Actualizar Pesos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NUEVO: MODAL ACTUALIZAR INGRESO INTELIGENTE -->
+  <div class="modal-overlay" id="modalIngreso">
+    <div class="modal" style="max-width: 650px;">
+      <h2 style="margin-top:0; color: #2B6CB0;">Actualizar Ingreso</h2>
+
+      <div id="pasoPegarIngreso">
+        <p style="font-size: 13px; color: #718096; margin-top: -10px;">Pega la información complementaria (Arete, ID, Sexo, Características, Peso). Busca en toda la base — no hace falta elegir Lote.</p>
+        <textarea id="textoIngreso" rows="8" placeholder="Ejemplo:&#10;2514, 101, H, Blanco, 455&#10;N/A, 205, M, Chaparro rojo, 765"></textarea>
+        <div class="modal-botones">
+          <button class="btn-cancelar" onclick="cerrarModalIngreso()">Cancelar</button>
+          <button onclick="buscarAnimalesIngreso()" id="btnBuscarIngreso" style="background-color: #2B6CB0;">Buscar Animales</button>
+        </div>
+      </div>
+
+      <div id="pasoResultadosIngreso" style="display:none;">
+        <div id="listaResultadosIngreso" style="max-height: 55vh; overflow-y: auto;"></div>
+        <div class="modal-botones">
+          <button class="btn-cancelar" onclick="cerrarModalIngreso()">Cancelar</button>
+          <button onclick="aplicarCambiosIngreso()" id="btnAplicarIngreso" style="background-color: #2C6B56;" disabled>Aplicar Cambios</button>
+        </div>
       </div>
     </div>
   </div>
@@ -571,6 +595,194 @@
         alert("Error de red."); 
         boton.innerText = "Actualizar Pesos"; boton.disabled = false; 
       });
+    }
+
+    // ============================================================
+    // NUEVO: ACTUALIZAR INGRESO INTELIGENTE
+    // ============================================================
+    let resultadosIngresoGlobal = [];
+    let animalesIncompletosCache = null;
+
+    function abrirModalIngreso() {
+      document.getElementById('modalIngreso').style.display = 'flex';
+      document.getElementById('pasoPegarIngreso').style.display = 'block';
+      document.getElementById('pasoResultadosIngreso').style.display = 'none';
+      document.getElementById('textoIngreso').value = '';
+      resultadosIngresoGlobal = [];
+      animalesIncompletosCache = null; // se refresca cada vez que se abre, por si hubo cambios
+    }
+
+    function cerrarModalIngreso() {
+      document.getElementById('modalIngreso').style.display = 'none';
+    }
+
+    function parsearLineasIngreso(texto) {
+      const lineas = [];
+      texto.trim().split('\n').forEach(l => {
+        if (!l.trim()) return;
+        let cols = l.split(',');
+        if (cols.length < 5) cols = l.split('\t');
+        lineas.push({
+          areteOrigen: (cols[0] || '').trim(),
+          idInterno: (cols[1] || '').trim(),
+          sexo: (cols[2] || '').trim(),
+          caracteristicas: (cols[3] || '').trim(),
+          peso: (cols[4] || '').replace(/[^0-9.]/g, '').trim()
+        });
+      });
+      return lineas;
+    }
+
+    function buscarAnimalesIngreso() {
+      const texto = document.getElementById('textoIngreso').value.trim();
+      if (!texto) { alert('Pega la información primero.'); return; }
+      const lineas = parsearLineasIngreso(texto);
+      if (lineas.length === 0) { alert('No se pudo leer ninguna línea.'); return; }
+
+      const boton = document.getElementById('btnBuscarIngreso');
+      boton.innerText = 'Buscando...'; boton.disabled = true;
+
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'BUSCAR_ANIMALES_INGRESO', lineas: lineas }) })
+        .then(res => res.json())
+        .then(res => {
+          boton.innerText = 'Buscar Animales'; boton.disabled = false;
+          if (res.error) { alert('Error: ' + res.error); return; }
+          resultadosIngresoGlobal = res.resultados.map(r => ({ ...r, decisionFila: null }));
+          mostrarResultadosIngreso();
+        })
+        .catch(() => { boton.innerText = 'Buscar Animales'; boton.disabled = false; alert('Error de red.'); });
+    }
+
+    function etiquetaLinea(linea) {
+      const areteValido = linea.areteOrigen && linea.areteOrigen.toUpperCase() !== 'N/A';
+      if (areteValido) return `Arete ${linea.areteOrigen}`;
+      return linea.idInterno ? `ID ${linea.idInterno}` : '(sin identificador)';
+    }
+
+    function mostrarResultadosIngreso() {
+      document.getElementById('pasoPegarIngreso').style.display = 'none';
+      document.getElementById('pasoResultadosIngreso').style.display = 'block';
+      const cont = document.getElementById('listaResultadosIngreso');
+      cont.innerHTML = '';
+
+      resultadosIngresoGlobal.forEach((r, idx) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'border:1px solid #E2E8F0;border-radius:6px;padding:10px;margin-bottom:10px;font-size:13px;';
+
+        let html = `<strong>${etiquetaLinea(r.linea)}</strong><br>`;
+
+        if (r.anomalia) {
+          html += `<div style="color:#C53030;margin:4px 0;">⚠️ ${r.anomalia}</div>`;
+        }
+
+        if (r.estado === 'encontrado') {
+          html += `<div style="color:#2F855A;">✅ Encontrado — se completará:</div><ul style="margin:4px 0 4px 18px;">`;
+          r.cambios.forEach(c => html += `<li>${c.campo}: ${c.valor}</li>`);
+          html += `</ul>`;
+        } else if (r.estado === 'sin_cambios') {
+          html += `<div style="color:#718096;">ℹ️ Sin cambios que aplicar (ya estaba completo).</div>`;
+        } else if (r.estado === 'varios') {
+          if (r.decisionFila) {
+            const elegido = r.candidatos.find(c => c.filaSheet === r.decisionFila);
+            html += `<div style="color:#2F855A;">✅ Asignado a ${elegido.loteId} (${elegido.sexo}, ${elegido.caracteristicas || 'sin rasgos'})</div>`;
+          } else {
+            html += `<div style="color:#B7791F;">⚠️ Varios animales posibles, elige uno:</div>`;
+            r.candidatos.forEach((c, ci) => {
+              html += `<label style="display:block;margin:3px 0;"><input type="radio" name="sel_${idx}" onclick="seleccionarCandidato(${idx}, ${c.filaSheet})"> ${c.loteId} — ${c.sexo || '—'}, ${c.caracteristicas || '(sin rasgos)'}, comprado ${c.fechaCompra || '—'}</label>`;
+            });
+          }
+        } else if (r.estado === 'ninguno') {
+          if (r.decisionFila) {
+            html += `<div style="color:#2F855A;">✅ Asignado manualmente.</div>`;
+          } else {
+            html += `<div style="color:#C53030;">❌ No se encontró ningún animal que coincida.</div>`;
+            html += `<button onclick="toggleBuscadorManual(${idx})" style="background-color:#A0AEC0;font-size:12px;padding:6px 10px;margin-top:4px;">Buscar manualmente</button>`;
+            html += `<div id="buscadorManual_${idx}" style="display:none;margin-top:6px;"></div>`;
+          }
+        }
+
+        div.innerHTML = html;
+        cont.appendChild(div);
+      });
+
+      actualizarBotonAplicarIngreso();
+    }
+
+    function seleccionarCandidato(idx, filaSheet) {
+      resultadosIngresoGlobal[idx].decisionFila = filaSheet;
+      mostrarResultadosIngreso();
+    }
+
+    function obtenerIncompletos(callback) {
+      if (animalesIncompletosCache) { callback(animalesIncompletosCache); return; }
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'LISTAR_ANIMALES_INCOMPLETOS' }) })
+        .then(res => res.json())
+        .then(res => { animalesIncompletosCache = res.animales || []; callback(animalesIncompletosCache); });
+    }
+
+    function toggleBuscadorManual(idx) {
+      const cont = document.getElementById(`buscadorManual_${idx}`);
+      const mostrar = cont.style.display === 'none';
+      cont.style.display = mostrar ? 'block' : 'none';
+      if (!mostrar) return;
+      cont.innerHTML = `<input type="text" placeholder="Escribe lote, arete, ID, sexo o características..." oninput="filtrarBuscadorManual(${idx}, this.value)">
+        <div id="resultadosBuscadorManual_${idx}" style="margin-top:6px;"></div>`;
+      obtenerIncompletos(() => filtrarBuscadorManual(idx, ''));
+    }
+
+    function filtrarBuscadorManual(idx, texto) {
+      const t = texto.toLowerCase();
+      const resultados = (animalesIncompletosCache || []).filter(a => {
+        return (a.loteId || '').toLowerCase().includes(t) ||
+               (a.arete || '').toString().toLowerCase().includes(t) ||
+               (a.idAnimal || '').toString().toLowerCase().includes(t) ||
+               (a.sexo || '').toLowerCase().includes(t) ||
+               (a.caracteristicas || '').toLowerCase().includes(t);
+      }).slice(0, 15);
+
+      const cont = document.getElementById(`resultadosBuscadorManual_${idx}`);
+      if (resultados.length === 0) { cont.innerHTML = '<em>Sin resultados</em>'; return; }
+      cont.innerHTML = resultados.map(a =>
+        `<label style="display:block;margin:3px 0;"><input type="radio" name="man_${idx}" onclick="seleccionarCandidato(${idx}, ${a.filaSheet})"> ${a.loteId} — Arete:${a.arete || '—'} ID:${a.idAnimal || '—'}, ${a.sexo || '—'}, ${a.caracteristicas || '(sin rasgos)'}, comprado ${a.fechaCompra || '—'}</label>`
+      ).join('');
+    }
+
+    function _lineaResuelta(r) {
+      return r.estado === 'encontrado' || r.estado === 'sin_cambios' || !!r.decisionFila;
+    }
+
+    function actualizarBotonAplicarIngreso() {
+      const boton = document.getElementById('btnAplicarIngreso');
+      const pendientes = resultadosIngresoGlobal.filter(r => !_lineaResuelta(r)).length;
+      if (pendientes > 0) {
+        boton.disabled = true;
+        boton.innerText = `Faltan ${pendientes} por asignar`;
+      } else {
+        boton.disabled = false;
+        boton.innerText = 'Aplicar Cambios';
+      }
+    }
+
+    function aplicarCambiosIngreso() {
+      const items = resultadosIngresoGlobal
+        .filter(r => r.estado === 'encontrado' || r.decisionFila)
+        .map(r => ({ filaSheet: r.filaSheet || r.decisionFila, linea: r.linea }));
+
+      if (items.length === 0) { cerrarModalIngreso(); return; }
+
+      const boton = document.getElementById('btnAplicarIngreso');
+      boton.innerText = 'Guardando...'; boton.disabled = true;
+
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'APLICAR_INGRESO', items: items }) })
+        .then(res => res.json())
+        .then(res => {
+          alert(res.mensaje || 'Listo.');
+          cerrarModalIngreso();
+        })
+        .catch(() => {
+          alert('Error de red.');
+          boton.innerText = 'Aplicar Cambios'; boton.disabled = false;
+        });
     }
   </script>
 </body>
