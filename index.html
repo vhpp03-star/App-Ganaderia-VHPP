@@ -741,8 +741,8 @@
       const mostrar = cont.style.display === 'none';
       cont.style.display = mostrar ? 'block' : 'none';
       if (!mostrar) return;
-      cont.innerHTML = `<input type="text" placeholder="Escribe lote, arete, ID, sexo o características..." oninput="filtrarBuscadorManual(${idx}, this.value)">
-        <div id="resultadosBuscadorManual_${idx}" style="margin-top:6px;"></div>`;
+      cont.innerHTML = `<input type="text" placeholder="Escribe lote, arete, ID, sexo, fecha o características..." oninput="filtrarBuscadorManual(${idx}, this.value)">
+        <div id="resultadosBuscadorManual_${idx}" style="margin-top:6px; max-height: 220px; overflow-y: auto;"></div>`;
       obtenerTodosAnimales(() => filtrarBuscadorManual(idx, ''));
     }
 
@@ -753,12 +753,17 @@
                (a.arete || '').toString().toLowerCase().includes(t) ||
                (a.idAnimal || '').toString().toLowerCase().includes(t) ||
                (a.sexo || '').toLowerCase().includes(t) ||
-               (a.caracteristicas || '').toLowerCase().includes(t);
-      }).slice(0, 15);
+               (a.caracteristicas || '').toLowerCase().includes(t) ||
+               (a.fechaCompra || '').toLowerCase().includes(t);
+      }).slice(0, 50);
 
       const cont = document.getElementById(`resultadosBuscadorManual_${idx}`);
-      if (resultados.length === 0) { cont.innerHTML = '<em>Sin resultados</em>'; return; }
-      cont.innerHTML = resultados.map(a =>
+      if (resultados.length === 0) { cont.innerHTML = '<em>Sin resultados — prueba con otro término.</em>'; return; }
+      let aviso = '';
+      if ((todosAnimalesCache || []).length > 50 && resultados.length === 50) {
+        aviso = '<div style="color:#B7791F;font-size:12px;margin-bottom:4px;">Mostrando los primeros 50 — escribe algo más específico si no ves el animal.</div>';
+      }
+      cont.innerHTML = aviso + resultados.map(a =>
         `<label style="display:block;margin:3px 0;"><input type="radio" name="man_${idx}" onclick="seleccionarCandidato(${idx}, ${a.filaSheet})"> ${a.loteId} — Arete:${a.arete || '—'} ID:${a.idAnimal || '—'}, ${a.sexo || '—'}, ${a.caracteristicas || '(sin rasgos)'}, comprado ${a.fechaCompra || '—'}</label>`
       ).join('');
     }
