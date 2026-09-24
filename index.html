@@ -617,7 +617,7 @@
     // NUEVO: ACTUALIZAR INGRESO INTELIGENTE
     // ============================================================
     let resultadosIngresoGlobal = [];
-    let animalesIncompletosCache = null;
+    let todosAnimalesCache = null;
 
     function abrirModalIngreso() {
       document.getElementById('modalIngreso').style.display = 'flex';
@@ -625,7 +625,7 @@
       document.getElementById('pasoResultadosIngreso').style.display = 'none';
       document.getElementById('textoIngreso').value = '';
       resultadosIngresoGlobal = [];
-      animalesIncompletosCache = null; // se refresca cada vez que se abre, por si hubo cambios
+      todosAnimalesCache = null; // se refresca cada vez que se abre, por si hubo cambios
     }
 
     function cerrarModalIngreso() {
@@ -729,11 +729,11 @@
       mostrarResultadosIngreso();
     }
 
-    function obtenerIncompletos(callback) {
-      if (animalesIncompletosCache) { callback(animalesIncompletosCache); return; }
-      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'LISTAR_ANIMALES_INCOMPLETOS' }) })
+    function obtenerTodosAnimales(callback) {
+      if (todosAnimalesCache) { callback(todosAnimalesCache); return; }
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'LISTAR_TODOS_ANIMALES' }) })
         .then(res => res.json())
-        .then(res => { animalesIncompletosCache = res.animales || []; callback(animalesIncompletosCache); });
+        .then(res => { todosAnimalesCache = res.animales || []; callback(todosAnimalesCache); });
     }
 
     function toggleBuscadorManual(idx) {
@@ -743,12 +743,12 @@
       if (!mostrar) return;
       cont.innerHTML = `<input type="text" placeholder="Escribe lote, arete, ID, sexo o características..." oninput="filtrarBuscadorManual(${idx}, this.value)">
         <div id="resultadosBuscadorManual_${idx}" style="margin-top:6px;"></div>`;
-      obtenerIncompletos(() => filtrarBuscadorManual(idx, ''));
+      obtenerTodosAnimales(() => filtrarBuscadorManual(idx, ''));
     }
 
     function filtrarBuscadorManual(idx, texto) {
       const t = texto.toLowerCase();
-      const resultados = (animalesIncompletosCache || []).filter(a => {
+      const resultados = (todosAnimalesCache || []).filter(a => {
         return (a.loteId || '').toLowerCase().includes(t) ||
                (a.arete || '').toString().toLowerCase().includes(t) ||
                (a.idAnimal || '').toString().toLowerCase().includes(t) ||
