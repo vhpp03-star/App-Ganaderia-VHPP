@@ -154,6 +154,12 @@
       <div class="form-group"><label>Nombre del Lote *</label><input type="text" id="nlNombre" required></div>
       <div class="form-group"><label>Fecha de Compra *</label><input type="date" id="nlFecha" required></div>
       <div class="form-group"><label>Raza *</label><input type="text" id="nlRaza" required></div>
+      <div class="form-group"><label>Modalidad de Compra *</label>
+        <select id="nlModalidad" required>
+          <option value="Pesado">Pesado (por lb)</option>
+          <option value="Precio Fijo">Precio Fijo</option>
+        </select>
+      </div>
       <div class="form-group"><label>Ganancia Meta (lbs) *</label><input type="number" id="nlMeta" required></div>
       <div class="modal-botones">
         <button class="btn-cancelar" onclick="cerrarModalNuevoLote()">Cancelar</button>
@@ -218,6 +224,12 @@
         </div>
         <div class="form-group"><label>Fecha de Compra</label><input type="date" id="vlFecha"></div>
         <div class="form-group"><label>Raza</label><input type="text" id="vlRaza"></div>
+        <div class="form-group"><label>Modalidad de Compra</label>
+          <select id="vlModalidad">
+            <option value="Pesado">Pesado (por lb)</option>
+            <option value="Precio Fijo">Precio Fijo</option>
+          </select>
+        </div>
         <div class="form-group"><label>Ganancia Meta (lbs)</label><input type="number" id="vlMeta"></div>
       </div>
 
@@ -475,12 +487,14 @@
       document.getElementById('nlNombre').value = '';
       document.getElementById('nlRaza').value = '';
       document.getElementById('nlMeta').value = '';
+      document.getElementById('nlModalidad').value = 'Pesado';
     }
 
     function guardarLote() {
       const nombreLote = document.getElementById('nlNombre').value.trim();
       const fecha = document.getElementById('nlFecha').value;
       const raza = document.getElementById('nlRaza').value.trim();
+      const modalidad = document.getElementById('nlModalidad').value;
       const meta = document.getElementById('nlMeta').value.trim();
 
       if (!nombreLote || !fecha || !raza || !meta) { alert("Llene todos los campos obligatorios."); return; }
@@ -490,7 +504,7 @@
 
       fetch(API_URL, {
         method: 'POST',
-        body: JSON.stringify({ accion: "CREAR_LOTE", nombreLote: nombreLote, fecha: fecha, raza: raza, gananciaMeta: meta })
+        body: JSON.stringify({ accion: "CREAR_LOTE", nombreLote: nombreLote, fecha: fecha, raza: raza, modalidadCompra: modalidad, gananciaMeta: meta })
       }).then(res => res.json()).then(res => {
         alert("¡" + res.id + " creado exitosamente!");
         cerrarModalNuevoLote();
@@ -512,6 +526,7 @@
       document.getElementById('vlEstado').value = lote.estado;
       document.getElementById('vlFecha').value = lote.fechaCompra;
       document.getElementById('vlRaza').value = lote.raza;
+      document.getElementById('vlModalidad').value = lote.modalidadCompra || 'Pesado';
       document.getElementById('vlMeta').value = lote.gananciaMeta;
 
       document.getElementById('vlCantIni').innerText = lote.cantInicial || 0;
@@ -553,6 +568,7 @@
           estado: document.getElementById('vlEstado').value,
           fecha: document.getElementById('vlFecha').value,
           raza: document.getElementById('vlRaza').value,
+          modalidadCompra: document.getElementById('vlModalidad').value,
           gananciaMeta: document.getElementById('vlMeta').value
         })
       }).then(res => res.json()).then(res => {
