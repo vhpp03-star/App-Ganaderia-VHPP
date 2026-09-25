@@ -109,6 +109,62 @@
     <div style="text-align: right; margin-bottom: 20px;">
       <button id="btnGuardarCompra" onclick="guardarCompra()" style="padding: 12px 25px; font-size: 16px; width: 100%; max-width: 300px;">💾 Guardar Compra en Inventario</button>
     </div>
+
+    <!-- NUEVO: INVENTARIO FILTRABLE DE ANIMALES -->
+    <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-top: 20px;">
+      <h3 style="margin-top: 0; color: var(--verde-oscuro); border-bottom: 1px solid var(--borde); padding-bottom: 10px;">3. Inventario de Animales</h3>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 10px;">
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Lote</label><select id="invLote" multiple style="height:90px;"></select></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Ubicación</label><select id="invUbicacion" multiple style="height:90px;"></select></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Sexo</label><select id="invSexo" multiple style="height:90px;"><option value="M">M</option><option value="H">H</option></select></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Estado</label><select id="invEstado" multiple style="height:90px;"></select></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Etapa Actual</label><select id="invEtapa" multiple style="height:90px;"></select></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Modalidad</label><select id="invModalidad" multiple style="height:90px;"><option value="Pesado">Pesado</option><option value="Precio Fijo">Precio Fijo</option></select></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Destino Inicial</label><select id="invDestino" multiple style="height:90px;"><option value="Engorde">Engorde</option><option value="Levante">Levante</option></select></div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 10px;">
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">ID Origen contiene</label><input type="text" id="invIdOrigen" placeholder="Ej. 2514"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">ID Interno contiene</label><input type="text" id="invIdInterno" placeholder="Ej. 101"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Búsqueda libre</label><input type="text" id="invBusquedaLibre" placeholder="Lote, arete, ID..."></div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 10px;">
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Peso Compra desde</label><input type="number" id="invPesoMin"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">hasta</label><input type="number" id="invPesoMax"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Precio desde</label><input type="number" id="invPrecioMin"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">hasta</label><input type="number" id="invPrecioMax"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Días desde</label><input type="number" id="invDiasMin"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">hasta</label><input type="number" id="invDiasMax"></div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 15px;">
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Fecha Compra desde</label><input type="date" id="invFechaCompraDesde"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">hasta</label><input type="date" id="invFechaCompraHasta"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Ingreso Engorda desde</label><input type="date" id="invFechaEngordaDesde"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">hasta</label><input type="date" id="invFechaEngordaHasta"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">Fecha Venta desde</label><input type="date" id="invFechaVentaDesde"></div>
+        <div><label style="font-size:12px;font-weight:bold;color:#4A5568;">hasta</label><input type="date" id="invFechaVentaHasta"></div>
+      </div>
+
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+        <button onclick="filtrarInventario()" style="background-color:#2C6B56;">🔍 Filtrar</button>
+        <button onclick="mostrarTodoInventario()" style="background-color:#2B6CB0;">📋 Mostrar Todos</button>
+        <button onclick="limpiarFiltrosInventario()" class="btn-cancelar">Limpiar Filtros</button>
+        <button onclick="toggleColumnasInv()" style="background-color:#718096;">🗂️ Columnas Visibles</button>
+      </div>
+
+      <div id="panelColumnasInv" style="display:none; flex-wrap:wrap; padding:10px; background:#f8fafc; border:1px solid var(--borde); border-radius:6px; margin-bottom:15px;"></div>
+
+      <div style="overflow-x: auto;">
+        <table class="tabla-compras">
+          <thead><tr id="filaEncabezadosInv"></tr></thead>
+          <tbody id="cuerpoInventario"><tr><td style="text-align:center;color:#A0AEC0;padding:15px;">Usa los filtros o "Mostrar Todos" para ver el inventario.</td></tr></tbody>
+        </table>
+      </div>
+      <p id="contadorInventario" style="font-size:12px;color:#718096;margin-top:8px;"></p>
+    </div>
   </div>
 
   <div id="vista-repesas" class="view-section"><div class="header"><h1>Repesas</h1></div><p>Pantalla en construcción...</p></div>
@@ -280,7 +336,232 @@
     window.onload = function() {
       document.getElementById('compraFecha').valueAsDate = new Date();
       cargarLotes(); agregarFilaAnimal(); generarCamposTransporte();
+      inicializarColumnasInv();
+      construirPanelColumnasInv();
+      obtenerInventarioCompleto(() => {}); // precarga silenciosa: solo llena los filtros, no muestra nada aún
     };
+
+    // ============================================================
+    // NUEVO: INVENTARIO FILTRABLE DE ANIMALES
+    // ============================================================
+    const COLUMNAS_INV = [
+      { id: 'idAnimal', label: 'ID Animal', default: true },
+      { id: 'loteId', label: 'Lote', default: true },
+      { id: 'arete', label: 'Arete/Origen', default: true },
+      { id: 'sexo', label: 'Sexo', default: true },
+      { id: 'caracteristicas', label: 'Características', default: false },
+      { id: 'destinoInicial', label: 'Destino', default: false },
+      { id: 'etapaActual', label: 'Etapa', default: false },
+      { id: 'ubicacionActual', label: 'Ubicación', default: true },
+      { id: 'fechaCompra', label: 'Fecha Compra', default: true },
+      { id: 'modalidadCompra', label: 'Modalidad', default: false },
+      { id: 'precioCompra', label: 'Precio', default: false },
+      { id: 'pesoCompra', label: 'Peso Compra', default: true },
+      { id: 'costoTotal', label: 'Costo Total', default: false },
+      { id: 'fechaIngresoEngorda', label: 'Ingreso Engorda', default: false },
+      { id: 'pesoLlegada', label: 'Peso Llegada', default: false },
+      { id: 'estadoAnimal', label: 'Estado', default: true },
+      { id: 'diasTranscurridos', label: 'Días', default: false },
+      { id: 'diasTranscurridosEngorda', label: 'Días Engorda', default: false },
+      { id: 'fechaVenta', label: 'Fecha Venta', default: false },
+      { id: 'observaciones', label: 'Observaciones', default: false }
+    ];
+
+    let inventarioCompletoCache = null;
+    let inventarioFiltrado = [];
+    let columnasVisiblesInv = {};
+    let ordenInv = { campo: 'fechaCompra', asc: false };
+
+    function inicializarColumnasInv() {
+      COLUMNAS_INV.forEach(c => columnasVisiblesInv[c.id] = c.default);
+    }
+
+    function construirPanelColumnasInv() {
+      document.getElementById('panelColumnasInv').innerHTML = COLUMNAS_INV.map(c =>
+        `<label style="display:inline-flex;align-items:center;gap:4px;margin-right:14px;margin-bottom:6px;font-size:12px;">
+           <input type="checkbox" ${columnasVisiblesInv[c.id] ? 'checked' : ''} onchange="columnasVisiblesInv['${c.id}']=this.checked; renderizarInventario();"> ${c.label}
+         </label>`
+      ).join('');
+    }
+
+    function toggleColumnasInv() {
+      const panel = document.getElementById('panelColumnasInv');
+      panel.style.display = (panel.style.display === 'none' || !panel.style.display) ? 'flex' : 'none';
+    }
+
+    function obtenerInventarioCompleto(callback) {
+      if (inventarioCompletoCache) { callback(inventarioCompletoCache); return; }
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'LISTAR_INVENTARIO_COMPLETO' }) })
+        .then(res => res.json())
+        .then(res => {
+          inventarioCompletoCache = res.animales || [];
+          poblarFiltrosCategoricosInv();
+          callback(inventarioCompletoCache);
+        })
+        .catch(() => { inventarioCompletoCache = []; });
+    }
+
+    function poblarFiltrosCategoricosInv() {
+      [{ id: 'invLote', campo: 'loteId' }, { id: 'invUbicacion', campo: 'ubicacionActual' },
+       { id: 'invEstado', campo: 'estadoAnimal' }, { id: 'invEtapa', campo: 'etapaActual' }].forEach(({ id, campo }) => {
+        const valores = [...new Set(inventarioCompletoCache.map(a => (a[campo] || '').toString().trim()).filter(v => v))].sort();
+        document.getElementById(id).innerHTML = valores.map(v => `<option value="${v}">${v}</option>`).join('');
+      });
+    }
+
+    function _valoresSeleccionadosInv(id) {
+      return Array.from(document.getElementById(id).selectedOptions).map(o => o.value);
+    }
+
+    function _isoATiempo(iso) {
+      if (!iso) return null;
+      const p = iso.split('-'); if (p.length !== 3) return null;
+      return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2])).getTime();
+    }
+
+    function _dmaATiempo(dma) {
+      if (!dma) return null;
+      const p = dma.split('/'); if (p.length !== 3) return null;
+      return new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0])).getTime();
+    }
+
+    function mostrarTodoInventario() {
+      obtenerInventarioCompleto(datos => {
+        inventarioFiltrado = datos.slice();
+        renderizarInventario();
+      });
+    }
+
+    function limpiarFiltrosInventario() {
+      ['invLote', 'invUbicacion', 'invSexo', 'invEstado', 'invEtapa', 'invModalidad', 'invDestino'].forEach(id => {
+        document.getElementById(id).selectedIndex = -1;
+      });
+      ['invIdOrigen', 'invIdInterno', 'invPesoMin', 'invPesoMax', 'invPrecioMin', 'invPrecioMax',
+       'invFechaCompraDesde', 'invFechaCompraHasta', 'invFechaEngordaDesde', 'invFechaEngordaHasta',
+       'invFechaVentaDesde', 'invFechaVentaHasta', 'invDiasMin', 'invDiasMax', 'invBusquedaLibre'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      inventarioFiltrado = [];
+      renderizarInventario();
+    }
+
+    function filtrarInventario() {
+      obtenerInventarioCompleto(datos => {
+        const loteSel = _valoresSeleccionadosInv('invLote');
+        const ubicSel = _valoresSeleccionadosInv('invUbicacion');
+        const sexoSel = _valoresSeleccionadosInv('invSexo');
+        const estadoSel = _valoresSeleccionadosInv('invEstado');
+        const etapaSel = _valoresSeleccionadosInv('invEtapa');
+        const modalidadSel = _valoresSeleccionadosInv('invModalidad');
+        const destinoSel = _valoresSeleccionadosInv('invDestino');
+
+        const idOrigen = document.getElementById('invIdOrigen').value.trim().toLowerCase();
+        const idInterno = document.getElementById('invIdInterno').value.trim().toLowerCase();
+        const busqueda = document.getElementById('invBusquedaLibre').value.trim().toLowerCase();
+
+        const pesoMin = parseFloat(document.getElementById('invPesoMin').value);
+        const pesoMax = parseFloat(document.getElementById('invPesoMax').value);
+        const precioMin = parseFloat(document.getElementById('invPrecioMin').value);
+        const precioMax = parseFloat(document.getElementById('invPrecioMax').value);
+        const diasMin = parseFloat(document.getElementById('invDiasMin').value);
+        const diasMax = parseFloat(document.getElementById('invDiasMax').value);
+
+        const fcDesde = _isoATiempo(document.getElementById('invFechaCompraDesde').value);
+        const fcHasta = _isoATiempo(document.getElementById('invFechaCompraHasta').value);
+        const feDesde = _isoATiempo(document.getElementById('invFechaEngordaDesde').value);
+        const feHasta = _isoATiempo(document.getElementById('invFechaEngordaHasta').value);
+        const fvDesde = _isoATiempo(document.getElementById('invFechaVentaDesde').value);
+        const fvHasta = _isoATiempo(document.getElementById('invFechaVentaHasta').value);
+
+        inventarioFiltrado = datos.filter(a => {
+          if (loteSel.length && !loteSel.includes((a.loteId || '').toString())) return false;
+          if (ubicSel.length && !ubicSel.includes((a.ubicacionActual || '').toString())) return false;
+          if (sexoSel.length && !sexoSel.includes((a.sexo || '').toString())) return false;
+          if (estadoSel.length && !estadoSel.includes((a.estadoAnimal || '').toString())) return false;
+          if (etapaSel.length && !etapaSel.includes((a.etapaActual || '').toString())) return false;
+          if (modalidadSel.length && !modalidadSel.includes((a.modalidadCompra || '').toString())) return false;
+          if (destinoSel.length && !destinoSel.includes((a.destinoInicial || '').toString())) return false;
+
+          if (idOrigen && !(a.arete || '').toString().toLowerCase().includes(idOrigen)) return false;
+          if (idInterno && !(a.idAnimal || '').toString().toLowerCase().includes(idInterno)) return false;
+
+          const peso = parseFloat(a.pesoCompra) || 0;
+          if (!isNaN(pesoMin) && peso < pesoMin) return false;
+          if (!isNaN(pesoMax) && peso > pesoMax) return false;
+
+          const precio = parseFloat(a.precioCompra) || 0;
+          if (!isNaN(precioMin) && precio < precioMin) return false;
+          if (!isNaN(precioMax) && precio > precioMax) return false;
+
+          const dias = parseFloat(a.diasTranscurridos) || 0;
+          if (!isNaN(diasMin) && dias < diasMin) return false;
+          if (!isNaN(diasMax) && dias > diasMax) return false;
+
+          const tFC = _dmaATiempo(a.fechaCompra);
+          if (fcDesde && (tFC === null || tFC < fcDesde)) return false;
+          if (fcHasta && (tFC === null || tFC > fcHasta)) return false;
+
+          const tFE = _dmaATiempo(a.fechaIngresoEngorda);
+          if (feDesde && (tFE === null || tFE < feDesde)) return false;
+          if (feHasta && (tFE === null || tFE > feHasta)) return false;
+
+          const tFV = _dmaATiempo(a.fechaVenta);
+          if (fvDesde && (tFV === null || tFV < fvDesde)) return false;
+          if (fvHasta && (tFV === null || tFV > fvHasta)) return false;
+
+          if (busqueda) {
+            const campoTexto = [a.arete, a.idAnimal, a.loteId, a.ubicacionActual].join(' ').toLowerCase();
+            if (!campoTexto.includes(busqueda)) return false;
+          }
+
+          return true;
+        });
+
+        renderizarInventario();
+      });
+    }
+
+    function ordenarInventarioPor(campo) {
+      if (ordenInv.campo === campo) { ordenInv.asc = !ordenInv.asc; }
+      else { ordenInv.campo = campo; ordenInv.asc = true; }
+      renderizarInventario();
+    }
+
+    function _valorOrdenInv(a, campo) {
+      const v = a[campo];
+      if (['fechaCompra', 'fechaIngresoEngorda', 'fechaVenta'].includes(campo)) return _dmaATiempo(v) || 0;
+      const num = parseFloat(v);
+      if (!isNaN(num) && v !== '' && v !== null && v !== undefined) return num;
+      return (v || '').toString().toLowerCase();
+    }
+
+    function renderizarInventario() {
+      const colsVisibles = COLUMNAS_INV.filter(c => columnasVisiblesInv[c.id]);
+
+      document.getElementById('filaEncabezadosInv').innerHTML = colsVisibles.map(c => {
+        const flecha = ordenInv.campo === c.id ? (ordenInv.asc ? ' ▲' : ' ▼') : '';
+        return `<th style="cursor:pointer;white-space:nowrap;" onclick="ordenarInventarioPor('${c.id}')">${c.label}${flecha}</th>`;
+      }).join('');
+
+      let datos = inventarioFiltrado.slice();
+      datos.sort((a, b) => {
+        const va = _valorOrdenInv(a, ordenInv.campo), vb = _valorOrdenInv(b, ordenInv.campo);
+        if (va < vb) return ordenInv.asc ? -1 : 1;
+        if (va > vb) return ordenInv.asc ? 1 : -1;
+        return 0;
+      });
+
+      const cuerpo = document.getElementById('cuerpoInventario');
+      if (datos.length === 0) {
+        cuerpo.innerHTML = `<tr><td colspan="${colsVisibles.length || 1}" style="text-align:center;color:#A0AEC0;padding:15px;">Sin resultados. Usa los filtros o "Mostrar Todos".</td></tr>`;
+      } else {
+        cuerpo.innerHTML = datos.map(a =>
+          '<tr>' + colsVisibles.map(c => `<td>${a[c.id] !== undefined && a[c.id] !== null ? a[c.id] : ''}</td>`).join('') + '</tr>'
+        ).join('');
+      }
+
+      document.getElementById('contadorInventario').innerText = `${datos.length} animal(es) encontrado(s).`;
+    }
 
     function cambiarVista(vistaId, elNav) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
