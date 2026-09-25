@@ -167,7 +167,7 @@
         </div>
       </div>
 
-      <div id="panelColumnasInv" style="display:none; flex-wrap:wrap; padding:10px; background:#f8fafc; border:1px solid var(--borde); border-radius:6px; margin-bottom:15px;"></div>
+      <div id="panelColumnasInv" style="display:none; padding:10px; background:#f8fafc; border:1px solid var(--borde); border-radius:6px; margin-bottom:15px; max-height:300px; overflow-y:auto;"></div>
 
       <div style="overflow-x: auto;">
         <table class="tabla-compras">
@@ -421,15 +421,15 @@
 
     function construirPanelColumnasInv() {
       document.getElementById('panelColumnasInv').innerHTML = COLUMNAS_INV.map(c =>
-        `<label style="display:inline-flex;align-items:center;gap:4px;margin-right:14px;margin-bottom:6px;font-size:12px;">
-           <input type="checkbox" ${columnasVisiblesInv[c.id] ? 'checked' : ''} onchange="columnasVisiblesInv['${c.id}']=this.checked; renderizarInventario();"> ${c.label}
+        `<label style="display:flex;align-items:center;gap:8px;padding:6px 2px;font-size:13px;border-bottom:1px solid #E2E8F0;">
+           <input type="checkbox" style="width:auto;margin-top:0;flex-shrink:0;" ${columnasVisiblesInv[c.id] ? 'checked' : ''} onchange="columnasVisiblesInv['${c.id}']=this.checked; renderizarInventario();"> ${c.label}
          </label>`
       ).join('');
     }
 
     function toggleColumnasInv() {
       const panel = document.getElementById('panelColumnasInv');
-      panel.style.display = (panel.style.display === 'none' || !panel.style.display) ? 'flex' : 'none';
+      panel.style.display = (panel.style.display === 'none' || !panel.style.display) ? 'block' : 'none';
     }
 
     function obtenerInventarioCompleto(callback) {
