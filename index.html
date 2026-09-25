@@ -183,8 +183,8 @@
       <h2 style="margin-top:0; color: #2B6CB0;">Actualizar Ingreso</h2>
 
       <div id="pasoPegarIngreso">
-        <p style="font-size: 13px; color: #718096; margin-top: -10px;">Pega la información complementaria (Arete, ID, Sexo, Características, Peso). Busca en toda la base — no hace falta elegir Lote.</p>
-        <textarea id="textoIngreso" rows="8" placeholder="Ejemplo:&#10;2514, 101, H, Blanco, 455&#10;N/A, 205, M, Chaparro rojo, 765"></textarea>
+        <p style="font-size: 13px; color: #718096; margin-top: -10px;">Pega la información complementaria (Arete, ID, Sexo, Características, Peso, Ubicación, Fecha Ingreso Engorda). Busca en toda la base — no hace falta elegir Lote.</p>
+        <textarea id="textoIngreso" rows="8" placeholder="Ejemplo:&#10;2514, 101, H, Blanco, 455, N/A, 24/09/2026&#10;N/A, 205, M, Chaparro rojo, 765, N/A, N/A"></textarea>
         <div class="modal-botones">
           <button class="btn-cancelar" onclick="cerrarModalIngreso()">Cancelar</button>
           <button onclick="buscarAnimalesIngreso()" id="btnBuscarIngreso" style="background-color: #2B6CB0;">Buscar Animales</button>
@@ -643,7 +643,8 @@
           idInterno: (cols[1] || '').trim(),
           sexo: (cols[2] || '').trim(),
           caracteristicas: (cols[3] || '').trim(),
-          peso: (cols[4] || '').replace(/[^0-9.]/g, '').trim()
+          peso: (cols[4] || '').replace(/[^0-9.]/g, '').trim(),
+          fechaIngresoEngorda: (cols[6] || '').trim()
         });
       });
       return lineas;
