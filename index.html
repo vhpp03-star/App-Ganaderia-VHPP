@@ -179,6 +179,58 @@
     </div>
   </div>
 
+  <!-- NUEVO: VISTA DE VENTAS -->
+  <div id="vista-ventas" class="view-section">
+    <div class="header"><h1>Gestión de Ventas</h1></div>
+
+    <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 20px;">
+      <h3 style="margin-top: 0; color: #7B341E; border-bottom: 1px solid var(--borde); padding-bottom: 10px;">1. Datos Generales</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px;">
+        <div><label>Cliente *</label><input type="text" id="ventaCliente" placeholder="Nombre del cliente"></div>
+        <div><label>Fecha *</label><input type="date" id="ventaFecha"></div>
+        <div><label>Modalidad *</label><select id="ventaModalidad" onchange="recalcularResumenVenta()"><option value="Pesado">Pesado (por lb)</option><option value="Precio Fijo">Precio Fijo</option></select></div>
+        <div><label>Precio Ref. (Q) *</label><input type="number" id="ventaPrecioRef" placeholder="Ej. 13.00" oninput="recalcularResumenVenta()"></div>
+      </div>
+    </div>
+
+    <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+        <h3 style="margin: 0; color: #7B341E;">2. Lista de Animales</h3>
+        <div>
+          <button onclick="abrirModalPegadoVenta()" style="background-color:#7B341E; margin-right:5px;">📋 Ingresar Venta</button>
+          <button onclick="abrirModalElegirOrdenRectificar()" style="background-color:#B7791F;">✏️ Rectificar Venta</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="tabla-compras">
+          <thead>
+            <tr>
+              <th>Arete/Origen</th><th>ID Animal</th><th>Sexo</th><th>Lote</th>
+              <th>Peso Compra</th><th>Peso Venta</th><th>Precio Venta</th><th>Estado</th><th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaVentaBody"><tr><td colspan="9" style="text-align:center;color:#A0AEC0;padding:15px;">Usa "Ingresar Venta" o "Rectificar Venta" para comenzar.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel-resumen">
+      <div class="resumen-item">Animales<span class="resumen-valor" id="resCantVenta">0</span></div>
+      <div class="resumen-item">Total Libras<span class="resumen-valor" id="resLbsVenta">0.00</span></div>
+      <div class="resumen-item">Peso Promedio<span class="resumen-valor" id="resPesoPromVenta">0.00 lbs</span></div>
+      <div class="resumen-item">Precio Promedio<span class="resumen-valor" id="resPromVenta">Q 0.00</span></div>
+      <div class="resumen-item">Total Venta<span class="resumen-valor" id="resPagarVenta" style="color:#7B341E;">Q 0.00</span></div>
+    </div>
+
+    <div style="text-align:right; margin-bottom:20px;">
+      <button id="btnConfirmarVenta" onclick="onClickBotonPrincipalVenta()" style="padding:12px 25px; font-size:16px; width:100%; max-width:300px; background-color:#7B341E;" disabled>Completa la lista primero</button>
+    </div>
+
+    <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--borde);">
+      <h3 style="margin-top:0; color:#7B341E; border-bottom:1px solid var(--borde); padding-bottom:10px;">3. Órdenes de Venta</h3>
+      <div class="grid-lotes" id="contenedorVentas"><p style="text-align:center;width:100%;color:#A0AEC0;">Cargando...</p></div>
+    </div>
+  </div>
 
   <!-- MODALES DE COMPRAS/LOGÍSTICA INTACTOS -->
   <div class="modal-overlay" id="modalPegado">
@@ -274,6 +326,69 @@
     </div>
   </div>
   
+  <!-- NUEVO: MODAL PEGAR DATOS DE VENTA -->
+  <div class="modal-overlay" id="modalPegadoVenta">
+    <div class="modal">
+      <h2 style="margin-top:0; color:#7B341E;">Ingresar Venta</h2>
+      <p style="font-size: 13px; color: #718096; margin-top: -10px;">Pega la información (Arete, ID, Sexo, Peso, Precio). Busca solo entre animales Activos.</p>
+      <textarea id="textoPegadoVenta" rows="8" placeholder="Ejemplo:&#10;2514, 101, H, 495, N/A&#10;N/A, 205, M, 780, 12.50"></textarea>
+      <div class="modal-botones">
+        <button class="btn-cancelar" onclick="cerrarModalPegadoVenta()">Cancelar</button>
+        <button onclick="procesarPegadoVenta()" id="btnBuscarVenta" style="background-color:#7B341E;">Buscar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NUEVO: MODAL ELEGIR ORDEN A RECTIFICAR -->
+  <div class="modal-overlay" id="modalElegirOrdenRectificar">
+    <div class="modal">
+      <h2 style="margin-top:0; color:#B7791F;">Elegir Orden a Rectificar</h2>
+      <div id="listaOrdenesElegir" style="max-height:55vh; overflow-y:auto;">Cargando...</div>
+      <div class="modal-botones">
+        <button class="btn-cancelar" onclick="cerrarModalElegirOrdenRectificar()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NUEVO: MODAL LOGÍSTICA DE VENTA -->
+  <div class="modal-overlay" id="modalLogisticaVenta">
+    <div class="modal">
+      <h2 style="margin-top:0; color:#7B341E;">Generar Orden de Venta</h2>
+      <p style="font-size: 13px; margin-top:0; color: #718096;">Llena estos datos para generar el PDF formal.</p>
+      <div class="form-group">
+        <label>Cantidad de Camiones</label>
+        <input type="number" id="ventaCantCamiones" value="1" min="1" onchange="generarCamposTransporteVenta()" style="width: 80px; display: block;">
+      </div>
+      <div id="contenedorTransporteVenta"></div>
+      <div class="modal-botones">
+        <button class="btn-cancelar" onclick="cerrarModalLogisticaVenta()">Cancelar</button>
+        <button onclick="confirmarVentaFinal()" id="btnEnviarVenta" style="background-color:#7B341E;">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NUEVO: MODAL VER ORDEN DE VENTA -->
+  <div class="modal-overlay" id="modalVerVenta">
+    <div class="modal">
+      <h2 style="margin-top:0; color:#7B341E;" id="vvIdTitulo">Venta</h2>
+      <div style="background:#f8fafc; padding:15px; border:1px solid var(--borde); border-radius:6px; margin-bottom:15px; font-size:13px;">
+        <p style="margin:5px 0;"><strong>Cliente:</strong> <span id="vvCliente"></span></p>
+        <p style="margin:5px 0;"><strong>Fecha:</strong> <span id="vvFecha"></span></p>
+        <p style="margin:5px 0;"><strong>Cantidad de Animales:</strong> <span id="vvCantidad"></span></p>
+        <p style="margin:5px 0;"><strong>Total Libras:</strong> <span id="vvTotalPeso"></span></p>
+        <p style="margin:5px 0;"><strong>Total Venta:</strong> Q <span id="vvTotalCosto"></span></p>
+        <div style="margin-top:10px; border-top:1px solid var(--borde); padding-top:10px;">
+          <strong>Orden de Venta:</strong>
+          <a id="vvLinkPdf" href="#" target="_blank" style="color:#7B341E; text-decoration:underline; font-weight:bold; display:none;">Ver PDF</a>
+          <span id="vvNoPdf" style="color:#718096; font-style:italic;">Sin link asignado</span>
+        </div>
+      </div>
+      <div class="modal-botones">
+        <button class="btn-cancelar" onclick="cerrarModalVerVenta()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- LA MINI OFICINA: MODAL VER/EDITAR LOTE -->
   <div class="modal-overlay" id="modalVerLote">
     <div class="modal">
@@ -334,6 +449,7 @@
   <div class="bottom-nav">
     <div class="nav-item" onclick="cambiarVista('vista-lotes', this)"><span class="nav-icon">📁</span><span>Lotes</span></div>
     <div class="nav-item active" onclick="cambiarVista('vista-compras', this)"><span class="nav-icon">🐄</span><span>Compras</span></div>
+    <div class="nav-item" onclick="cambiarVista('vista-ventas', this)"><span class="nav-icon">💰</span><span>Ventas</span></div>
   </div>
 
   <script>
@@ -349,6 +465,8 @@
       inicializarColumnasInv();
       construirPanelColumnasInv();
       obtenerInventarioCompleto(() => {}); // precarga silenciosa: solo llena los filtros, no muestra nada aún
+      document.getElementById('ventaFecha').valueAsDate = new Date();
+      cargarOrdenesVenta();
     };
 
     // ============================================================
@@ -604,6 +722,384 @@
 
       document.getElementById('contadorInventario').innerText = `${datos.length} animal(es) encontrado(s).`;
     }
+
+    // ============================================================
+    // NUEVO: MÓDULO DE VENTAS
+    // ============================================================
+    let resultadosVentaGlobal = [];
+    let modoVenta = 'ingreso'; // 'ingreso' | 'rectificar'
+    let idVentaRectificando = null;
+    let ventasCache = null;
+
+    function parsearLineasVenta(texto) {
+      const lineas = [];
+      texto.trim().split('\n').forEach(l => {
+        if (!l.trim()) return;
+        let cols = l.split(','); if (cols.length < 5) cols = l.split('\t');
+        lineas.push({
+          areteOrigen: _limpiarNA(cols[0]),
+          idInterno: _limpiarNA(cols[1]),
+          sexo: _limpiarNA(cols[2]),
+          peso: (cols[3] || '').replace(/[^0-9.]/g, '').trim(),
+          precio: _limpiarNA(cols[4])
+        });
+      });
+      return lineas;
+    }
+
+    function abrirModalPegadoVenta() {
+      document.getElementById('modalPegadoVenta').style.display = 'flex';
+      document.getElementById('textoPegadoVenta').value = '';
+    }
+    function cerrarModalPegadoVenta() {
+      document.getElementById('modalPegadoVenta').style.display = 'none';
+    }
+
+    function procesarPegadoVenta() {
+      const texto = document.getElementById('textoPegadoVenta').value.trim();
+      if (!texto) { alert('Pega la información primero.'); return; }
+      const lineas = parsearLineasVenta(texto);
+      if (lineas.length === 0) { alert('No se pudo leer ninguna línea.'); return; }
+
+      const boton = document.getElementById('btnBuscarVenta');
+      boton.innerText = 'Buscando...'; boton.disabled = true;
+
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'BUSCAR_ANIMALES_VENTA', lineas: lineas }) })
+        .then(res => res.json())
+        .then(res => {
+          boton.innerText = 'Buscar'; boton.disabled = false;
+          if (res.error) { alert('Error: ' + res.error); return; }
+          modoVenta = 'ingreso';
+          idVentaRectificando = null;
+          resultadosVentaGlobal = res.resultados.map(r => ({
+            ...r,
+            pesoVenta: r.linea.peso || '',
+            precioVenta: (r.linea.precio && r.linea.precio.toString().toUpperCase() !== 'N/A') ? r.linea.precio : ''
+          }));
+          cerrarModalPegadoVenta();
+          renderizarTablaVenta();
+        })
+        .catch(() => { boton.innerText = 'Buscar'; boton.disabled = false; alert('Error de red.'); });
+    }
+
+    function renderizarTablaVenta() {
+      const tbody = document.getElementById('tablaVentaBody');
+      if (resultadosVentaGlobal.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#A0AEC0;padding:15px;">Usa "Ingresar Venta" o "Rectificar Venta" para comenzar.</td></tr>';
+        actualizarBotonPrincipalVenta();
+        recalcularResumenVenta();
+        return;
+      }
+
+      tbody.innerHTML = resultadosVentaGlobal.map((r, idx) => {
+        if (modoVenta === 'rectificar') {
+          const a = r.animal;
+          return `<tr>
+            <td>${a.arete || '—'}</td><td>${a.idAnimal || '—'}</td><td>${a.sexo || '—'}</td><td>—</td><td>—</td>
+            <td><input type="number" value="${a.peso}" oninput="actualizarValorVenta(${idx}, 'peso', this.value)"></td>
+            <td><input type="number" value="${a.precio}" oninput="actualizarValorVenta(${idx}, 'precio', this.value)"></td>
+            <td style="color:#2F855A;">Editable</td><td>—</td>
+          </tr>`;
+        }
+
+        if (r.estado === 'encontrado') {
+          const a = r.animal;
+          return `<tr>
+            <td>${a.arete || '—'}</td><td>${a.idAnimal || '—'}</td><td>${a.sexo || '—'}</td>
+            <td>${a.loteId || '—'}</td><td>${a.pesoCompra || 0}</td>
+            <td><input type="number" value="${r.pesoVenta}" oninput="actualizarValorVenta(${idx}, 'pesoVenta', this.value)"></td>
+            <td><input type="number" value="${r.precioVenta}" placeholder="Ref." oninput="actualizarValorVenta(${idx}, 'precioVenta', this.value)"></td>
+            <td style="color:#2F855A;">✅ Listo</td>
+            <td><button class="btn-eliminar" onclick="quitarFilaVenta(${idx})">X</button></td>
+          </tr>`;
+        }
+
+        if (r.estado === 'varios') {
+          const opciones = r.candidatos.map(c => `<option value="${c.filaSheet}">${c.loteId} — ${c.sexo || '—'}, ${c.diasTranscurridos || '?'} días</option>`).join('');
+          return `<tr>
+            <td colspan="2"><select onchange="elegirCandidatoVenta(${idx}, this.value)"><option value="">-- Elegir animal --</option>${opciones}</select></td>
+            <td colspan="6" style="color:#B7791F;">⚠️ Varios animales coinciden, elige uno</td>
+            <td><button class="btn-eliminar" onclick="quitarFilaVenta(${idx})">X</button></td>
+          </tr>`;
+        }
+
+        // ninguno
+        const etiqueta = (r.linea.areteOrigen && r.linea.areteOrigen.toUpperCase() !== 'N/A') ? r.linea.areteOrigen : r.linea.idInterno;
+        return `<tr>
+          <td colspan="2">${etiqueta || '—'}</td>
+          <td colspan="5" style="color:#C53030;">
+            ❌ No se encontró — <button onclick="toggleBusquedaManualVenta(${idx})" style="background-color:#A0AEC0;font-size:11px;padding:4px 8px;">Buscar manualmente</button>
+            <div id="buscadorVenta_${idx}" style="display:none;margin-top:4px;"></div>
+          </td>
+          <td><button class="btn-eliminar" onclick="quitarFilaVenta(${idx})">X</button></td>
+        </tr>`;
+      }).join('');
+
+      actualizarBotonPrincipalVenta();
+      recalcularResumenVenta();
+    }
+
+    function actualizarValorVenta(idx, campo, valor) {
+      if (modoVenta === 'rectificar') resultadosVentaGlobal[idx].animal[campo] = valor;
+      else resultadosVentaGlobal[idx][campo] = valor;
+      recalcularResumenVenta();
+    }
+
+    function elegirCandidatoVenta(idx, filaSheet) {
+      if (!filaSheet) return;
+      const r = resultadosVentaGlobal[idx];
+      const elegido = r.candidatos.find(c => c.filaSheet == filaSheet);
+      r.estado = 'encontrado';
+      r.animal = elegido;
+      renderizarTablaVenta();
+    }
+
+    function quitarFilaVenta(idx) {
+      resultadosVentaGlobal.splice(idx, 1);
+      renderizarTablaVenta();
+    }
+
+    function toggleBusquedaManualVenta(idx) {
+      const cont = document.getElementById(`buscadorVenta_${idx}`);
+      const mostrar = cont.style.display === 'none';
+      cont.style.display = mostrar ? 'block' : 'none';
+      if (!mostrar) return;
+      cont.innerHTML = `<input type="text" placeholder="Lote, arete, ID, sexo..." oninput="filtrarBusquedaManualVenta(${idx}, this.value)">
+        <div id="resultadosBusquedaVenta_${idx}" style="margin-top:6px;max-height:150px;overflow-y:auto;"></div>`;
+      obtenerTodosAnimales(() => filtrarBusquedaManualVenta(idx, ''));
+    }
+
+    function filtrarBusquedaManualVenta(idx, texto) {
+      const t = texto.toLowerCase();
+      const resultados = (todosAnimalesCache || []).filter(a => (a.estadoAnimal || '') === 'Activo' && (
+        (a.loteId || '').toLowerCase().includes(t) || (a.arete || '').toString().toLowerCase().includes(t) ||
+        (a.idAnimal || '').toString().toLowerCase().includes(t) || (a.sexo || '').toLowerCase().includes(t)
+      )).slice(0, 20);
+      const cont = document.getElementById(`resultadosBusquedaVenta_${idx}`);
+      if (resultados.length === 0) { cont.innerHTML = '<em>Sin resultados</em>'; return; }
+      cont.innerHTML = resultados.map(a =>
+        `<label style="display:block;margin:3px 0;"><input type="radio" name="manv_${idx}" onclick="seleccionarManualVenta(${idx}, ${a.filaSheet})"> ${a.loteId} — Arete:${a.arete || '—'} ID:${a.idAnimal || '—'}, ${a.sexo || '—'}</label>`
+      ).join('');
+    }
+
+    function seleccionarManualVenta(idx, filaSheet) {
+      const animal = (todosAnimalesCache || []).find(a => a.filaSheet === filaSheet);
+      if (!animal) return;
+      const r = resultadosVentaGlobal[idx];
+      r.estado = 'encontrado';
+      r.animal = { filaSheet: animal.filaSheet, idAnimal: animal.idAnimal, loteId: animal.loteId, arete: animal.arete, sexo: animal.sexo, pesoCompra: '—' };
+      renderizarTablaVenta();
+    }
+
+    function recalcularResumenVenta() {
+      const modalidad = document.getElementById('ventaModalidad').value;
+      const precioRef = parseFloat(document.getElementById('ventaPrecioRef').value) || 0;
+      let cant = 0, totalLbs = 0, sumaPrecios = 0, totalPagar = 0;
+
+      resultadosVentaGlobal.forEach(r => {
+        let peso, precio;
+        if (modoVenta === 'rectificar') {
+          peso = parseFloat(r.animal.peso) || 0;
+          precio = parseFloat(r.animal.precio) || precioRef;
+        } else {
+          if (r.estado !== 'encontrado') return;
+          peso = parseFloat(r.pesoVenta) || 0;
+          precio = parseFloat(r.precioVenta) || precioRef;
+        }
+        cant++; totalLbs += peso; sumaPrecios += precio;
+        totalPagar += modalidad === 'Precio Fijo' ? precio : peso * precio;
+      });
+
+      const prom = cant > 0 ? sumaPrecios / cant : 0;
+      const pesoProm = cant > 0 ? totalLbs / cant : 0;
+      document.getElementById('resCantVenta').innerText = cant;
+      document.getElementById('resLbsVenta').innerText = totalLbs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('resPesoPromVenta').innerText = pesoProm.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' lbs';
+      document.getElementById('resPromVenta').innerText = 'Q ' + prom.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('resPagarVenta').innerText = 'Q ' + totalPagar.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function actualizarBotonPrincipalVenta() {
+      const boton = document.getElementById('btnConfirmarVenta');
+      if (resultadosVentaGlobal.length === 0) {
+        boton.disabled = true; boton.innerText = 'Completa la lista primero';
+        return;
+      }
+      if (modoVenta === 'rectificar') {
+        boton.disabled = false; boton.innerText = 'Guardar Rectificación';
+        return;
+      }
+      const pendientes = resultadosVentaGlobal.filter(r => r.estado !== 'encontrado').length;
+      if (pendientes > 0) { boton.disabled = true; boton.innerText = `Faltan ${pendientes} por identificar`; }
+      else { boton.disabled = false; boton.innerText = 'Confirmar Venta'; }
+    }
+
+    function onClickBotonPrincipalVenta() {
+      if (modoVenta === 'rectificar') guardarRectificacionVenta();
+      else abrirModalLogisticaVenta();
+    }
+
+    // --- Flujo de ingreso: logística y confirmación final ---
+    function abrirModalLogisticaVenta() {
+      const cliente = document.getElementById('ventaCliente').value.trim();
+      const fecha = document.getElementById('ventaFecha').value;
+      if (!cliente || !fecha) { alert('Cliente y Fecha son obligatorios.'); return; }
+      document.getElementById('modalLogisticaVenta').style.display = 'flex';
+      document.getElementById('ventaCantCamiones').value = 1;
+      generarCamposTransporteVenta();
+    }
+    function cerrarModalLogisticaVenta() {
+      document.getElementById('modalLogisticaVenta').style.display = 'none';
+    }
+    function generarCamposTransporteVenta() {
+      const cant = parseInt(document.getElementById('ventaCantCamiones').value) || 1;
+      const contenedor = document.getElementById('contenedorTransporteVenta');
+      contenedor.innerHTML = '';
+      for (let i = 1; i <= cant; i++) {
+        contenedor.innerHTML += `<div style="background:#f8fafc;padding:10px;border:1px solid var(--borde);border-radius:6px;margin-bottom:10px;">
+          <strong style="font-size:12px;color:#7B341E;">Camión ${i}</strong>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:5px;">
+            <div><input type="text" class="placa-camion-venta" placeholder="Placa"></div>
+            <div><input type="text" class="piloto-camion-venta" placeholder="Nombre del Piloto"></div>
+          </div>
+        </div>`;
+      }
+    }
+
+    function confirmarVentaFinal() {
+      const camionesData = [];
+      document.querySelectorAll('#contenedorTransporteVenta > div').forEach(div => {
+        camionesData.push({
+          placa: div.querySelector('.placa-camion-venta').value.trim() || 'N/A',
+          piloto: div.querySelector('.piloto-camion-venta').value.trim() || 'No asignado'
+        });
+      });
+
+      const animalesPayload = resultadosVentaGlobal
+        .filter(r => r.estado === 'encontrado')
+        .map(r => ({ filaSheet: r.animal.filaSheet, peso: r.pesoVenta, precio: r.precioVenta }));
+
+      const boton = document.getElementById('btnEnviarVenta');
+      boton.innerText = 'Guardando...'; boton.disabled = true;
+
+      fetch(API_URL, {
+        method: 'POST', body: JSON.stringify({
+          accion: 'CONFIRMAR_VENTA',
+          fecha: document.getElementById('ventaFecha').value,
+          cliente: document.getElementById('ventaCliente').value.trim(),
+          modalidadVenta: document.getElementById('ventaModalidad').value,
+          precioRef: document.getElementById('ventaPrecioRef').value,
+          animales: animalesPayload,
+          camiones: camionesData
+        })
+      }).then(res => res.json()).then(res => {
+        boton.innerText = 'Enviar'; boton.disabled = false;
+        if (res.error) { alert('Error: ' + res.error); return; }
+        alert(res.mensaje || 'Venta registrada.');
+        cerrarModalLogisticaVenta();
+        resultadosVentaGlobal = [];
+        document.getElementById('ventaCliente').value = '';
+        document.getElementById('ventaPrecioRef').value = '';
+        renderizarTablaVenta();
+        ventasCache = null;
+        cargarOrdenesVenta();
+      }).catch(() => { boton.innerText = 'Enviar'; boton.disabled = false; alert('Error de red.'); });
+    }
+
+    // --- Flujo de rectificación ---
+    function abrirModalElegirOrdenRectificar() {
+      document.getElementById('modalElegirOrdenRectificar').style.display = 'flex';
+      cargarListaOrdenesParaElegir();
+    }
+    function cerrarModalElegirOrdenRectificar() {
+      document.getElementById('modalElegirOrdenRectificar').style.display = 'none';
+    }
+    function cargarListaOrdenesParaElegir() {
+      const cont = document.getElementById('listaOrdenesElegir');
+      cont.innerHTML = 'Cargando...';
+      ventasCache = null; // siempre fresco al abrir, por si hubo una venta nueva
+      obtenerOrdenesVenta(ordenes => {
+        if (ordenes.length === 0) { cont.innerHTML = '<em>No hay órdenes de venta registradas.</em>'; return; }
+        cont.innerHTML = ordenes.map(o =>
+          `<div class="tarjeta" style="margin-bottom:8px;cursor:pointer;" onclick="elegirOrdenParaRectificar('${o.idVenta}')">
+            <h3 style="margin:0;color:#7B341E;">${o.idVenta}</h3>
+            <p style="margin:4px 0;">${o.cliente} — ${o.fecha} — ${o.cantidad} animales</p>
+          </div>`
+        ).join('');
+      });
+    }
+    function elegirOrdenParaRectificar(idVenta) {
+      cerrarModalElegirOrdenRectificar();
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'OBTENER_DETALLE_VENTA', idVenta: idVenta }) })
+        .then(res => res.json())
+        .then(res => {
+          modoVenta = 'rectificar';
+          idVentaRectificando = idVenta;
+          resultadosVentaGlobal = (res.detalle || []).map(d => ({ estado: 'editable', animal: d }));
+          renderizarTablaVenta();
+        })
+        .catch(() => alert('Error de red.'));
+    }
+
+    function guardarRectificacionVenta() {
+      const cambios = resultadosVentaGlobal.map(r => ({ filaVenta: r.animal.filaVenta, peso: r.animal.peso, precio: r.animal.precio }));
+      const boton = document.getElementById('btnConfirmarVenta');
+      boton.innerText = 'Guardando...'; boton.disabled = true;
+
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'RECTIFICAR_VENTA', idVenta: idVentaRectificando, cambios: cambios }) })
+        .then(res => res.json())
+        .then(res => {
+          if (res.error) { alert('Error: ' + res.error); boton.disabled = false; return; }
+          alert(res.mensaje || 'Rectificación aplicada.');
+          modoVenta = 'ingreso'; idVentaRectificando = null;
+          resultadosVentaGlobal = [];
+          renderizarTablaVenta();
+          ventasCache = null;
+          cargarOrdenesVenta();
+        }).catch(() => { alert('Error de red.'); boton.disabled = false; });
+    }
+
+    // --- Sección 3: chips de Órdenes de Venta ---
+    function obtenerOrdenesVenta(callback) {
+      if (ventasCache) { callback(ventasCache); return; }
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'LISTAR_ORDENES_VENTA' }) })
+        .then(res => res.json())
+        .then(res => { ventasCache = res.ordenes || []; callback(ventasCache); });
+    }
+
+    function cargarOrdenesVenta() {
+      obtenerOrdenesVenta(ordenes => {
+        const cont = document.getElementById('contenedorVentas');
+        if (ordenes.length === 0) { cont.innerHTML = '<p style="text-align:center;width:100%;color:#A0AEC0;">Aún no hay ventas registradas.</p>'; return; }
+        cont.innerHTML = ordenes.map(o => `
+          <div class="tarjeta" onclick="abrirModalVerVenta('${o.idVenta}')">
+            <h3>${o.idVenta}</h3>
+            <p><strong>Cliente:</strong> ${o.cliente}</p>
+            <p><strong>Fecha:</strong> ${o.fecha}</p>
+          </div>`).join('');
+      });
+    }
+
+    function abrirModalVerVenta(idVenta) {
+      const orden = (ventasCache || []).find(o => o.idVenta === idVenta);
+      if (!orden) return;
+      document.getElementById('vvIdTitulo').innerText = orden.idVenta;
+      document.getElementById('vvCliente').innerText = orden.cliente;
+      document.getElementById('vvFecha').innerText = orden.fecha;
+      document.getElementById('vvCantidad').innerText = orden.cantidad;
+      document.getElementById('vvTotalPeso').innerText = orden.totalPeso.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('vvTotalCosto').innerText = orden.totalCosto.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      if (orden.linkPdf) {
+        document.getElementById('vvLinkPdf').href = orden.linkPdf;
+        document.getElementById('vvLinkPdf').style.display = 'inline';
+        document.getElementById('vvNoPdf').style.display = 'none';
+      } else {
+        document.getElementById('vvLinkPdf').style.display = 'none';
+        document.getElementById('vvNoPdf').style.display = 'inline';
+      }
+      document.getElementById('modalVerVenta').style.display = 'flex';
+    }
+    function cerrarModalVerVenta() { document.getElementById('modalVerVenta').style.display = 'none'; }
 
     function cambiarVista(vistaId, elNav) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
