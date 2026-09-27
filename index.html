@@ -280,6 +280,7 @@
         </select>
       </div>
       <div class="form-group"><label>Ganancia Meta (lbs) *</label><input type="number" id="nlMeta" required></div>
+      <div class="form-group"><label>Notas</label><textarea id="nlNotas" rows="3" placeholder="Observaciones sobre este lote (opcional)"></textarea></div>
       <div class="modal-botones">
         <button class="btn-cancelar" onclick="cerrarModalNuevoLote()">Cancelar</button>
         <button onclick="guardarLote()" id="btnGuardarLote" style="background-color: var(--verde-claro);">Guardar Lote</button>
@@ -455,6 +456,7 @@
           </select>
         </div>
         <div class="form-group"><label>Ganancia Meta (lbs)</label><input type="number" id="vlMeta"></div>
+        <div class="form-group"><label>Notas</label><textarea id="vlNotas" rows="3" placeholder="Observaciones sobre este lote"></textarea></div>
       </div>
 
       <div style="background: #E6FFFA; padding: 15px; border: 1px solid var(--verde-claro); border-radius: 6px; margin-bottom: 15px;">
@@ -1385,6 +1387,7 @@
       document.getElementById('nlNombre').value = '';
       document.getElementById('nlRaza').value = '';
       document.getElementById('nlMeta').value = '';
+      document.getElementById('nlNotas').value = '';
       document.getElementById('nlModalidad').value = 'Pesado';
     }
 
@@ -1394,6 +1397,7 @@
       const raza = document.getElementById('nlRaza').value.trim();
       const modalidad = document.getElementById('nlModalidad').value;
       const meta = document.getElementById('nlMeta').value.trim();
+      const notas = document.getElementById('nlNotas').value.trim();
 
       if (!nombreLote || !fecha || !raza || !meta) { alert("Llene todos los campos obligatorios."); return; }
 
@@ -1402,7 +1406,7 @@
 
       fetch(API_URL, {
         method: 'POST',
-        body: JSON.stringify({ accion: "CREAR_LOTE", nombreLote: nombreLote, fecha: fecha, raza: raza, modalidadCompra: modalidad, gananciaMeta: meta })
+        body: JSON.stringify({ accion: "CREAR_LOTE", nombreLote: nombreLote, fecha: fecha, raza: raza, modalidadCompra: modalidad, gananciaMeta: meta, notas: notas })
       }).then(res => res.json()).then(res => {
         alert("¡" + res.id + " creado exitosamente!");
         cerrarModalNuevoLote();
@@ -1426,6 +1430,7 @@
       document.getElementById('vlRaza').value = lote.raza;
       document.getElementById('vlModalidad').value = lote.modalidadCompra || 'Pesado';
       document.getElementById('vlMeta').value = lote.gananciaMeta;
+      document.getElementById('vlNotas').value = lote.notas || '';
 
       document.getElementById('vlCantIni').innerText = lote.cantInicial || 0;
       document.getElementById('vlCantAct').innerText = lote.cantActivos || 0;
@@ -1467,7 +1472,8 @@
           fecha: document.getElementById('vlFecha').value,
           raza: document.getElementById('vlRaza').value,
           modalidadCompra: document.getElementById('vlModalidad').value,
-          gananciaMeta: document.getElementById('vlMeta').value
+          gananciaMeta: document.getElementById('vlMeta').value,
+          notas: document.getElementById('vlNotas').value
         })
       }).then(res => res.json()).then(res => {
         alert("¡Datos actualizados!");
