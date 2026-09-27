@@ -401,8 +401,8 @@
       </div>
 
       <p style="margin:0 0 8px 0; font-size:11px; font-weight:bold; color:#4A5568; text-transform:uppercase; letter-spacing:0.03em;">Detalle de Animales</p>
-      <div style="max-height:220px; overflow-y:auto; border:1px solid var(--borde); border-radius:6px; margin-bottom:15px;">
-        <table style="width:100%; border-collapse:collapse; font-size:12px;">
+      <div style="max-height:220px; overflow-y:auto; overflow-x:auto; border:1px solid var(--borde); border-radius:6px; margin-bottom:15px;">
+        <table style="width:100%; min-width:560px; border-collapse:collapse; font-size:12px;">
           <thead>
             <tr style="background:#F7FAFC;">
               <th style="padding:6px; text-align:left; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">Arete</th>
@@ -411,6 +411,8 @@
               <th style="padding:6px; text-align:right; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">Peso</th>
               <th style="padding:6px; text-align:right; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">Precio</th>
               <th style="padding:6px; text-align:right; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">Costo Total</th>
+              <th style="padding:6px; text-align:right; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">Lbs. Ganadas</th>
+              <th style="padding:6px; text-align:right; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">Ganancia (Q)</th>
             </tr>
           </thead>
           <tbody id="vvDetalleBody"></tbody>
@@ -1150,7 +1152,10 @@
       document.getElementById('vvHembrasWrap').style.display = (orden.hembras > 0) ? '' : 'none';
 
       const detalle = orden.detalle || [];
-      document.getElementById('vvDetalleBody').innerHTML = detalle.map((a, i) => `
+      document.getElementById('vvDetalleBody').innerHTML = detalle.map((a, i) => {
+        const gL = a.gananciaLibras || 0, gC = a.gananciaCosto || 0;
+        const colorL = gL >= 0 ? '#276749' : '#C53030', colorC = gC >= 0 ? '#276749' : '#C53030';
+        return `
         <tr style="background-color:${i % 2 === 0 ? '#ffffff' : '#f7f7f7'};">
           <td style="padding:6px; border-bottom:1px solid #eee;">${a.arete || ''}</td>
           <td style="padding:6px; border-bottom:1px solid #eee;">${a.idAnimal || ''}</td>
@@ -1158,7 +1163,10 @@
           <td style="padding:6px; border-bottom:1px solid #eee; text-align:right;">${fmt(a.peso)}</td>
           <td style="padding:6px; border-bottom:1px solid #eee; text-align:right;">Q ${fmt(a.precio)}</td>
           <td style="padding:6px; border-bottom:1px solid #eee; text-align:right;">Q ${fmt(a.costoTotal)}</td>
-        </tr>`).join('');
+          <td style="padding:6px; border-bottom:1px solid #eee; text-align:right; color:${colorL}; font-weight:bold;">${(gL >= 0 ? '+' : '')}${fmt(gL)}</td>
+          <td style="padding:6px; border-bottom:1px solid #eee; text-align:right; color:${colorC}; font-weight:bold;">${(gC >= 0 ? '+Q ' : '-Q ')}${fmt(Math.abs(gC))}</td>
+        </tr>`;
+      }).join('');
 
       if (orden.linkPdf) {
         document.getElementById('vvLinkPdf').href = orden.linkPdf;
