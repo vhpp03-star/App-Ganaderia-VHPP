@@ -369,20 +369,55 @@
 
   <!-- NUEVO: MODAL VER ORDEN DE VENTA -->
   <div class="modal-overlay" id="modalVerVenta">
-    <div class="modal">
-      <h2 style="margin-top:0; color:#7B341E;" id="vvIdTitulo">Venta</h2>
-      <div style="background:#f8fafc; padding:15px; border:1px solid var(--borde); border-radius:6px; margin-bottom:15px; font-size:13px;">
-        <p style="margin:5px 0;"><strong>Cliente:</strong> <span id="vvCliente"></span></p>
-        <p style="margin:5px 0;"><strong>Fecha:</strong> <span id="vvFecha"></span></p>
-        <p style="margin:5px 0;"><strong>Cantidad de Animales:</strong> <span id="vvCantidad"></span></p>
-        <p style="margin:5px 0;"><strong>Total Libras:</strong> <span id="vvTotalPeso"></span></p>
-        <p style="margin:5px 0;"><strong>Total Venta:</strong> Q <span id="vvTotalCosto"></span></p>
-        <div style="margin-top:10px; border-top:1px solid var(--borde); padding-top:10px;">
-          <strong>Orden de Venta:</strong>
-          <a id="vvLinkPdf" href="#" target="_blank" style="color:#7B341E; text-decoration:underline; font-weight:bold; display:none;">Ver PDF</a>
-          <span id="vvNoPdf" style="color:#718096; font-style:italic;">Sin link asignado</span>
-        </div>
+    <div class="modal" style="max-width:650px;">
+      <h2 style="margin-top:0; margin-bottom:2px; color:#7B341E;" id="vvIdTitulo">Venta</h2>
+      <p style="margin:0 0 15px 0; color:#718096; font-size:13px;">
+        <span id="vvCliente"></span> &middot; <span id="vvFecha"></span>
+      </p>
+
+      <p style="margin:0 0 6px 0; font-size:11px; font-weight:bold; color:#4A5568; text-transform:uppercase; letter-spacing:0.03em;">Composición del Lote</p>
+      <div class="panel-resumen" style="margin-bottom:15px;">
+        <div class="resumen-item">Animales<span class="resumen-valor" id="vvCantidad">0</span></div>
+        <div class="resumen-item" id="vvMachosWrap">Machos<span class="resumen-valor" id="vvMachos">0</span></div>
+        <div class="resumen-item" id="vvHembrasWrap">Hembras<span class="resumen-valor" id="vvHembras">0</span></div>
       </div>
+
+      <p style="margin:0 0 6px 0; font-size:11px; font-weight:bold; color:#4A5568; text-transform:uppercase; letter-spacing:0.03em;">Promedios</p>
+      <div class="panel-resumen" style="margin-bottom:15px;">
+        <div class="resumen-item">Peso Promedio<span class="resumen-valor" id="vvPesoProm">0.00 lbs</span></div>
+        <div class="resumen-item">Precio Promedio<span class="resumen-valor" id="vvPrecioProm">Q 0.00</span></div>
+        <div class="resumen-item">Costo Prom./Animal<span class="resumen-valor" id="vvCostoProm">Q 0.00</span></div>
+      </div>
+
+      <p style="margin:0 0 6px 0; font-size:11px; font-weight:bold; color:#4A5568; text-transform:uppercase; letter-spacing:0.03em;">Totales</p>
+      <div class="panel-resumen" style="margin-bottom:15px;">
+        <div class="resumen-item">Total Libras<span class="resumen-valor" id="vvTotalPeso">0.00</span></div>
+        <div class="resumen-item">Total Venta<span class="resumen-valor" id="vvTotalCosto" style="color:#7B341E;">Q 0.00</span></div>
+      </div>
+
+      <p style="margin:0 0 8px 0; font-size:11px; font-weight:bold; color:#4A5568; text-transform:uppercase; letter-spacing:0.03em;">Detalle de Animales</p>
+      <div style="max-height:220px; overflow-y:auto; border:1px solid var(--borde); border-radius:6px; margin-bottom:15px;">
+        <table style="width:100%; border-collapse:collapse; font-size:12px;">
+          <thead>
+            <tr style="background:#F7FAFC;">
+              <th style="padding:6px; text-align:left; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">Arete</th>
+              <th style="padding:6px; text-align:left; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">ID</th>
+              <th style="padding:6px; text-align:center; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">Sexo</th>
+              <th style="padding:6px; text-align:right; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">Peso</th>
+              <th style="padding:6px; text-align:right; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">Precio</th>
+              <th style="padding:6px; text-align:right; border-bottom:1px solid var(--borde); position:sticky; top:0; background:#F7FAFC;">Costo Total</th>
+            </tr>
+          </thead>
+          <tbody id="vvDetalleBody"></tbody>
+        </table>
+      </div>
+
+      <div style="background:#f8fafc; padding:10px 15px; border:1px solid var(--borde); border-radius:6px; margin-bottom:15px; font-size:13px; display:flex; justify-content:space-between; align-items:center;">
+        <strong>Orden de Venta (PDF)</strong>
+        <a id="vvLinkPdf" href="#" target="_blank" style="color:#7B341E; text-decoration:underline; font-weight:bold; display:none;">Ver PDF ↗</a>
+        <span id="vvNoPdf" style="color:#718096; font-style:italic;">Sin link asignado</span>
+      </div>
+
       <div class="modal-botones">
         <button class="btn-cancelar" onclick="cerrarModalVerVenta()">Cerrar</button>
       </div>
@@ -1083,12 +1118,35 @@
     function abrirModalVerVenta(idVenta) {
       const orden = (ventasCache || []).find(o => o.idVenta === idVenta);
       if (!orden) return;
+      const fmt = (n) => (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
       document.getElementById('vvIdTitulo').innerText = orden.idVenta;
       document.getElementById('vvCliente').innerText = orden.cliente;
       document.getElementById('vvFecha').innerText = orden.fecha;
       document.getElementById('vvCantidad').innerText = orden.cantidad;
-      document.getElementById('vvTotalPeso').innerText = orden.totalPeso.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      document.getElementById('vvTotalCosto').innerText = orden.totalCosto.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('vvTotalPeso').innerText = fmt(orden.totalPeso);
+      document.getElementById('vvTotalCosto').innerText = 'Q ' + fmt(orden.totalCosto);
+      document.getElementById('vvPesoProm').innerText = fmt(orden.pesoProm) + ' lbs';
+      document.getElementById('vvPrecioProm').innerText = 'Q ' + fmt(orden.precioProm);
+      document.getElementById('vvCostoProm').innerText = 'Q ' + fmt(orden.costoProm);
+
+      // Machos/Hembras: si alguno es 0, se oculta esa tarjeta en vez de mostrar "0".
+      document.getElementById('vvMachos').innerText = orden.machos || 0;
+      document.getElementById('vvHembras').innerText = orden.hembras || 0;
+      document.getElementById('vvMachosWrap').style.display = (orden.machos > 0) ? '' : 'none';
+      document.getElementById('vvHembrasWrap').style.display = (orden.hembras > 0) ? '' : 'none';
+
+      const detalle = orden.detalle || [];
+      document.getElementById('vvDetalleBody').innerHTML = detalle.map((a, i) => `
+        <tr style="background-color:${i % 2 === 0 ? '#ffffff' : '#f7f7f7'};">
+          <td style="padding:6px; border-bottom:1px solid #eee;">${a.arete || ''}</td>
+          <td style="padding:6px; border-bottom:1px solid #eee;">${a.idAnimal || ''}</td>
+          <td style="padding:6px; border-bottom:1px solid #eee; text-align:center;">${a.sexo || ''}</td>
+          <td style="padding:6px; border-bottom:1px solid #eee; text-align:right;">${fmt(a.peso)}</td>
+          <td style="padding:6px; border-bottom:1px solid #eee; text-align:right;">Q ${fmt(a.precio)}</td>
+          <td style="padding:6px; border-bottom:1px solid #eee; text-align:right;">Q ${fmt(a.costoTotal)}</td>
+        </tr>`).join('');
+
       if (orden.linkPdf) {
         document.getElementById('vvLinkPdf').href = orden.linkPdf;
         document.getElementById('vvLinkPdf').style.display = 'inline';
