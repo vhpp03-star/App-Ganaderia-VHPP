@@ -1253,15 +1253,19 @@
       if(!texto) return;
       texto.split('\n').forEach(filaTexto => {
         if(filaTexto.trim() === '') return;
-        let cols = filaTexto.split(','); if (cols.length < 5) cols = filaTexto.split('\t');
-        // Orden del Gem: AreteOrigen, IDInterno, Sexo, Caracteristicas, Peso, Ubicacion
+        // Omitir la fila de encabezado si el Gem la incluye (ID Origen,Características,...)
+        if (/^id\s*origen/i.test(filaTexto.trim())) return;
+        let cols = filaTexto.split(',');
+        // Orden actual del Gem: ID Origen, Características, Peso, Ubicacion
+        // (Sexo e ID Interno ya no vienen del Gem: Sexo se marca manual en la tabla,
+        // ID Interno se asigna después con "Actualizar Ingreso")
         agregarFilaAnimal({
           arete: _limpiarNA(cols[0]),
-          id: _limpiarNA(cols[1]),
-          sexo: _limpiarNA(cols[2]),
-          rasgos: _limpiarNA(cols[3]),
-          peso: (cols[4] || '').replace(/[^0-9.]/g, '').trim(),
-          ubicacion: _limpiarNA(cols[5])
+          id: '',
+          sexo: '',
+          rasgos: _limpiarNA(cols[1]),
+          peso: (cols[2] || '').replace(/[^0-9.]/g, '').trim(),
+          ubicacion: _limpiarNA(cols[3])
         });
       });
       cerrarModalPegado();
