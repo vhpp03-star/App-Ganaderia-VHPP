@@ -859,7 +859,10 @@
         }
 
         if (r.estado === 'varios') {
-          const opciones = r.candidatos.map(c => `<option value="${c.filaSheet}">${c.loteId} — ${c.sexo || '—'}, ${c.diasTranscurridos || '?'} días</option>`).join('');
+          // No ofrecer en el dropdown un animal que ya quedó asignado a otra fila de esta misma venta
+          const yaUsados = _filaSheetsYaUsadosEnVenta(idx);
+          const opciones = r.candidatos.filter(c => !yaUsados.has(c.filaSheet))
+            .map(c => `<option value="${c.filaSheet}">${c.loteId} — ${c.sexo || '—'}, ${c.diasTranscurridos || '?'} días</option>`).join('');
           return `<tr>
             <td colspan="2"><select onchange="elegirCandidatoVenta(${idx}, this.value)"><option value="">-- Elegir animal --</option>${opciones}</select></td>
             <td colspan="6" style="color:#B7791F;">⚠️ Varios animales coinciden, elige uno</td>
@@ -889,8 +892,24 @@
       recalcularResumenVenta();
     }
 
+    // Devuelve el conjunto de filaSheet ya asignados a OTRAS filas de la venta que se
+    // está armando ahora mismo — para que un mismo animal no se pueda elegir dos veces
+    // en la misma orden (ni por el dropdown de "varios coinciden" ni por "Buscar manualmente").
+    function _filaSheetsYaUsadosEnVenta(idxActual) {
+      const usados = new Set();
+      resultadosVentaGlobal.forEach((r, i) => {
+        if (i !== idxActual && r.estado === 'encontrado' && r.animal) usados.add(r.animal.filaSheet);
+      });
+      return usados;
+    }
+
     function elegirCandidatoVenta(idx, filaSheet) {
       if (!filaSheet) return;
+      if (_filaSheetsYaUsadosEnVenta(idx).has(Number(filaSheet))) {
+        alert('Ese animal ya está asignado a otra fila de esta misma venta.');
+        renderizarTablaVenta();
+        return;
+      }
       const r = resultadosVentaGlobal[idx];
       const elegido = r.candidatos.find(c => c.filaSheet == filaSheet);
       r.estado = 'encontrado';
@@ -915,7 +934,9 @@
 
     function filtrarBusquedaManualVenta(idx, texto) {
       const t = texto.toLowerCase();
-      const resultados = (todosAnimalesCache || []).filter(a => (a.estadoAnimal || '') === 'Activo' && (
+      // No mostrar como opción un animal que ya quedó asignado a otra fila de esta misma venta
+      const yaUsados = _filaSheetsYaUsadosEnVenta(idx);
+      const resultados = (todosAnimalesCache || []).filter(a => (a.estadoAnimal || '') === 'Activo' && !yaUsados.has(a.filaSheet) && (
         (a.loteId || '').toLowerCase().includes(t) || (a.arete || '').toString().toLowerCase().includes(t) ||
         (a.idAnimal || '').toString().toLowerCase().includes(t) || (a.sexo || '').toLowerCase().includes(t)
       )).slice(0, 20);
@@ -927,6 +948,11 @@
     }
 
     function seleccionarManualVenta(idx, filaSheet) {
+      if (_filaSheetsYaUsadosEnVenta(idx).has(filaSheet)) {
+        alert('Ese animal ya está asignado a otra fila de esta misma venta.');
+        renderizarTablaVenta();
+        return;
+      }
       const animal = (todosAnimalesCache || []).find(a => a.filaSheet === filaSheet);
       if (!animal) return;
       const r = resultadosVentaGlobal[idx];
