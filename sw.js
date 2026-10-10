@@ -1,6 +1,6 @@
 // Guarda la app en el teléfono para que abra sin internet.
 // La API de Google (otro dominio) nunca pasa por aquí: va directo a la red.
-const CACHE = "vhpp-app-v1";
+const CACHE = "vhpp-app-v2";
 const PRECACHE = ["./fletes.html", "./manifest-fletes.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", e => {
