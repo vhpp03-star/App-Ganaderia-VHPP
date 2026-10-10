@@ -127,7 +127,8 @@
 <!-- Entrar -->
 <div class="velo" id="velLogin"><div class="caja">
   <h3>Entrar</h3>
-  <p style="margin:0 0 14px;color:var(--apagado);font-size:14px;" id="loginMsg">Escribe tu PIN de 4 números. La primera vez se necesita internet.</p>
+  <p style="margin:0 0 14px;color:var(--apagado);font-size:14px;" id="loginMsg">Toca tu nombre y escribe tu PIN de 4 números. La primera vez se necesita internet.</p>
+  <div id="listaUsuarios" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
   <input type="password" id="pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••">
   <div class="error" id="loginErr"></div>
   <div class="botones"><button id="btnEntrar">Entrar</button></div>
@@ -307,20 +308,43 @@
   setInterval(() => { if (cola.some(v => v.estado === "pendiente")) sincronizar(); }, 30000);
 
   // ---------- entrar ----------
+  let usuarioElegido = null, usuariosApp = [];
+  function pintarUsuarios() {
+    const c = $("listaUsuarios"); c.innerHTML = "";
+    usuariosApp.forEach(u => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = u.nombre; b.className = (usuarioElegido === u.id) ? "" : "sec";
+      b.addEventListener("click", () => { usuarioElegido = u.id; $("loginErr").textContent = ""; $("pin").value = ""; pintarUsuarios(); $("pin").focus(); });
+      c.appendChild(b);
+    });
+  }
+  async function cargarUsuarios() {
+    $("loginErr").textContent = "";
+    try {
+      const resp = await fetch(API_URL, { method: "POST", body: JSON.stringify({ accion: "LISTAR_USUARIOS_APP", app: APP }) });
+      const r = await resp.json();
+      if (r.error) { $("loginErr").textContent = r.error; return; }
+      usuariosApp = r.usuarios || [];
+      if (!usuariosApp.length) { $("loginErr").textContent = "No hay usuarios habilitados. Avisa al administrador."; return; }
+      if (!usuariosApp.some(u => u.id === usuarioElegido)) usuarioElegido = usuariosApp.length === 1 ? usuariosApp[0].id : null;
+      pintarUsuarios();
+    } catch (e) { $("loginErr").textContent = "Sin conexión. Para entrar se necesita internet."; }
+  }
   function mostrarLogin(msg) {
     if (msg) $("loginMsg").textContent = msg;
     $("loginErr").textContent = ""; $("pin").value = "";
-    $("velLogin").classList.add("ver"); setTimeout(() => $("pin").focus(), 100);
+    $("velLogin").classList.add("ver"); cargarUsuarios();
   }
   $("pin").addEventListener("input", () => { $("pin").value = $("pin").value.replace(/\D/g, ""); $("loginErr").textContent = ""; if ($("pin").value.length === 4) entrar(); });
   $("btnEntrar").addEventListener("click", entrar);
   async function entrar() {
     if ($("btnEntrar").disabled) return;
+    if (!usuarioElegido) { $("loginErr").textContent = "Primero toca tu nombre."; $("pin").value = ""; return; }
     const pin = $("pin").value;
     if (pin.length !== 4) { $("loginErr").textContent = "El PIN tiene 4 números."; return; }
     $("btnEntrar").disabled = true; $("btnEntrar").textContent = "Verificando…"; $("loginErr").textContent = "";
     try {
-      const resp = await fetch(API_URL, { method: "POST", body: JSON.stringify({ accion: "LOGIN", app: APP, pin: pin }) });
+      const resp = await fetch(API_URL, { method: "POST", body: JSON.stringify({ accion: "LOGIN", app: APP, usuarioId: usuarioElegido, pin: pin }) });
       const r = await resp.json();
       if (!r.ok) { $("loginErr").textContent = r.error || "No se pudo entrar."; $("pin").value = ""; }
       else {
@@ -335,7 +359,7 @@
   $("btnSalir").addEventListener("click", () => {
     const pend = cola.filter(v => v.estado === "pendiente").length;
     if (pend && !confirm("Hay " + pend + " viaje(s) sin enviar. Se quedarán guardados y se enviarán cuando vuelvas a entrar. ¿Cerrar sesión?")) return;
-    sesion = null; lsSet(K_SESION, null); render(); mostrarLogin("Escribe tu PIN para entrar.");
+    sesion = null; lsSet(K_SESION, null); render(); mostrarLogin("Toca tu nombre y escribe tu PIN para entrar.");
   });
 
   // ---------- instalar ----------
