@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E1512">
+<title>Concentrado</title>
+<link rel="manifest" href="manifest-fletes.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+  :root { --fondo:#0E1512; --texto:#E8F0EB; --borde:#24332C; --menta:#6EE7B7; --superficie:#16211C; --superficie2:#111B16; --apagado:#93A59B; --ambar:#F5B544; --rojo:#FCA5A5; --campo:#2F443A; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { margin:0; background:var(--fondo); color:var(--texto); }
+  body { font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; font-size:16px; padding:0 16px calc(32px + env(safe-area-inset-bottom)); max-width:520px; margin:0 auto; }
+  .mono { font-family:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums; }
+  button { font-family:inherit; font-weight:700; border:0; border-radius:10px; cursor:pointer; background:var(--menta); color:#04261A; font-size:16px; padding:14px 16px; min-height:48px; }
+  button:active { transform:scale(.98); }
+  button:disabled { background:#1B2822; color:var(--apagado); border:1px solid var(--campo); cursor:not-allowed; }
+  button.sec { background:#2A3A32; color:var(--texto); }
+  input { font-family:inherit; font-size:18px; background:var(--fondo); color:var(--texto); border:1px solid var(--campo); border-radius:10px; padding:12px; width:100%; min-height:48px; color-scheme:dark; }
+  input:focus { outline:none; border-color:var(--menta); }
+
+  header { padding:22px 0 12px; display:flex; justify-content:space-between; align-items:flex-end; gap:12px; }
+  .marca { font-family:ui-monospace,Menlo,monospace; font-size:11px; font-weight:600; letter-spacing:.14em; color:var(--menta); text-transform:uppercase; }
+  h1 { margin:6px 0 0; font-size:30px; line-height:1.05; font-weight:700; }
+  .pill { display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:6px 10px; border-radius:999px; border:1px solid var(--campo); color:var(--apagado); white-space:nowrap; }
+  .pill i { width:8px; height:8px; border-radius:50%; background:var(--apagado); display:inline-block; }
+  .pill.on { color:var(--menta); border-color:#2F7D5B; } .pill.on i { background:var(--menta); }
+  .pill.off { color:var(--ambar); border-color:#7A5A1E; } .pill.off i { background:var(--ambar); }
+  .quien { display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--apagado); margin-bottom:12px; gap:8px; }
+  .link { background:none; color:var(--apagado); text-decoration:underline; padding:6px 0; min-height:0; font-weight:600; font-size:13px; }
+
+  .envio { display:none; align-items:center; justify-content:space-between; gap:10px; background:rgba(245,181,68,.10); border:1px solid #7A5A1E; border-radius:12px; padding:10px 12px; margin-bottom:14px; }
+  .envio.ver { display:flex; }
+  .envio b { color:var(--ambar); font-size:15px; } .envio span { font-size:12px; color:var(--apagado); display:block; margin-top:2px; }
+  .envio button { padding:10px 14px; min-height:40px; font-size:14px; background:var(--ambar); color:#2A1A00; }
+
+  .tarjeta { background:var(--superficie); border:1px solid var(--borde); border-radius:14px; padding:16px; margin-bottom:16px; }
+  h2 { margin:0 0 14px; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--apagado); }
+  label.et { display:block; font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--apagado); margin-bottom:6px; }
+  .tipo { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-top:1px solid var(--borde); }
+  .tipo:first-of-type { border-top:0; }
+  .tipo .n { font-size:18px; font-weight:700; }
+  .paso { display:flex; align-items:center; gap:8px; }
+  .paso button { width:52px; padding:0; font-size:26px; line-height:1; background:#2A3A32; color:var(--texto); }
+  .paso input { width:84px; text-align:center; font-size:24px; font-weight:700; padding:8px 4px; }
+  .total { display:flex; justify-content:space-between; align-items:baseline; padding:14px 0 6px; border-top:2px solid var(--borde); margin-top:6px; }
+  .total .v { font-size:30px; font-weight:700; color:var(--menta); }
+  .campo { margin-bottom:14px; }
+  #btnGuardar { width:100%; font-size:18px; padding:16px; margin-top:8px; }
+
+  .dia { margin-bottom:16px; }
+  .dia-cab { display:flex; justify-content:space-between; align-items:baseline; padding:0 2px 6px; }
+  .dia-cab b { font-size:15px; text-transform:capitalize; } .dia-cab .t { color:var(--menta); font-weight:700; }
+  .dia-sub { font-size:12px; color:var(--apagado); padding:0 2px 8px; }
+  .viaje { background:var(--superficie); border:1px solid var(--borde); border-radius:12px; padding:12px; margin-bottom:8px; }
+  .viaje .l1 { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; }
+  .viaje .lin { display:flex; justify-content:space-between; font-size:15px; padding:2px 0; }
+  .viaje .nota { font-size:13px; color:var(--apagado); margin-top:6px; font-style:italic; }
+  .chip { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:3px 8px; border-radius:6px; white-space:nowrap; }
+  .chip.pend { background:rgba(245,181,68,.12); color:var(--ambar); border:1px solid #7A5A1E; }
+  .chip.env { background:rgba(110,231,183,.10); color:var(--menta); border:1px solid #2F7D5B; }
+  .chip.rech { background:rgba(185,28,28,.15); color:var(--rojo); border:1px solid #B91C1C; }
+  .motivo { font-size:13px; color:var(--rojo); margin-top:6px; }
+  .vacio { text-align:center; color:var(--apagado); padding:24px 10px; font-size:14px; }
+
+  .velo { position:fixed; inset:0; background:rgba(4,10,7,.82); display:none; align-items:center; justify-content:center; padding:16px; z-index:50; }
+  .velo.ver { display:flex; }
+  .caja { background:var(--superficie); border:1px solid var(--borde); border-radius:16px; padding:20px; width:100%; max-width:420px; max-height:90vh; overflow:auto; }
+  .caja h3 { margin:0 0 12px; font-size:20px; }
+  .botones { display:flex; gap:10px; margin-top:16px; } .botones button { flex:1; }
+  .aviso { background:rgba(245,181,68,.10); border:1px solid #7A5A1E; color:var(--ambar); border-radius:10px; padding:10px 12px; font-size:14px; margin-top:12px; }
+  .error { color:var(--rojo); font-size:14px; margin-top:10px; min-height:20px; }
+  #pin { text-align:center; font-size:32px; letter-spacing:.5em; padding-left:.5em; }
+  #toast { position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom)); transform:translate(-50%,20px); background:#1B2822; border:1px solid #2F7D5B; color:var(--texto); padding:12px 18px; border-radius:12px; opacity:0; pointer-events:none; transition:.25s; z-index:80; font-weight:600; width:max-content; max-width:90vw; text-align:center; }
+  #toast.ver { opacity:1; transform:translate(-50%,0); }
+  footer { text-align:center; color:#5F7468; font-size:12px; padding-top:8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="marca">Hacienda Paso Caballos</div>
+    <h1>Concentrado</h1>
+  </div>
+  <span class="pill" id="pillRed"><i></i><span id="pillTxt">…</span></span>
+</header>
+
+<div class="quien">
+  <span id="quien"></span>
+  <span><button class="link" id="btnInstalar" style="display:none;">Instalar app</button> <button class="link" id="btnSalir">Cerrar sesión</button></span>
+</div>
+
+<div class="envio" id="envio">
+  <div><b id="envioN">0 por enviar</b><span id="envioTxt">Se enviarán solos cuando haya internet.</span></div>
+  <button id="btnEnviar">Enviar ahora</button>
+</div>
+
+<div class="tarjeta">
+  <h2>Nuevo viaje</h2>
+  <div class="campo">
+    <label class="et" for="fecha">Fecha del viaje</label>
+    <input type="date" id="fecha">
+  </div>
+  <div id="tipos"></div>
+  <div class="total"><span class="et" style="margin:0">Total del viaje</span><span class="v mono"><span id="totalQQ">0</span> qq</span></div>
+  <div class="campo" style="margin-top:10px;">
+    <label class="et" for="nota">Nota (opcional)</label>
+    <input type="text" id="nota" maxlength="200" placeholder="Ej. salió tarde, lluvia…">
+  </div>
+  <button id="btnGuardar" disabled>Guardar viaje</button>
+</div>
+
+<h2 style="margin-top:6px;">Registros</h2>
+<div id="lista"></div>
+<footer>v1 · los registros se guardan en este teléfono hasta enviarse</footer>
+
+<!-- Confirmar -->
+<div class="velo" id="velConfirmar"><div class="caja">
+  <h3>¿Guardar este viaje?</h3>
+  <div id="resumen"></div>
+  <div id="avisoGrande"></div>
+  <div class="botones"><button class="sec" id="btnRevisar">Revisar</button><button id="btnConfirmar">Sí, guardar</button></div>
+</div></div>
+
+<!-- Entrar -->
+<div class="velo" id="velLogin"><div class="caja">
+  <h3>Entrar</h3>
+  <p style="margin:0 0 14px;color:var(--apagado);font-size:14px;" id="loginMsg">Escribe tu PIN de 4 números. La primera vez se necesita internet.</p>
+  <input type="password" id="pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••">
+  <div class="error" id="loginErr"></div>
+  <div class="botones"><button id="btnEntrar">Entrar</button></div>
+</div></div>
+
+<div id="toast"></div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbz_-dBAyfQKRIMTcR-GAjqMWqG33LnhTuL_pKdaaE9PuPHWZaHJSHw6H_jGbhGzIGJFBw/exec";
+  const APP = "fletes";
+  const TIPOS_DEF = ["Desarrollo", "Etapa 1", "Etapa 2", "Etapa 3"];
+  const AVISO_QQ = 40;           // desde aquí la app pide confirmar doble
+  const K_SESION = "vhpp.fletes.sesion", K_COLA = "vhpp.fletes.cola";
+  const DIAS_VISIBLES = 14, DIAS_GUARDAR_ENVIADOS = 45;
+
+  // ---------- almacenamiento local ----------
+  function lsGet(k, def) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+
+  let sesion = lsGet(K_SESION, null);
+  let cola = lsGet(K_COLA, []);
+  let tipos = (sesion && sesion.tipos && sesion.tipos.length) ? sesion.tipos : TIPOS_DEF;
+  let sincronizando = false;
+
+  function guardarCola() { return lsSet(K_COLA, cola); }
+  function limpiarCola() {
+    const limite = Date.now() - DIAS_GUARDAR_ENVIADOS * 86400000;
+    cola = cola.filter(v => v.estado !== "enviado" || new Date(v.enviadoEn || v.capturadoEn).getTime() > limite);
+  }
+
+  // ---------- utilidades ----------
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  function p2(n) { return String(n).padStart(2, "0"); }
+  function hoyISO() { const d = new Date(); return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()); }
+  function uuid() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+  }
+  function fechaLarga(iso) {
+    const [y, m, d] = iso.split("-").map(Number);
+    const dt = new Date(y, m - 1, d);
+    return dt.toLocaleDateString("es-GT", { weekday: "short" }).replace(".", "") + " " + p2(d) + "/" + p2(m) + "/" + y;
+  }
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("ver"); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("ver"), 3200); }
+  function totalViaje(v) { return v.lineas.reduce((a, l) => a + l.qq, 0); }
+
+  // ---------- formulario ----------
+  function construirTipos() {
+    $("tipos").innerHTML = tipos.map((t, i) =>
+      `<div class="tipo"><div class="n">${esc(t)}</div><div class="paso">
+        <button type="button" data-i="${i}" data-d="-1" aria-label="Menos">−</button>
+        <input class="mono qq" data-i="${i}" inputmode="numeric" pattern="[0-9]*" maxlength="3" placeholder="0" aria-label="Quintales de ${esc(t)}">
+        <button type="button" data-i="${i}" data-d="1" aria-label="Más">+</button></div></div>`).join("");
+    $("tipos").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+      const inp = $("tipos").querySelector('input[data-i="' + b.dataset.i + '"]');
+      const n = Math.max(0, Math.min(500, (parseInt(inp.value, 10) || 0) + Number(b.dataset.d)));
+      inp.value = n ? String(n) : ""; actualizarTotal();
+    }));
+    $("tipos").querySelectorAll("input").forEach(inp => inp.addEventListener("input", () => {
+      inp.value = inp.value.replace(/\D/g, "").replace(/^0+(?=\d)/, ""); actualizarTotal();
+    }));
+  }
+  function lineasActuales() {
+    const out = [];
+    $("tipos").querySelectorAll("input").forEach(inp => {
+      const n = parseInt(inp.value, 10) || 0;
+      if (n > 0) out.push({ tipo: tipos[Number(inp.dataset.i)], qq: n });
+    });
+    return out;
+  }
+  function actualizarTotal() {
+    const t = lineasActuales().reduce((a, l) => a + l.qq, 0);
+    $("totalQQ").textContent = t;
+    $("btnGuardar").disabled = t <= 0 || !$("fecha").value;
+  }
+
+  $("btnGuardar").addEventListener("click", () => {
+    const fecha = $("fecha").value, lineas = lineasActuales();
+    if (!fecha || !lineas.length) return;
+    if (fecha > hoyISO()) { toast("La fecha no puede ser futura."); return; }
+    const total = lineas.reduce((a, l) => a + l.qq, 0);
+    $("resumen").innerHTML =
+      `<div style="color:var(--apagado);font-size:14px;margin-bottom:8px;">${esc(fechaLarga(fecha))}</div>` +
+      lineas.map(l => `<div class="lin" style="display:flex;justify-content:space-between;font-size:20px;padding:4px 0;"><span>${esc(l.tipo)}</span><b class="mono">${l.qq} qq</b></div>`).join("") +
+      `<div style="display:flex;justify-content:space-between;border-top:2px solid var(--borde);margin-top:8px;padding-top:10px;font-size:22px;"><span>Total</span><b class="mono" style="color:var(--menta)">${total} qq</b></div>`;
+    $("avisoGrande").innerHTML = total > AVISO_QQ ? `<div class="aviso">Son <b>${total} quintales</b>, más de lo normal en un viaje. Revisa que los números estén bien.</div>` : "";
+    $("velConfirmar").classList.add("ver");
+  });
+  $("btnRevisar").addEventListener("click", () => $("velConfirmar").classList.remove("ver"));
+  $("btnConfirmar").addEventListener("click", () => {
+    $("velConfirmar").classList.remove("ver");
+    const lineas = lineasActuales(), fecha = $("fecha").value;
+    if (!fecha || !lineas.length) return;
+    const viaje = { id: uuid(), fecha: fecha, lineas: lineas, nota: $("nota").value.trim(), capturadoEn: new Date().toISOString(), estado: "pendiente" };
+    cola.push(viaje);
+    if (!guardarCola()) { cola.pop(); alert("No se pudo guardar en el teléfono (almacenamiento lleno o bloqueado). El viaje NO quedó guardado."); return; }
+    $("tipos").querySelectorAll("input").forEach(i => i.value = "");
+    $("nota").value = ""; actualizarTotal();
+    toast("Viaje guardado");
+    render();
+    sincronizar();
+  });
+
+  // ---------- lista ----------
+  function render() {
+    const pend = cola.filter(v => v.estado === "pendiente").length;
+    $("envio").classList.toggle("ver", pend > 0);
+    $("envioN").textContent = pend + (pend === 1 ? " viaje por enviar" : " viajes por enviar");
+    $("envioTxt").textContent = sincronizando ? "Enviando…" : (navigator.onLine ? "Intentando enviar…" : "Se enviarán solos cuando haya internet.");
+    $("btnEnviar").disabled = sincronizando;
+    const online = navigator.onLine;
+    $("pillRed").className = "pill " + (online ? "on" : "off");
+    $("pillTxt").textContent = online ? "En línea" : "Sin conexión";
+    $("quien").textContent = sesion ? "Hola, " + sesion.nombre : "";
+
+    const limite = new Date(); limite.setDate(limite.getDate() - DIAS_VISIBLES);
+    const minISO = limite.getFullYear() + "-" + p2(limite.getMonth() + 1) + "-" + p2(limite.getDate());
+    const vis = cola.filter(v => v.fecha >= minISO || v.estado !== "enviado");
+    if (!vis.length) { $("lista").innerHTML = '<div class="vacio">Todavía no hay viajes registrados.</div>'; return; }
+    const dias = {};
+    vis.forEach(v => (dias[v.fecha] = dias[v.fecha] || []).push(v));
+    $("lista").innerHTML = Object.keys(dias).sort().reverse().map(f => {
+      const vs = dias[f].slice().sort((a, b) => b.capturadoEn.localeCompare(a.capturadoEn));
+      const validos = vs.filter(v => v.estado !== "rechazado");
+      const porTipo = {};
+      validos.forEach(v => v.lineas.forEach(l => porTipo[l.tipo] = (porTipo[l.tipo] || 0) + l.qq));
+      const tot = validos.reduce((a, v) => a + totalViaje(v), 0);
+      const sub = tipos.filter(t => porTipo[t]).map(t => esc(t) + " " + porTipo[t]).join(" · ");
+      return `<div class="dia"><div class="dia-cab"><b>${esc(fechaLarga(f))}</b><span class="t mono">${tot} qq</span></div>` +
+        (sub ? `<div class="dia-sub">${sub} · ${validos.length} ${validos.length === 1 ? "viaje" : "viajes"}</div>` : "") +
+        vs.map(v => {
+          const chip = v.estado === "enviado" ? `<span class="chip env">Enviado${v.idIngreso ? " · " + esc(v.idIngreso) : ""}</span>`
+            : v.estado === "rechazado" ? '<span class="chip rech">Rechazado</span>' : '<span class="chip pend">Por enviar</span>';
+          return `<div class="viaje"><div class="l1"><b class="mono">${totalViaje(v)} qq</b>${chip}</div>` +
+            v.lineas.map(l => `<div class="lin"><span>${esc(l.tipo)}</span><span class="mono">${l.qq} qq</span></div>`).join("") +
+            (v.nota ? `<div class="nota">${esc(v.nota)}</div>` : "") +
+            (v.estado === "rechazado" ? `<div class="motivo">${esc(v.error || "El servidor no lo aceptó.")} Avisa al administrador.</div>` : "") + `</div>`;
+        }).join("") + `</div>`;
+    }).join("");
+  }
+
+  // ---------- envío ----------
+  async function sincronizar() {
+    if (sincronizando) return;
+    const pend = cola.filter(v => v.estado === "pendiente");
+    if (!pend.length) { render(); return; }
+    if (!sesion) { mostrarLogin("Entra con tu PIN para enviar los viajes guardados."); return; }
+    sincronizando = true; render();
+    try {
+      for (let i = 0; i < pend.length; i += 30) {
+        const lote = pend.slice(i, i + 30);
+        const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 30000);
+        let r;
+        try {
+          const resp = await fetch(API_URL, { method: "POST", signal: ctrl.signal, body: JSON.stringify({
+            accion: "REGISTRAR_VIAJES_CONCENTRADO", token: sesion.token,
+            viajes: lote.map(v => ({ idCaptura: v.id, fecha: v.fecha, capturadoEn: v.capturadoEn, lineas: v.lineas, nota: v.nota })) }) });
+          r = await resp.json();
+        } finally { clearTimeout(to); }
+        if (r.sesionInvalida) { sesion = null; lsSet(K_SESION, null); mostrarLogin(r.error || "Tu sesión terminó. Entra de nuevo."); break; }
+        if (r.error || !r.resultados) break;
+        r.resultados.forEach(x => {
+          const v = cola.find(c => c.id === x.idCaptura); if (!v) return;
+          if (x.estado === "ok" || x.estado === "duplicado") { v.estado = "enviado"; v.idIngreso = x.idIngreso; v.enviadoEn = new Date().toISOString(); }
+          else { v.estado = "rechazado"; v.error = x.error; }
+        });
+        limpiarCola(); guardarCola();
+      }
+    } catch (e) { /* sin internet o señal mala: los viajes siguen guardados y se reintenta */ }
+    sincronizando = false; render();
+  }
+  $("btnEnviar").addEventListener("click", sincronizar);
+  window.addEventListener("online", () => { render(); sincronizar(); });
+  window.addEventListener("offline", render);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { render(); sincronizar(); } });
+  setInterval(() => { if (cola.some(v => v.estado === "pendiente")) sincronizar(); }, 30000);
+
+  // ---------- entrar ----------
+  function mostrarLogin(msg) {
+    if (msg) $("loginMsg").textContent = msg;
+    $("loginErr").textContent = ""; $("pin").value = "";
+    $("velLogin").classList.add("ver"); setTimeout(() => $("pin").focus(), 100);
+  }
+  $("pin").addEventListener("input", () => { $("pin").value = $("pin").value.replace(/\D/g, ""); if ($("pin").value.length === 4) entrar(); });
+  $("btnEntrar").addEventListener("click", entrar);
+  async function entrar() {
+    if ($("btnEntrar").disabled) return;
+    const pin = $("pin").value;
+    if (pin.length !== 4) { $("loginErr").textContent = "El PIN tiene 4 números."; return; }
+    $("btnEntrar").disabled = true; $("loginErr").textContent = "";
+    try {
+      const resp = await fetch(API_URL, { method: "POST", body: JSON.stringify({ accion: "LOGIN", app: APP, pin: pin }) });
+      const r = await resp.json();
+      if (!r.ok) { $("loginErr").textContent = r.error || "No se pudo entrar."; $("pin").value = ""; }
+      else {
+        sesion = { token: r.token, nombre: r.nombre, usuarioId: r.usuarioId, tipos: r.tipos };
+        lsSet(K_SESION, sesion);
+        if (JSON.stringify(r.tipos) !== JSON.stringify(tipos)) { tipos = r.tipos; construirTipos(); }
+        $("velLogin").classList.remove("ver"); render(); sincronizar();
+      }
+    } catch (e) { $("loginErr").textContent = "Sin conexión. Para entrar se necesita internet."; }
+    $("btnEntrar").disabled = false;
+  }
+  $("btnSalir").addEventListener("click", () => {
+    const pend = cola.filter(v => v.estado === "pendiente").length;
+    if (pend && !confirm("Hay " + pend + " viaje(s) sin enviar. Se quedarán guardados y se enviarán cuando vuelvas a entrar. ¿Cerrar sesión?")) return;
+    sesion = null; lsSet(K_SESION, null); render(); mostrarLogin("Escribe tu PIN para entrar.");
+  });
+
+  // ---------- instalar ----------
+  let promptInstalar = null;
+  window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); promptInstalar = e; $("btnInstalar").style.display = "inline"; });
+  $("btnInstalar").addEventListener("click", async () => { if (!promptInstalar) return; promptInstalar.prompt(); await promptInstalar.userChoice; promptInstalar = null; $("btnInstalar").style.display = "none"; });
+  window.addEventListener("appinstalled", () => { $("btnInstalar").style.display = "none"; });
+
+  // ---------- inicio ----------
+  $("fecha").value = hoyISO(); $("fecha").max = hoyISO();
+  $("fecha").addEventListener("input", actualizarTotal);
+  construirTipos(); actualizarTotal(); render();
+  if (!sesion) mostrarLogin(); else sincronizar();
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+</script>
+</body>
+</html>
