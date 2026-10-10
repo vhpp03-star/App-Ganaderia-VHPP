@@ -131,7 +131,7 @@
 
 
     /* ===== Módulo Concentrado ===== */
-    #vista-concentrado .header h1::before { color:#6EE7B7; }
+    #vista-concentrado .header h1::before, #vista-alimentacion .header h1::before { color:#6EE7B7; }
     .cc-card { background:var(--superficie); border:1px solid var(--borde); border-radius:12px; padding:14px; margin-bottom:14px; }
     .cc-card h3 { margin:0 0 12px; font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--apagado); }
     .cc-lbl { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--apagado); display:block; }
@@ -375,6 +375,49 @@
       <input type="text" id="ccNota" maxlength="200" placeholder="Ej. salió tarde, lluvia…">
       <button type="button" id="ccBtnGuardar" onclick="ccGuardar()" style="width:100%; padding:12px; margin-top:12px;">Guardar viaje</button>
       <div class="cc-msg" id="ccMsgGuardar"></div>
+    </div>
+    <div style="height:90px"></div>
+  </div>
+
+  <!-- VISTA ALIMENTACIÓN -->
+  <div id="vista-alimentacion" class="view-section">
+    <div class="header"><h1>Alimentación</h1></div>
+
+    <div class="cc-card">
+      <h3>Consultar por fechas</h3>
+      <div class="cc-fechas">
+        <div><label class="cc-lbl" for="acDesde">Desde</label><input type="date" id="acDesde"></div>
+        <div><label class="cc-lbl" for="acHasta">Hasta</label><input type="date" id="acHasta"></div>
+      </div>
+      <label class="cc-lbl" for="acFiltroUbic">Ubicación</label>
+      <select id="acFiltroUbic" style="margin-bottom:10px;"><option value="">Todas</option></select>
+      <div class="cc-atajos">
+        <button type="button" onclick="acAtajo('hoy')">Hoy</button>
+        <button type="button" onclick="acAtajo('ayer')">Ayer</button>
+        <button type="button" onclick="acAtajo('7')">Últimos 7 días</button>
+        <button type="button" onclick="acAtajo('mes')">Este mes</button>
+      </div>
+      <button type="button" id="acBtnConsultar" onclick="acConsultar()" style="width:100%; padding:12px;">Consultar</button>
+      <div class="cc-msg" id="acMsgConsulta"></div>
+    </div>
+
+    <div id="acResultado"></div>
+
+    <div class="cc-card">
+      <h3>Registrar alimentación</h3>
+      <label class="cc-lbl" for="acFecha">Fecha</label>
+      <input type="date" id="acFecha">
+      <div class="cc-fechas" style="margin-top:10px;">
+        <div><label class="cc-lbl" for="acUbic">Ubicación</label><select id="acUbic"></select></div>
+        <div><label class="cc-lbl" for="acTipo">Tipo</label><select id="acTipo"></select></div>
+      </div>
+      <label class="cc-lbl" for="acQq">Cantidad (qq, de medio en medio)</label>
+      <input type="text" id="acQq" inputmode="decimal" maxlength="5" placeholder="0">
+      <div id="acAyuda" style="font-size:12px;color:var(--apagado);margin-top:6px;min-height:16px;"></div>
+      <label class="cc-lbl" for="acNota" style="margin-top:10px;">Nota (opcional)</label>
+      <input type="text" id="acNota" maxlength="200" placeholder="Ej. envío para 10 días">
+      <button type="button" id="acBtnGuardar" onclick="acGuardar()" style="width:100%; padding:12px; margin-top:12px;">Guardar</button>
+      <div class="cc-msg" id="acMsgGuardar"></div>
     </div>
     <div style="height:90px"></div>
   </div>
@@ -745,6 +788,7 @@
     <div class="nav-item" onclick="cambiarVista('vista-ubicaciones', this)"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span>Ubicac.</span></div>
     <div class="nav-item" onclick="cambiarVista('vista-ventas', this)"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg></span><span>Ventas</span></div>
     <div class="nav-item" onclick="cambiarVista('vista-concentrado', this)"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 6c1.5-2 8.5-2 10 0l2 3-1 11H6L5 9l2-3Z"/><path d="M8 11h8"/></svg></span><span>Concent.</span></div>
+    <div class="nav-item" onclick="cambiarVista('vista-alimentacion', this)"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11h16l-1.5 8h-13L4 11Z"/><path d="M8 11c0-3 1.5-5 4-5s4 2 4 5"/></svg></span><span>Aliment.</span></div>
   </div>
 
   <script>
@@ -1466,6 +1510,7 @@
       elNav.classList.add('active');
       if (vistaId === 'vista-ubicaciones') cargarUbicaciones(false);
       if (vistaId === 'vista-concentrado') ccAlEntrar();
+      if (vistaId === 'vista-alimentacion') acAlEntrar();
       if (typeof actualizarBarraUbic === 'function') actualizarBarraUbic();
     }
 
@@ -1621,6 +1666,163 @@
         })
         .catch(() => { msg.className = 'cc-msg err'; msg.textContent = 'No se pudo guardar. Revisa tu internet y revisa la lista antes de reintentar.'; })
         .finally(() => { ccGuardando = false; btn.disabled = false; btn.textContent = 'Guardar viaje'; });
+    }
+
+
+    // ===================== MÓDULO ALIMENTACIÓN =====================
+    const AC_UBICS = ['Corral 1', 'Corral 2', 'Corral 3', 'Corral 4', 'Paso Caballos', 'La Palma', 'La Unión'];
+    let acRegs = [], acRango = null, acIniciado = false, acGuardando = false;
+
+    function acFmt(n) { return String(Math.round(n * 2) / 2); }
+    function acHora(iso) { if (!iso) return ''; const d = new Date(iso); return isNaN(d.getTime()) ? '' : d.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' }); }
+
+    function acAlEntrar() {
+      if (!acIniciado) {
+        acIniciado = true;
+        const opts = AC_UBICS.map(u => '<option value="' + u + '">' + u + '</option>').join('');
+        document.getElementById('acUbic').innerHTML = opts;
+        document.getElementById('acFiltroUbic').innerHTML = '<option value="">Todas</option>' + opts;
+        document.getElementById('acTipo').innerHTML = CC_TIPOS.map(t => '<option value="' + t + '">' + t + '</option>').join('');
+        document.getElementById('acFecha').value = ccIso(new Date());
+        document.getElementById('acFecha').max = ccIso(new Date());
+        document.getElementById('acUbic').addEventListener('change', acActualizarAyuda);
+        acActualizarAyuda();
+        acAtajo('mes', true);
+      }
+      acConsultar();
+    }
+    function acActualizarAyuda() {
+      const u = document.getElementById('acUbic').value;
+      document.getElementById('acAyuda').textContent = /^Corral/.test(u) ? '' : 'Finca: registre el envío completo con la fecha en que lo manda (ej. 15 qq).';
+    }
+
+    function acAtajo(tipo, sinConsultar) {
+      const h = new Date(), hoy = ccIso(h);
+      let d = hoy, a = hoy;
+      if (tipo === 'ayer') { const y = new Date(h); y.setDate(y.getDate()-1); d = a = ccIso(y); }
+      else if (tipo === '7') { const y = new Date(h); y.setDate(y.getDate()-6); d = ccIso(y); }
+      else if (tipo === 'mes') { d = ccIso(new Date(h.getFullYear(), h.getMonth(), 1)); }
+      document.getElementById('acDesde').value = d; document.getElementById('acHasta').value = a;
+      if (!sinConsultar) acConsultar();
+    }
+
+    function acConsultar() {
+      const desde = document.getElementById('acDesde').value, hasta = document.getElementById('acHasta').value;
+      const ubic = document.getElementById('acFiltroUbic').value;
+      const msg = document.getElementById('acMsgConsulta'); msg.className = 'cc-msg'; msg.textContent = '';
+      if (!desde || !hasta) { msg.className = 'cc-msg err'; msg.textContent = 'Elige las dos fechas.'; return; }
+      if (desde > hasta) { msg.className = 'cc-msg err'; msg.textContent = "La fecha 'Desde' no puede ser mayor que 'Hasta'."; return; }
+      const btn = document.getElementById('acBtnConsultar'); btn.disabled = true; btn.textContent = 'Consultando…';
+      document.getElementById('acResultado').innerHTML = '<div class="cc-vacio">Cargando…</div>';
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'LISTAR_ALIMENTACION', desde: desde, hasta: hasta, ubicacion: ubic }) })
+        .then(r => r.json())
+        .then(r => {
+          if (r.error) { document.getElementById('acResultado').innerHTML = ''; msg.className = 'cc-msg err'; msg.textContent = r.error; return; }
+          acRegs = r.registros || []; acRango = { desde: desde, hasta: hasta, ubic: ubic }; acPintar();
+        })
+        .catch(() => { document.getElementById('acResultado').innerHTML = ''; msg.className = 'cc-msg err'; msg.textContent = 'No se pudo consultar. Revisa tu internet.'; })
+        .finally(() => { btn.disabled = false; btn.textContent = 'Consultar'; });
+    }
+
+    function acCalcular() {
+      const dias = {}, porUbic = {}, porTipo = {};
+      let total = 0;
+      acRegs.forEach(r => {
+        (dias[r.fecha] = dias[r.fecha] || []).push(r);
+        porUbic[r.ubicacion] = (porUbic[r.ubicacion] || 0) + r.qq;
+        porTipo[r.tipo] = (porTipo[r.tipo] || 0) + r.qq;
+        total += r.qq;
+      });
+      const ordU = Object.keys(porUbic).sort((a, b) => AC_UBICS.indexOf(a) - AC_UBICS.indexOf(b));
+      const ordT = Object.keys(porTipo).sort((a, b) => CC_TIPOS.indexOf(a) - CC_TIPOS.indexOf(b));
+      return { dias: dias, fechas: Object.keys(dias).sort(), porUbic: porUbic, ordU: ordU, porTipo: porTipo, ordT: ordT, total: total };
+    }
+
+    function acRangoTexto() {
+      if (!acRango) return '';
+      const base = acRango.desde === acRango.hasta ? ccTxtFecha(acRango.desde, true) : 'del ' + ccTxtFecha(acRango.desde) + ' al ' + ccTxtFecha(acRango.hasta, true);
+      return base + (acRango.ubic ? ' · ' + acRango.ubic : '');
+    }
+
+    function acPintar() {
+      const cont = document.getElementById('acResultado');
+      if (!acRegs.length) { cont.innerHTML = '<div class="cc-card"><div class="cc-vacio">No hay alimentación registrada en estas fechas.</div></div>'; return; }
+      const c = acCalcular();
+      let h = '<div class="cc-card"><h3>Registros · ' + ccEsc(acRangoTexto()) + '</h3>';
+      c.fechas.forEach(f => {
+        const d = ccDe(f), lista = c.dias[f], totDia = lista.reduce((a, r) => a + r.qq, 0);
+        h += '<div class="cc-dia"><div class="cc-dia-t">' + CC_DIAS[d.getDay()].charAt(0).toUpperCase() + CC_DIAS[d.getDay()].slice(1) + ' ' + ccTxtFecha(f) + '<span>' + acFmt(totDia) + ' qq</span></div>';
+        lista.slice().sort((a, b) => AC_UBICS.indexOf(a.ubicacion) - AC_UBICS.indexOf(b.ubicacion) || (a.capturadoEn || '').localeCompare(b.capturadoEn || '')).forEach(r => {
+          h += '<div class="cc-viaje"><div>' + ccEsc(r.ubicacion) + ' · ' + ccEsc(r.tipo) + '<small>' + ccEsc(r.id) + ' · ' + ccEsc(r.usuario || '') + (acHora(r.capturadoEn) ? ' · ' + acHora(r.capturadoEn) : '') + (r.nota ? ' · ' + ccEsc(r.nota) : '') + '</small></div><div class="qq">' + acFmt(r.qq) + ' qq</div></div>';
+        });
+        h += '</div>';
+      });
+      h += '</div><div class="cc-card"><h3>Resumen por ubicación</h3>';
+      c.ordU.forEach(u => { h += '<div class="cc-res-fila"><span>' + ccEsc(u) + '</span><b>' + acFmt(c.porUbic[u]) + ' qq</b></div>'; });
+      h += '<h3 style="margin-top:16px;">Resumen por tipo</h3>';
+      c.ordT.forEach(t => { h += '<div class="cc-res-fila"><span>' + ccEsc(t) + '</span><b>' + acFmt(c.porTipo[t]) + ' qq</b></div>'; });
+      h += '<div class="cc-res-total"><span>TOTAL</span><b>' + acFmt(c.total) + ' qq</b></div>';
+      h += '<button type="button" onclick="acCopiar()" style="width:100%; padding:12px; margin-top:14px;">Copiar para WhatsApp</button><div class="cc-msg" id="acMsgCopiar"></div></div>';
+      cont.innerHTML = h;
+    }
+
+    function acTextoCopia() {
+      const c = acCalcular(), L = [];
+      L.push('*ALIMENTACIÓN*');
+      L.push(acRango.desde === acRango.hasta ? ccTxtFecha(acRango.desde, true) : 'Del ' + ccTxtFecha(acRango.desde) + ' al ' + ccTxtFecha(acRango.hasta, true));
+      if (acRango.ubic) L.push(acRango.ubic);
+      c.fechas.forEach(f => {
+        L.push(''); L.push('*' + ccTxtFecha(f) + '*');
+        const g = {};
+        c.dias[f].forEach(r => { const k = r.ubicacion + '|' + r.tipo; g[k] = (g[k] || 0) + r.qq; });
+        Object.keys(g).sort((a, b) => {
+          const pa = a.split('|'), pb = b.split('|');
+          return AC_UBICS.indexOf(pa[0]) - AC_UBICS.indexOf(pb[0]) || CC_TIPOS.indexOf(pa[1]) - CC_TIPOS.indexOf(pb[1]);
+        }).forEach(k => { const p = k.split('|'); L.push(p[0] + ' - ' + p[1] + ': ' + acFmt(g[k]) + ' qq'); });
+      });
+      L.push(''); L.push('*RESUMEN POR UBICACIÓN*');
+      c.ordU.forEach(u => L.push(u + ': ' + acFmt(c.porUbic[u]) + ' qq'));
+      L.push(''); L.push('*RESUMEN POR TIPO*');
+      c.ordT.forEach(t => L.push(t + ': ' + acFmt(c.porTipo[t]) + ' qq'));
+      L.push('*TOTAL: ' + acFmt(c.total) + ' qq*');
+      return L.join('\n');
+    }
+
+    function acCopiar() {
+      const txt = acTextoCopia(), msg = document.getElementById('acMsgCopiar');
+      const ok = () => { msg.className = 'cc-msg ok'; msg.textContent = 'Copiado. Pégalo en WhatsApp.'; };
+      const mal = () => { msg.className = 'cc-msg err'; msg.textContent = 'No se pudo copiar.'; };
+      const respaldo = () => {
+        const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy') ? ok() : mal(); } catch (e) { mal(); }
+        document.body.removeChild(ta);
+      };
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(txt).then(ok).catch(respaldo); else respaldo();
+    }
+
+    function acGuardar() {
+      if (acGuardando) return;
+      const msg = document.getElementById('acMsgGuardar'); msg.className = 'cc-msg'; msg.textContent = '';
+      const fecha = document.getElementById('acFecha').value, ubic = document.getElementById('acUbic').value, tipo = document.getElementById('acTipo').value;
+      const qq = parseFloat(document.getElementById('acQq').value.replace(',', '.'));
+      if (!fecha) { msg.className = 'cc-msg err'; msg.textContent = 'Elige la fecha.'; return; }
+      if (fecha > ccIso(new Date())) { msg.className = 'cc-msg err'; msg.textContent = 'La fecha no puede ser futura.'; return; }
+      if (!(qq >= 0.5) || qq > 500 || Math.round(qq * 2) !== qq * 2) { msg.className = 'cc-msg err'; msg.textContent = 'Cantidad no válida: de 0.5 a 500, de medio en medio.'; return; }
+      if (!confirm('¿Guardar?\n\n' + ccTxtFecha(fecha, true) + '\n' + ubic + ' · ' + tipo + '\n' + acFmt(qq) + ' qq' + (qq > 40 && /^Corral/.test(ubic) ? '\n\nOjo: es más de 40 qq en un corral.' : ''))) return;
+      const idCap = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
+      const btn = document.getElementById('acBtnGuardar'); acGuardando = true; btn.disabled = true; btn.textContent = 'Guardando…';
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'REGISTRAR_ALIMENTACION_ADMIN', registros: [{ idCaptura: idCap, fecha: fecha, capturadoEn: new Date().toISOString(), ubicacion: ubic, tipo: tipo, qq: qq, nota: document.getElementById('acNota').value.trim() }] }) })
+        .then(r => r.json())
+        .then(r => {
+          const x = r.resultados && r.resultados[0];
+          if (r.error || !x || x.estado === 'rechazado') { msg.className = 'cc-msg err'; msg.textContent = (r.error || (x && x.error) || 'No se pudo guardar.'); return; }
+          msg.className = 'cc-msg ok'; msg.textContent = 'Guardado como ' + x.idAlimentacion + '.';
+          document.getElementById('acQq').value = ''; document.getElementById('acNota').value = '';
+          if (acRango && fecha >= acRango.desde && fecha <= acRango.hasta && (!acRango.ubic || acRango.ubic === ubic)) acConsultar();
+        })
+        .catch(() => { msg.className = 'cc-msg err'; msg.textContent = 'No se pudo guardar. Revisa tu internet y revisa la lista antes de reintentar.'; })
+        .finally(() => { acGuardando = false; btn.disabled = false; btn.textContent = 'Guardar'; });
     }
 
     // ===================== MÓDULO UBICACIONES =====================
