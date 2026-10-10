@@ -128,6 +128,52 @@
     button[style*="color:#7B341E"], button[style*="color: #7B341E"] { color:#2A1A00 !important; }
     /* Botón deshabilitado: va al final y con más peso para que ningún color fijo lo tape */
     button:disabled, button[style]:disabled { background-color:#1B2822 !important; color:#93A59B !important; border:1px solid #2F443A !important; cursor:not-allowed; opacity:1; }
+
+    /* ===== Módulo Ubicaciones ===== */
+    #vista-ubicaciones .header h1::before { color:#6EE7B7; }
+    .u-resumen { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; background:var(--superficie); border:1px solid var(--borde); border-radius:12px; padding:14px; margin-bottom:14px; }
+    .u-num { font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:700; line-height:1; color:#6EE7B7; }
+    .u-num.amb { color:var(--ambar); } .u-num.neu { color:var(--texto); }
+    .u-lbl { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--apagado); margin-top:6px; }
+    .u-chips { display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:12px; -webkit-overflow-scrolling:touch; }
+    .u-chip { flex:0 0 auto; display:flex; align-items:center; gap:8px; background:#1B2822; color:var(--apagado); border:1px solid #2F443A; border-radius:10px; padding:8px 12px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; }
+    .u-chip b { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--texto); }
+    .u-chip.sel { background:#6EE7B7; color:#04261A; border-color:#6EE7B7; } .u-chip.sel b { color:#04261A; }
+    .u-chip.sinub { border-style:dashed; }
+    .u-stats { background:var(--superficie); border:1px solid var(--borde); border-radius:12px; padding:14px; margin-bottom:14px; }
+    .u-stats h3 { margin:0 0 12px; font-size:17px; font-family:'JetBrains Mono',monospace; display:flex; justify-content:space-between; align-items:center; }
+    .u-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px 12px; }
+    .u-k { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--apagado); }
+    .u-v { font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:600; margin-top:4px; }
+    .u-lotes { margin-top:12px; padding-top:12px; border-top:1px solid var(--borde); font-size:12px; color:var(--apagado); display:flex; flex-wrap:wrap; gap:6px; }
+    .u-lotes span { background:#1B2822; border:1px solid #2F443A; border-radius:6px; padding:3px 8px; color:var(--texto); font-family:'JetBrains Mono',monospace; font-size:11px; }
+    .u-busca { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+    .u-busca input { margin-top:0; }
+    .u-todos { display:flex; align-items:center; gap:10px; padding:6px 4px 10px; font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--apagado); }
+    .u-todos input, .u-fila input[type=checkbox] { width:22px; height:22px; margin:0; accent-color:#6EE7B7; flex-shrink:0; }
+    .u-fila { display:flex; align-items:center; gap:12px; background:var(--superficie); border:1px solid var(--borde); border-radius:10px; padding:10px 12px; margin-bottom:8px; cursor:pointer; }
+    .u-fila.sel { border-color:#6EE7B7; background:rgba(110,231,183,.07); }
+    .u-fila .cen { flex:1; min-width:0; }
+    .u-ar { font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; }
+    .u-sub { font-size:12px; color:var(--apagado); margin-top:3px; }
+    .u-der { text-align:right; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--apagado); }
+    .u-der b { display:block; color:var(--texto); font-size:14px; }
+    .u-tag { display:inline-block; font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:2px 7px; border-radius:5px; margin-left:6px; vertical-align:middle; }
+    .u-tag.eng { background:rgba(245,181,68,.12); color:var(--ambar); border:1px solid #7A5A1E; }
+    .u-tag.lev { background:rgba(110,231,183,.1); color:#6EE7B7; border:1px solid #2F7D5B; }
+    .u-tag.ning { background:transparent; color:var(--apagado); border:1px dashed #2F443A; }
+    .u-barra { position:fixed; left:0; right:0; bottom:62px; z-index:900; background:#0B110E; border-top:1px solid #2F7D5B; padding:10px 16px; display:none; gap:10px; align-items:center; }
+    .u-barra.visible { display:flex; }
+    .u-barra .n { font-family:'JetBrains Mono',monospace; font-weight:700; color:#6EE7B7; min-width:34px; }
+    .u-barra button { flex:1; padding:12px 8px; font-size:14px; }
+    .u-aviso { background:rgba(245,181,68,.10); border:1px solid #7A5A1E; color:var(--ambar); border-radius:8px; padding:10px 12px; font-size:13px; margin-top:12px; }
+    .u-aviso ul { margin:6px 0 0; padding-left:18px; } .u-aviso li { margin:3px 0; color:var(--texto); }
+    .u-error { background:rgba(185,28,28,.15); border:1px solid #B91C1C; color:#FCA5A5; border-radius:8px; padding:10px 12px; font-size:13px; margin-top:12px; }
+    .u-peso-fila { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--borde); }
+    .u-peso-fila .ar { flex:1; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; min-width:0; }
+    .u-peso-fila .ar small { display:block; font-weight:500; color:var(--apagado); font-size:11px; }
+    .u-peso-fila input { width:96px; margin-top:0; text-align:right; }
+    .u-vacio { text-align:center; color:var(--apagado); padding:30px 10px; font-size:14px; }
   </style>
 </head>
 <body>
@@ -256,6 +302,22 @@
       </div>
       <p id="contadorInventario" style="font-size:12px;color:#718096;margin-top:8px;"></p>
     </div>
+  </div>
+
+  <!-- VISTA DE UBICACIONES -->
+  <div id="vista-ubicaciones" class="view-section">
+    <div class="header">
+      <h1>Ubicaciones</h1>
+      <button id="btnRefrescarUbic" onclick="cargarUbicaciones(true)" style="background-color:#2A3A32;">Actualizar</button>
+    </div>
+    <div id="ubicAviso"></div>
+    <div class="u-resumen" id="ubicResumen"></div>
+    <div class="u-chips" id="ubicChips"></div>
+    <div class="u-stats" id="ubicStats"></div>
+    <div class="u-busca"><input type="search" id="ubicBusca" placeholder="Buscar arete, ID interno o lote…" oninput="ubicBuscar(this.value)"></div>
+    <div class="u-todos"><input type="checkbox" id="ubicTodos" onchange="ubicToggleTodos(this.checked)"><label for="ubicTodos" id="ubicTodosLbl">Seleccionar todos</label></div>
+    <div id="ubicLista"></div>
+    <div style="height:90px"></div>
   </div>
 
   <!-- NUEVO: VISTA DE VENTAS -->
@@ -569,9 +631,59 @@
     </div>
   </div>
 
+  <!-- MODALES DE UBICACIONES -->
+  <div class="modal-overlay" id="modalMover">
+    <div class="modal">
+      <h3 style="margin-top:0;" id="movTitulo">Mover animales</h3>
+      <p id="movResumen" style="font-size:13px;color:var(--apagado);margin:0 0 14px;"></p>
+      <div class="form-group"><label>Destino *</label>
+        <select id="movDestino">
+          <option value="">— Elegir destino —</option>
+          <optgroup label="Corrales"><option>Corral 1</option><option>Corral 2</option><option>Corral 3</option><option>Corral 4</option></optgroup>
+          <optgroup label="Fincas"><option>Paso Caballos</option><option>La Palma</option><option>La Unión</option></optgroup>
+        </select></div>
+      <div class="form-group"><label>Fecha del movimiento *</label><input type="date" id="movFecha"></div>
+      <div class="form-group"><label id="movMotivoLbl">Motivo / nota (opcional)</label><input type="text" id="movMotivo" placeholder="Ej. cambio de corral por espacio"></div>
+      <div id="movMensaje"></div>
+      <div class="modal-botones">
+        <button class="btn-cancelar" onclick="cerrarModalMover()">Cancelar</button>
+        <button id="btnConfirmarMover" onclick="enviarMover()">Mover</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalEngorde">
+    <div class="modal">
+      <h3 style="margin-top:0;">Pasar a Engorde</h3>
+      <p style="font-size:13px;color:var(--apagado);margin:0 0 14px;">Registra la fecha y el peso con que cada animal inicia la engorda. Si ya tiene fecha de inicio, no se toca.</p>
+      <div class="form-group"><label>Corral destino *</label>
+        <select id="engDestino"><option value="">— Elegir corral —</option><option>Corral 1</option><option>Corral 2</option><option>Corral 3</option><option>Corral 4</option></select></div>
+      <div class="form-group"><label>Fecha de inicio de engorda *</label><input type="date" id="engFecha"></div>
+      <div class="form-group"><label>Motivo / nota (opcional)</label><input type="text" id="engMotivo"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin:6px 0 2px;">
+        <span class="u-k">Peso de inicio (lbs) *</span>
+        <button type="button" onclick="engCopiarPesoCompra()" style="padding:6px 10px;font-size:12px;background-color:#2A3A32;">Copiar peso de compra</button>
+      </div>
+      <div id="engFilas"></div>
+      <div id="engMensaje"></div>
+      <div class="modal-botones">
+        <button class="btn-cancelar" onclick="cerrarModalEngorde()">Cancelar</button>
+        <button id="btnConfirmarEngorde" onclick="enviarEngorde()">Registrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="u-barra" id="ubicBarra">
+    <span class="n" id="ubicBarraN">0</span>
+    <button onclick="abrirModalMover()">Mover</button>
+    <button onclick="abrirModalEngorde()" style="background-color:#F5B544;color:#2A1A00;">Pasar a Engorde</button>
+    <button onclick="ubicLimpiarSel()" style="flex:0 0 auto;background-color:#2A3A32;color:#E8F0EB;">✕</button>
+  </div>
+
   <div class="bottom-nav">
     <div class="nav-item" onclick="cambiarVista('vista-lotes', this)"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span><span>Lotes</span></div>
     <div class="nav-item active" onclick="cambiarVista('vista-compras', this)"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span>Compras</span></div>
+    <div class="nav-item" onclick="cambiarVista('vista-ubicaciones', this)"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span>Ubicac.</span></div>
     <div class="nav-item" onclick="cambiarVista('vista-ventas', this)"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg></span><span>Ventas</span></div>
   </div>
 
@@ -1292,6 +1404,230 @@
       document.getElementById(vistaId).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       elNav.classList.add('active');
+      if (vistaId === 'vista-ubicaciones') cargarUbicaciones(false);
+      if (typeof actualizarBarraUbic === 'function') actualizarBarraUbic();
+    }
+
+    // ===================== MÓDULO UBICACIONES =====================
+    const UBIC_SIN = 'Sin ubicación';
+    let ubicData = null, ubicFiltro = null, ubicBusq = '', ubicSel = new Set(), ubicConfirmando = false;
+
+    function _escU(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+    function _fechaUbic(s) { const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s || ''); return m ? new Date(+m[3], +m[2]-1, +m[1]) : null; }
+    function _diasUbic(s) { const d = _fechaUbic(s); if (!d) return null; const h = new Date(); h.setHours(0,0,0,0); return Math.max(0, Math.round((h - d) / 86400000)); }
+    function _hoyISO() { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+    function _promU(arr) { return arr.length ? arr.reduce((a,b) => a + b, 0) / arr.length : null; }
+    function _fmtU(n, dec) { return n == null ? '—' : n.toLocaleString('es-GT', { minimumFractionDigits: dec||0, maximumFractionDigits: dec||0 }); }
+    function _ubicDe(a) { return a.ubicacion || UBIC_SIN; }
+
+    function cargarUbicaciones(forzar) {
+      if (ubicData && !forzar) { renderUbicaciones(); return; }
+      document.getElementById('ubicLista').innerHTML = '<div class="u-vacio">Cargando…</div>';
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'LISTAR_UBICACIONES' }) })
+        .then(r => r.json())
+        .then(res => {
+          if (res.error) throw new Error(res.error);
+          ubicData = res;
+          const vivos = new Set(res.animales.map(a => a.uid));
+          ubicSel.forEach(u => { if (!vivos.has(u)) ubicSel.delete(u); });
+          renderUbicaciones();
+        })
+        .catch(e => {
+          document.getElementById('ubicLista').innerHTML = '<div class="u-error">No se pudo cargar: ' + _escU(e.message || 'revisa la conexión y que el script esté actualizado') + '</div>';
+        });
+    }
+
+    function _ubicFiltrados() {
+      const q = ubicBusq.trim().toLowerCase();
+      return ubicData.animales.filter(a => {
+        if (ubicFiltro && _ubicDe(a) !== ubicFiltro) return false;
+        if (!q) return true;
+        return [a.arete, a.idInterno, a.loteId, a.uid].some(v => String(v || '').toLowerCase().indexOf(q) >= 0);
+      });
+    }
+
+    function renderUbicaciones() {
+      if (!ubicData) return;
+      const an = ubicData.animales;
+      document.getElementById('ubicAviso').innerHTML = ubicData.historialListo ? '' : '<div class="u-error" style="margin:0 0 14px;">Falta la hoja "Historial Movimientos". Corre PREPARAR_MODULO_UBICACIONES en el script.</div>';
+
+      // Resumen global
+      const eng = an.filter(a => a.etapa === 'Engorde').length, lev = an.filter(a => a.etapa === 'Levante').length;
+      const sin = an.filter(a => !a.ubicacion).length;
+      document.getElementById('ubicResumen').innerHTML =
+        `<div><div class="u-num">${an.length}</div><div class="u-lbl">Activos</div></div>` +
+        `<div><div class="u-num amb">${eng}</div><div class="u-lbl">Engorde</div></div>` +
+        `<div><div class="u-num neu">${lev}</div><div class="u-lbl">Levante</div></div>` +
+        `<div><div class="u-num neu">${sin}</div><div class="u-lbl">Sin ubic.</div></div>`;
+
+      // Chips
+      const cuenta = {}; an.forEach(a => { const k = _ubicDe(a); cuenta[k] = (cuenta[k] || 0) + 1; });
+      let ch = `<div class="u-chip ${ubicFiltro === null ? 'sel' : ''}" onclick="ubicElegir(null)">Todas <b>${an.length}</b></div>`;
+      ubicData.ubicaciones.forEach(u => { ch += `<div class="u-chip ${ubicFiltro === u ? 'sel' : ''}" onclick="ubicElegir('${_escU(u)}')">${_escU(u)} <b>${cuenta[u] || 0}</b></div>`; });
+      if (cuenta[UBIC_SIN]) ch += `<div class="u-chip sinub ${ubicFiltro === UBIC_SIN ? 'sel' : ''}" onclick="ubicElegir('${UBIC_SIN}')">${UBIC_SIN} <b>${cuenta[UBIC_SIN]}</b></div>`;
+      document.getElementById('ubicChips').innerHTML = ch;
+
+      renderUbicStats();
+      renderUbicLista();
+    }
+
+    function renderUbicStats() {
+      const base = ubicData.animales.filter(a => !ubicFiltro || _ubicDe(a) === ubicFiltro);
+      const el = document.getElementById('ubicStats');
+      const titulo = ubicFiltro || 'Todas las ubicaciones';
+      if (!base.length) { el.innerHTML = `<h3>${_escU(titulo)}</h3><div class="u-vacio" style="padding:10px;">Sin animales activos aquí.</div>`; return; }
+      const h = base.filter(a => String(a.sexo).toUpperCase() === 'H').length, m = base.filter(a => String(a.sexo).toUpperCase() === 'M').length;
+      const nEng = base.filter(a => a.etapa === 'Engorde').length, nLev = base.filter(a => a.etapa === 'Levante').length;
+      const pesos = base.map(a => a.pesoCompra).filter(p => p > 0);
+      const pIni = base.map(a => a.pesoInicioEngorda).filter(p => p > 0);
+      const dUbic = base.map(a => _diasUbic(a.fechaEntradaUbicacion)).filter(d => d != null);
+      const dCompra = base.map(a => _diasUbic(a.fechaCompra)).filter(d => d != null);
+      const lotes = {}; base.forEach(a => { const l = a.loteId || '—'; lotes[l] = (lotes[l] || 0) + 1; });
+      const lotesHtml = Object.keys(lotes).sort().map(l => `<span>${_escU(l)} · ${lotes[l]}</span>`).join('');
+      el.innerHTML =
+        `<h3>${_escU(titulo)} <span style="color:#6EE7B7;">${base.length}</span></h3>` +
+        `<div class="u-grid">` +
+        `<div><div class="u-k">Hembras / Machos</div><div class="u-v">${h} / ${m}</div></div>` +
+        `<div><div class="u-k">Levante / Engorde</div><div class="u-v">${nLev} / ${nEng}</div></div>` +
+        `<div><div class="u-k">Peso compra prom.</div><div class="u-v">${_fmtU(_promU(pesos), 1)} lb</div></div>` +
+        `<div><div class="u-k">Peso compra total</div><div class="u-v">${_fmtU(pesos.reduce((a,b)=>a+b,0), 0)} lb</div></div>` +
+        `<div><div class="u-k">Días aquí (prom.)</div><div class="u-v">${_fmtU(_promU(dUbic), 0)}</div></div>` +
+        `<div><div class="u-k">Días desde compra</div><div class="u-v">${_fmtU(_promU(dCompra), 0)}</div></div>` +
+        (pIni.length ? `<div><div class="u-k">Peso inicio engorda</div><div class="u-v">${_fmtU(_promU(pIni), 1)} lb</div></div>` : '') +
+        `</div><div class="u-lotes">${lotesHtml}</div>`;
+    }
+
+    function renderUbicLista() {
+      const lista = _ubicFiltrados();
+      const cont = document.getElementById('ubicLista');
+      if (!lista.length) { cont.innerHTML = '<div class="u-vacio">No hay animales para mostrar.</div>'; }
+      else {
+        cont.innerHTML = lista.map(a => {
+          const sel = ubicSel.has(a.uid);
+          const tag = a.etapa === 'Engorde' ? '<span class="u-tag eng">Engorde</span>' : a.etapa === 'Levante' ? '<span class="u-tag lev">Levante</span>' : '<span class="u-tag ning">Sin etapa</span>';
+          const d = _diasUbic(a.fechaEntradaUbicacion);
+          const id = a.idInterno ? ' · ID ' + _escU(a.idInterno) : '';
+          return `<div class="u-fila ${sel ? 'sel' : ''}" data-uid="${_escU(a.uid)}" onclick="ubicToggle(this.dataset.uid)">` +
+            `<input type="checkbox" ${sel ? 'checked' : ''} tabindex="-1" style="pointer-events:none;">` +
+            `<div class="cen"><div class="u-ar">${_escU(a.arete || a.uid)}${tag}</div>` +
+            `<div class="u-sub">${_escU(a.loteId || '')} · ${_escU(String(a.sexo || '').toUpperCase())}${id}${ubicFiltro ? '' : ' · ' + _escU(_ubicDe(a))}</div></div>` +
+            `<div class="u-der"><b>${a.pesoCompra > 0 ? _fmtU(a.pesoCompra, 0) + ' lb' : '—'}</b>${d != null ? d + ' d aquí' : ''}</div></div>`;
+        }).join('');
+      }
+      const todos = document.getElementById('ubicTodos');
+      const nSel = lista.filter(a => ubicSel.has(a.uid)).length;
+      todos.checked = lista.length > 0 && nSel === lista.length;
+      document.getElementById('ubicTodosLbl').textContent = 'Seleccionar todos (' + lista.length + ')';
+      actualizarBarraUbic();
+    }
+
+    function actualizarBarraUbic() {
+      document.getElementById('ubicBarraN').textContent = ubicSel.size;
+      document.getElementById('ubicBarra').classList.toggle('visible', ubicSel.size > 0 && document.getElementById('vista-ubicaciones').classList.contains('active'));
+    }
+    function ubicElegir(u) { ubicFiltro = u; ubicSel.clear(); renderUbicaciones(); }
+    function ubicBuscar(v) { ubicBusq = v; renderUbicLista(); }
+    function ubicToggle(uid) { if (ubicSel.has(uid)) ubicSel.delete(uid); else ubicSel.add(uid); renderUbicLista(); }
+    function ubicToggleTodos(on) { _ubicFiltrados().forEach(a => { if (on) ubicSel.add(a.uid); else ubicSel.delete(a.uid); }); renderUbicLista(); }
+    function ubicLimpiarSel() { ubicSel.clear(); renderUbicLista(); }
+    function _ubicSeleccionados() { return ubicData.animales.filter(a => ubicSel.has(a.uid)); }
+
+    function _ubicPostEscritura() {
+      inventarioCompletoCache = null;
+      ubicSel.clear();
+      cargarUbicaciones(true);
+    }
+
+    // ---- Mover ----
+    function abrirModalMover() {
+      const sel = _ubicSeleccionados(); if (!sel.length) return;
+      ubicConfirmando = false;
+      const origenes = [...new Set(sel.map(_ubicDe))];
+      const carga = origenes.length === 1 && origenes[0] === UBIC_SIN;
+      document.getElementById('movTitulo').textContent = carga ? 'Carga inicial de ubicación' : 'Mover animales';
+      document.getElementById('movResumen').textContent = sel.length + ' animal(es) · desde: ' + origenes.join(', ');
+      document.getElementById('movDestino').value = '';
+      document.getElementById('movFecha').value = _hoyISO(); document.getElementById('movFecha').max = _hoyISO();
+      document.getElementById('movMotivo').value = '';
+      document.getElementById('movMotivoLbl').textContent = 'Motivo / nota (opcional)';
+      document.getElementById('movMensaje').innerHTML = '';
+      document.getElementById('btnConfirmarMover').textContent = 'Mover'; document.getElementById('btnConfirmarMover').disabled = false;
+      document.getElementById('modalMover').style.display = 'flex';
+    }
+    function cerrarModalMover() { document.getElementById('modalMover').style.display = 'none'; }
+
+    function enviarMover() {
+      const destino = document.getElementById('movDestino').value, fecha = document.getElementById('movFecha').value;
+      const motivo = document.getElementById('movMotivo').value.trim(), msg = document.getElementById('movMensaje'), btn = document.getElementById('btnConfirmarMover');
+      if (!destino) { msg.innerHTML = '<div class="u-error">Elige el destino.</div>'; return; }
+      if (!fecha) { msg.innerHTML = '<div class="u-error">Falta la fecha.</div>'; return; }
+      if (ubicConfirmando && !motivo) { msg.innerHTML = '<div class="u-error">Para confirmar estas advertencias escribe el motivo.</div>'; return; }
+      btn.disabled = true; const txt = btn.textContent; btn.textContent = 'Guardando…';
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'MOVER_ANIMALES', uids: [...ubicSel], destino: destino, fecha: fecha, motivo: motivo, confirmarAdvertencias: ubicConfirmando }) })
+        .then(r => r.json())
+        .then(res => {
+          btn.disabled = false; btn.textContent = txt;
+          if (res.requiereConfirmacion) {
+            ubicConfirmando = true;
+            document.getElementById('movMotivoLbl').textContent = 'Motivo * (obligatorio)';
+            btn.textContent = 'Confirmar de todos modos';
+            msg.innerHTML = '<div class="u-aviso"><b>Revisa antes de continuar:</b><ul>' + res.advertencias.map(a => '<li>' + _escU(a.animal) + ': ' + _escU(a.texto) + '</li>').join('') + '</ul></div>';
+            return;
+          }
+          if (res.error) { msg.innerHTML = '<div class="u-error">' + _escU(res.error) + '</div>'; return; }
+          cerrarModalMover(); _ubicPostEscritura();
+          alert(res.mensaje || 'Movimiento registrado.');
+        })
+        .catch(() => { btn.disabled = false; btn.textContent = txt; msg.innerHTML = '<div class="u-error">Error de conexión. No se guardó nada; intenta de nuevo.</div>'; });
+    }
+
+    // ---- Pasar a Engorde ----
+    let engAnimales = [];
+    function abrirModalEngorde() {
+      const sel = _ubicSeleccionados(); if (!sel.length) return;
+      engAnimales = sel;
+      document.getElementById('engDestino').value = '';
+      document.getElementById('engFecha').value = _hoyISO(); document.getElementById('engFecha').max = _hoyISO();
+      document.getElementById('engMotivo').value = ''; document.getElementById('engMensaje').innerHTML = '';
+      document.getElementById('engFilas').innerHTML = sel.map(a => {
+        const ya = !!a.fechaIngresoEngorda;
+        const pesoPrev = a.pesoInicioEngorda > 0 ? a.pesoInicioEngorda : '';
+        return `<div class="u-peso-fila"><div class="ar">${_escU(a.arete || a.uid)}<small>${_escU(a.loteId || '')} · compra ${a.pesoCompra > 0 ? _fmtU(a.pesoCompra,0) + ' lb' : 'sin peso'}${ya ? ' · ya inició engorda ' + _escU(a.fechaIngresoEngorda) : ''}</small></div>` +
+          (ya ? '<span class="u-tag eng">Omitido</span>' : `<input type="number" inputmode="decimal" step="0.1" min="0" class="eng-peso" data-uid="${_escU(a.uid)}" value="${pesoPrev}" placeholder="lbs">`) + '</div>';
+      }).join('');
+      document.getElementById('btnConfirmarEngorde').disabled = false;
+      document.getElementById('modalEngorde').style.display = 'flex';
+    }
+    function cerrarModalEngorde() { document.getElementById('modalEngorde').style.display = 'none'; }
+    function engCopiarPesoCompra() {
+      document.querySelectorAll('#engFilas .eng-peso').forEach(inp => {
+        if (inp.value) return;
+        const a = engAnimales.find(x => x.uid === inp.dataset.uid);
+        if (a && a.pesoCompra > 0) inp.value = a.pesoCompra;
+      });
+    }
+    function enviarEngorde() {
+      const destino = document.getElementById('engDestino').value, fecha = document.getElementById('engFecha').value;
+      const motivo = document.getElementById('engMotivo').value.trim(), msg = document.getElementById('engMensaje'), btn = document.getElementById('btnConfirmarEngorde');
+      if (!destino) { msg.innerHTML = '<div class="u-error">Elige el corral destino.</div>'; return; }
+      if (!fecha) { msg.innerHTML = '<div class="u-error">Falta la fecha de inicio.</div>'; return; }
+      const items = []; let falta = 0;
+      document.querySelectorAll('#engFilas .eng-peso').forEach(inp => {
+        const p = parseFloat(inp.value);
+        if (!(p > 0)) { falta++; inp.style.borderColor = '#B91C1C'; } else { inp.style.borderColor = ''; items.push({ uid: inp.dataset.uid, peso: p }); }
+      });
+      if (falta) { msg.innerHTML = '<div class="u-error">Falta el peso de ' + falta + ' animal(es).</div>'; return; }
+      if (!items.length) { msg.innerHTML = '<div class="u-error">Todos los animales seleccionados ya iniciaron engorda.</div>'; return; }
+      btn.disabled = true; const txt = btn.textContent; btn.textContent = 'Guardando…';
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'PASAR_A_ENGORDE', items: items, destino: destino, fecha: fecha, motivo: motivo }) })
+        .then(r => r.json())
+        .then(res => {
+          btn.disabled = false; btn.textContent = txt;
+          if (res.error) { msg.innerHTML = '<div class="u-error">' + _escU(res.error) + '</div>'; return; }
+          cerrarModalEngorde(); _ubicPostEscritura();
+          alert(res.mensaje || 'Registrado.');
+        })
+        .catch(() => { btn.disabled = false; btn.textContent = txt; msg.innerHTML = '<div class="u-error">Error de conexión. No se guardó nada; intenta de nuevo.</div>'; });
     }
 
     // --- FUNCIONES DE COMPRAS INTACTAS ---
