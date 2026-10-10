@@ -312,13 +312,13 @@
     $("loginErr").textContent = ""; $("pin").value = "";
     $("velLogin").classList.add("ver"); setTimeout(() => $("pin").focus(), 100);
   }
-  $("pin").addEventListener("input", () => { $("pin").value = $("pin").value.replace(/\D/g, ""); if ($("pin").value.length === 4) entrar(); });
+  $("pin").addEventListener("input", () => { $("pin").value = $("pin").value.replace(/\D/g, ""); $("loginErr").textContent = ""; if ($("pin").value.length === 4) entrar(); });
   $("btnEntrar").addEventListener("click", entrar);
   async function entrar() {
     if ($("btnEntrar").disabled) return;
     const pin = $("pin").value;
     if (pin.length !== 4) { $("loginErr").textContent = "El PIN tiene 4 números."; return; }
-    $("btnEntrar").disabled = true; $("loginErr").textContent = "";
+    $("btnEntrar").disabled = true; $("btnEntrar").textContent = "Verificando…"; $("loginErr").textContent = "";
     try {
       const resp = await fetch(API_URL, { method: "POST", body: JSON.stringify({ accion: "LOGIN", app: APP, pin: pin }) });
       const r = await resp.json();
@@ -330,7 +330,7 @@
         $("velLogin").classList.remove("ver"); render(); sincronizar();
       }
     } catch (e) { $("loginErr").textContent = "Sin conexión. Para entrar se necesita internet."; }
-    $("btnEntrar").disabled = false;
+    $("btnEntrar").disabled = false; $("btnEntrar").textContent = "Entrar";
   }
   $("btnSalir").addEventListener("click", () => {
     const pend = cola.filter(v => v.estado === "pendiente").length;
