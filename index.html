@@ -199,12 +199,45 @@
     .u-peso-fila input { width:96px; margin-top:0; text-align:right; }
     .u-vacio { text-align:center; color:var(--apagado); padding:30px 10px; font-size:14px; }
   </style>
+
+  <style id="estilo-acceso">
+    /* ===== Pantalla de entrada con PIN de administrador ===== */
+    #velAcceso { position:fixed; inset:0; background:#0E1512; display:none; align-items:center; justify-content:center; padding:16px; z-index:5000; overflow:auto; }
+    #velAcceso.ver { display:flex; }
+    .caja-acceso { width:100%; max-width:380px; background:#16211C; border:1px solid #24332C; border-radius:16px; padding:22px; color:#E8F0EB; }
+    .caja-acceso .acceso-marca { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:.14em; color:#6EE7B7; margin-bottom:6px; }
+    .caja-acceso h2 { margin:0 0 6px; font-size:26px; color:#E8F0EB; }
+    .caja-acceso p { margin:0 0 14px; color:#93A59B; font-size:14px; }
+    #accesoUsuarios { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+    #accesoUsuarios button { width:100%; text-align:left; padding:12px 14px; font-size:16px; }
+    #accesoUsuarios button.sec { background:#2A3A32; color:#E8F0EB; }
+    #accesoPin { width:100%; box-sizing:border-box; text-align:center; font-size:32px; letter-spacing:.5em; padding:10px 10px 10px calc(10px + .5em); background:#0E1512; color:#E8F0EB; border:1px solid #24332C; border-radius:10px; }
+    #accesoPin:focus { outline:none; border-color:#6EE7B7; }
+    #accesoError { color:#F87171; font-size:14px; min-height:22px; margin:10px 0 4px; }
+    #accesoBoton { width:100%; padding:13px; font-size:16px; }
+    #accesoBoton:disabled { opacity:.6; cursor:default; }
+    .pie-sesion { text-align:center; color:#93A59B; font-size:13px; padding:18px 0 90px; }
+    .pie-sesion a { color:#6EE7B7; cursor:pointer; text-decoration:underline; }
+  </style>
 </head>
 <body>
+
+  <!-- Entrada con PIN de administrador -->
+  <div id="velAcceso"><div class="caja-acceso">
+    <div class="acceso-marca">HACIENDA PASO CABALLOS</div>
+    <h2>Entrar</h2>
+    <p id="accesoMsg">Toca tu nombre y escribe tu PIN de 4 números.</p>
+    <div id="accesoUsuarios"></div>
+    <input type="password" id="accesoPin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••">
+    <div id="accesoError"></div>
+    <button type="button" id="accesoBoton">Entrar</button>
+  </div></div>
+
 
   <div id="vista-lotes" class="view-section">
     <div class="header"><h1>Control de Lotes</h1><button onclick="abrirModalNuevoLote()">+ Nuevo Lote</button></div>
     <div class="grid-lotes" id="contenedorLotes"><p style="text-align:center; width:100%;">Cargando...</p></div>
+    <div class="pie-sesion"><span id="pieSesionNombre"></span><a onclick="cerrarSesionAdmin()">Cerrar sesión en este aparato</a></div>
   </div>
 
   <div id="vista-compras" class="view-section active">
@@ -794,11 +827,118 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbz_-dBAyfQKRIMTcR-GAjqMWqG33LnhTuL_pKdaaE9PuPHWZaHJSHw6H_jGbhGzIGJFBw/exec";
 
+    // ============================================================
+    // ACCESO CON PIN DE ADMINISTRADOR
+    // Un solo punto agrega la sesión a TODAS las llamadas al servidor, y si el servidor
+    // dice que la sesión no sirve, muestra la pantalla de entrada.
+    // ============================================================
+    const K_SESION_ADMIN = "vhpp_admin_sesion_v1";
+    let sesionAdmin = null, appIniciada = false, usuarioAdminElegido = null, usuariosAdmin = [];
+    try { sesionAdmin = JSON.parse(localStorage.getItem(K_SESION_ADMIN) || "null"); } catch (e) { sesionAdmin = null; }
+    function guardarSesionAdmin(sesion) {
+      sesionAdmin = sesion;
+      try { if (sesion) localStorage.setItem(K_SESION_ADMIN, JSON.stringify(sesion)); else localStorage.removeItem(K_SESION_ADMIN); } catch (e) {}
+      actualizarPieSesion();
+    }
+    function actualizarPieSesion() {
+      const el = document.getElementById('pieSesionNombre');
+      if (el) el.textContent = (sesionAdmin && sesionAdmin.nombre) ? ('Sesión de ' + sesionAdmin.nombre + ' · ') : '';
+    }
+
+    const _fetchOriginal = window.fetch.bind(window);
+    window.fetch = function (url, opciones) {
+      if (typeof url !== "string" || url.indexOf(API_URL) !== 0) return _fetchOriginal(url, opciones);
+      let destino = url, o = opciones;
+      if (sesionAdmin && sesionAdmin.token) {
+        if (o && typeof o.body === "string") {
+          try {
+            const cuerpo = JSON.parse(o.body);
+            if (cuerpo && typeof cuerpo === "object" && !cuerpo.token) { cuerpo.token = sesionAdmin.token; o = Object.assign({}, o, { body: JSON.stringify(cuerpo) }); }
+          } catch (e) {}
+        } else if (!o || !o.method || String(o.method).toUpperCase() === "GET") {
+          destino = url + (url.indexOf("?") < 0 ? "?" : "&") + "token=" + encodeURIComponent(sesionAdmin.token);
+        }
+      }
+      return _fetchOriginal(destino, o).then(resp => {
+        try {
+          resp.clone().text().then(t => {
+            if (t && t.slice(0, 400).indexOf('"sesionInvalida"') >= 0) {
+              let msg = "Tu sesión terminó. Entra de nuevo con tu PIN.";
+              try { msg = JSON.parse(t).error || msg; } catch (e) {}
+              guardarSesionAdmin(null); mostrarAcceso(msg);
+            }
+          }).catch(() => {});
+        } catch (e) {}
+        return resp;
+      });
+    };
+
+    function mostrarAcceso(msg) {
+      document.getElementById('accesoMsg').textContent = msg || "Toca tu nombre y escribe tu PIN de 4 números.";
+      document.getElementById('accesoError').textContent = "";
+      document.getElementById('accesoPin').value = "";
+      document.getElementById('velAcceso').classList.add('ver');
+      cargarUsuariosAcceso();
+    }
+    function pintarUsuariosAcceso() {
+      const c = document.getElementById('accesoUsuarios'); c.innerHTML = "";
+      usuariosAdmin.forEach(u => {
+        const b = document.createElement('button');
+        b.type = "button"; b.textContent = u.nombre; b.className = (usuarioAdminElegido === u.id) ? "" : "sec";
+        b.addEventListener('click', () => { usuarioAdminElegido = u.id; document.getElementById('accesoError').textContent = ""; document.getElementById('accesoPin').value = ""; pintarUsuariosAcceso(); document.getElementById('accesoPin').focus(); });
+        c.appendChild(b);
+      });
+    }
+    async function cargarUsuariosAcceso() {
+      const err = document.getElementById('accesoError');
+      try {
+        const resp = await _fetchOriginal(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'LISTAR_USUARIOS_APP', app: 'admin' }) });
+        const r = await resp.json();
+        if (r.error) { err.textContent = r.error; return; }
+        usuariosAdmin = r.usuarios || [];
+        if (!usuariosAdmin.length) { err.textContent = "No hay administradores con PIN. Asigna uno desde el menú Ganadería de la hoja."; return; }
+        if (!usuariosAdmin.some(u => u.id === usuarioAdminElegido)) usuarioAdminElegido = usuariosAdmin.length === 1 ? usuariosAdmin[0].id : null;
+        pintarUsuariosAcceso();
+        if (usuarioAdminElegido) document.getElementById('accesoPin').focus();
+      } catch (e) { err.textContent = "Sin conexión. Para entrar se necesita internet."; }
+    }
+    async function entrarAdmin() {
+      const boton = document.getElementById('accesoBoton'), err = document.getElementById('accesoError'), pinEl = document.getElementById('accesoPin');
+      if (boton.disabled) return;
+      if (!usuarioAdminElegido) { err.textContent = "Primero toca tu nombre."; pinEl.value = ""; return; }
+      const pin = pinEl.value;
+      if (pin.length !== 4) { err.textContent = "El PIN tiene 4 números."; return; }
+      boton.disabled = true; boton.textContent = "Verificando…"; err.textContent = "";
+      try {
+        const resp = await _fetchOriginal(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'LOGIN', app: 'admin', usuarioId: usuarioAdminElegido, pin: pin }) });
+        const r = await resp.json();
+        if (!r.ok) { err.textContent = r.error || "No se pudo entrar."; pinEl.value = ""; }
+        else {
+          guardarSesionAdmin({ token: r.token, nombre: r.nombre, usuarioId: r.usuarioId });
+          document.getElementById('velAcceso').classList.remove('ver');
+          if (!appIniciada) iniciarApp();
+          else { cargarLotes(); obtenerInventarioCompleto(() => {}); cargarOrdenesVenta(); }
+        }
+      } catch (e) { err.textContent = "Sin conexión. Para entrar se necesita internet."; }
+      boton.disabled = false; boton.textContent = "Entrar";
+    }
+    document.getElementById('accesoPin').addEventListener('input', function () {
+      this.value = this.value.replace(/\D/g, ""); document.getElementById('accesoError').textContent = "";
+      if (this.value.length === 4) entrarAdmin();
+    });
+    document.getElementById('accesoBoton').addEventListener('click', entrarAdmin);
+    function cerrarSesionAdmin() {
+      if (!confirm("¿Cerrar sesión en este aparato? Tus otros aparatos siguen con su sesión.")) return;
+      guardarSesionAdmin(null); mostrarAcceso("Sesión cerrada. Entra con tu PIN.");
+    }
+
     let datosGlobalesAnimales = []; 
     let totalesGlobales = {};
     let datosGlobalesLotes = []; // Guarda la info completa para la mini oficina
 
-    window.onload = function() {
+    function iniciarApp() {
+      appIniciada = true;
+      actualizarPieSesion();
       document.getElementById('compraFecha').valueAsDate = new Date();
       cargarLotes(); agregarFilaAnimal(); generarCamposTransporte();
       inicializarColumnasInv();
@@ -806,6 +946,16 @@
       obtenerInventarioCompleto(() => {}); // precarga silenciosa: solo llena los filtros, no muestra nada aún
       document.getElementById('ventaFecha').valueAsDate = new Date();
       cargarOrdenesVenta();
+    }
+
+    // Al abrir: sin sesión guardada -> pantalla de entrada. Con sesión guardada -> se confirma con el servidor
+    // (si ya venció, la pantalla de entrada aparece sola) y recién entonces se carga la app.
+    window.onload = function() {
+      if (!sesionAdmin || !sesionAdmin.token) { mostrarAcceso(); return; }
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'VERIFICAR_SESION' }) })
+        .then(res => res.json())
+        .then(r => { if (r && r.ok) iniciarApp(); })
+        .catch(() => iniciarApp());   // sin internet: se abre igual; los datos fallarán por sí solos
     };
 
     // ============================================================
