@@ -243,6 +243,73 @@
     body > .view-section { max-width:1100px; margin-left:auto; margin-right:auto; }
     @media (min-width:900px) { body { padding-left:32px; padding-right:32px; } .subnav { margin-left:-32px; margin-right:-32px; padding:0 32px; } }
   </style>
+  <style id="estilo-gastos">
+    /* ===== Módulo Administrativo > Gastos ===== */
+    #vista-gastos .header h1::before { color:var(--ambar); }
+    .gx-resumen { display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:8px; background:var(--superficie); border:1px solid var(--borde); border-radius:12px; padding:14px; margin-bottom:14px; }
+    .gx-num { font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; line-height:1.1; color:var(--ambar); white-space:nowrap; }
+    .gx-num.v { color:#6EE7B7; } .gx-num.n { color:var(--texto); }
+    .gx-lbl { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--apagado); margin-top:6px; }
+    .gx-acciones { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+    .gx-acciones button { padding:13px 8px; font-size:15px; }
+    .gx-btn-sec { background:transparent !important; border:1px solid #6EE7B7 !important; color:#6EE7B7 !important; }
+    .gx-filtros { background:var(--superficie); border:1px solid var(--borde); border-radius:12px; padding:12px; margin-bottom:14px; }
+    .gx-filtros input, .gx-filtros select { margin-top:0; }
+    .gx-fila2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+    .gx-chips { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+    .gx-chip { background:#1B2822; color:var(--apagado); border:1px solid #2F443A; border-radius:16px; padding:6px 13px; font-size:13px; font-weight:600; }
+    .gx-chip:hover { background:#1B2822; }
+    .gx-chip.sel { background:#6EE7B7; color:#04261A; border-color:#6EE7B7; }
+    .gx-item { background:var(--superficie); border:1px solid var(--borde); border-radius:12px; margin-bottom:10px; overflow:hidden; }
+    .gx-item.anul { opacity:.6; }
+    .gx-cab { display:flex; gap:12px; justify-content:space-between; padding:12px 14px; cursor:pointer; }
+    .gx-prov { font-size:16px; font-weight:700; }
+    .gx-sub { font-size:12px; color:var(--apagado); margin-top:3px; line-height:1.4; }
+    .gx-der { text-align:right; flex:0 0 auto; }
+    .gx-monto { font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700; }
+    .gx-saldo { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ambar); margin-top:3px; }
+    .gx-tag { display:inline-block; font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:2px 7px; border-radius:5px; margin-top:5px; }
+    .gx-tag.Pendiente { background:rgba(245,181,68,.12); color:var(--ambar); border:1px solid #7A5A1E; }
+    .gx-tag.Parcial { background:rgba(141,187,245,.10); color:#8DBBF5; border:1px solid #2B5B8E; }
+    .gx-tag.Pagado { background:rgba(110,231,183,.1); color:#6EE7B7; border:1px solid #2F7D5B; }
+    .gx-tag.Anulado { background:transparent; color:var(--apagado); border:1px dashed #2F443A; }
+    .gx-tag.foto { background:rgba(252,165,165,.10); color:#FCA5A5; border:1px solid #7F3A3A; margin-left:5px; }
+    .gx-det { border-top:1px solid var(--borde); padding:12px 14px 14px; background:var(--superficie-2); font-size:14px; }
+    .gx-det dl { display:grid; grid-template-columns:110px 1fr; gap:6px 10px; margin:0 0 12px; }
+    .gx-det dt { color:var(--apagado); font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding-top:2px; }
+    .gx-det dd { margin:0; word-break:break-word; }
+    .gx-det a { color:#8DBBF5; }
+    .gx-pago { display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-top:1px solid var(--borde); font-size:13px; }
+    .gx-pago.anul { opacity:.55; text-decoration:line-through; }
+    .gx-pago small { display:block; color:var(--apagado); font-size:11px; margin-top:2px; text-decoration:none; }
+    .gx-btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .gx-btns button { padding:9px 12px; font-size:13px; }
+    .gx-peligro { background:transparent !important; border:1px solid #B91C1C !important; color:#FCA5A5 !important; }
+    .gx-modal { max-width:560px !important; }
+    .gx-modal h2 { margin:0 0 4px; font-size:22px; color:var(--texto); }
+    .gx-modal .sub { color:var(--apagado); font-size:13px; margin-bottom:14px; }
+    .gx-bloque { border-top:1px solid var(--borde); margin-top:16px; padding-top:14px; }
+    .gx-bloque h4 { margin:0 0 10px; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--ambar); }
+    .gx-g2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .gx-nota { font-size:13px; color:var(--apagado); background:var(--superficie-2); border:1px dashed #2F443A; border-radius:8px; padding:10px 12px; }
+    .gx-msg { font-size:14px; margin-top:10px; min-height:18px; } .gx-msg.err { color:#FCA5A5; } .gx-msg.ok { color:#6EE7B7; }
+    .gx-foto-estado { font-size:12px; color:var(--apagado); margin-top:4px; }
+    .gx-res { max-height:230px; overflow-y:auto; margin-top:8px; border:1px solid var(--borde); border-radius:8px; }
+    .gx-res label { display:flex; gap:10px; align-items:center; padding:8px 10px; border-bottom:1px solid var(--borde); cursor:pointer; font-size:13px; }
+    .gx-res label:last-child { border-bottom:none; }
+    .gx-res input { width:20px; height:20px; margin:0; accent-color:#6EE7B7; flex:0 0 auto; }
+    .gx-res b { font-family:'JetBrains Mono',monospace; }
+    .gx-res small { display:block; color:var(--apagado); font-size:11px; }
+    .gx-sel-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .gx-sel-chips span { background:#1B2822; border:1px solid #2F7D5B; border-radius:14px; padding:4px 6px 4px 11px; font-size:12px; font-family:'JetBrains Mono',monospace; display:flex; gap:6px; align-items:center; }
+    .gx-sel-chips i { font-style:normal; cursor:pointer; color:#FCA5A5; font-size:15px; padding:0 4px; }
+    .gx-radio { display:flex; gap:10px; align-items:flex-start; padding:9px 10px; border:1px solid var(--borde); border-radius:8px; margin-top:6px; cursor:pointer; font-size:13px; }
+    .gx-radio.sel { border-color:#6EE7B7; background:rgba(110,231,183,.07); }
+    .gx-radio input { width:20px; height:20px; margin:0; accent-color:#6EE7B7; flex:0 0 auto; }
+    .gx-radio b { font-family:'JetBrains Mono',monospace; }
+    .gx-modal .modal-botones button { padding:11px 18px; }
+    @media (max-width:520px) { .gx-g2 { grid-template-columns:1fr; } .gx-det dl { grid-template-columns:90px 1fr; } }
+  </style>
 </head>
 <body>
 
@@ -850,9 +917,136 @@
     <button onclick="ubicLimpiarSel()" style="flex:0 0 auto;background-color:#2A3A32;color:#E8F0EB;">✕</button>
   </div>
 
+  <!-- VISTA ADMINISTRATIVO > GASTOS -->
+  <div id="vista-gastos" class="view-section">
+    <div class="header"><h1>Gastos</h1></div>
+
+    <div class="gx-resumen">
+      <div><div class="gx-num" id="gxResPorPagar">Q 0.00</div><div class="gx-lbl">Por pagar</div></div>
+      <div><div class="gx-num n" id="gxResAbiertos">0</div><div class="gx-lbl">Gastos abiertos</div></div>
+      <div><div class="gx-num n" id="gxResFotos">0</div><div class="gx-lbl">Pagos sin foto</div></div>
+    </div>
+
+    <div class="gx-acciones">
+      <button type="button" onclick="gxNuevoGasto()">+ Nuevo gasto</button>
+      <button type="button" class="gx-btn-sec" onclick="gxAbrirPago()">Registrar pago</button>
+    </div>
+
+    <div class="gx-filtros">
+      <input type="search" id="gxBuscar" placeholder="Buscar: proveedor, concepto, factura, monto, ID…" oninput="gxPintar()">
+      <div class="gx-fila2">
+        <select id="gxProvFiltro" onchange="gxPintar()"><option value="">Todos los proveedores</option></select>
+        <select id="gxCatFiltro" onchange="gxPintar()"><option value="">Todas las categorías</option></select>
+      </div>
+      <div class="gx-fila2">
+        <div><label class="cc-lbl" for="gxDesde">Desde</label><input type="date" id="gxDesde" onchange="gxPintar()"></div>
+        <div><label class="cc-lbl" for="gxHasta">Hasta</label><input type="date" id="gxHasta" onchange="gxPintar()"></div>
+      </div>
+      <div class="gx-chips" id="gxChips"></div>
+    </div>
+
+    <div id="gxLista"><div class="cc-vacio">Cargando…</div></div>
+    <div style="height:90px"></div>
+  </div>
+
+  <datalist id="gxProvs"></datalist>
+  <datalist id="gxBancos"></datalist>
+  <input type="file" id="gxArchivoAdjuntar" accept="image/*,application/pdf" style="display:none" onchange="gxAdjuntarElegido(this)">
+
+  <!-- Modal: nuevo gasto -->
+  <div class="modal-overlay" id="gxModalGasto">
+    <div class="modal gx-modal">
+      <h2>Nuevo gasto</h2>
+      <div class="sub">Primero el gasto. El pago puede ir ahora o después.</div>
+      <div class="gx-g2">
+        <div class="form-group"><label for="gxgFecha">Fecha</label><input type="date" id="gxgFecha"></div>
+        <div class="form-group"><label for="gxgCategoria">Categoría</label><select id="gxgCategoria" onchange="gxCambiaCategoria()"></select></div>
+      </div>
+      <div class="form-group"><label for="gxgConcepto">Concepto</label><input type="text" id="gxgConcepto" maxlength="200" placeholder="Ej. Vacunas de lote, flete de concentrado…"></div>
+      <div class="gx-g2">
+        <div class="form-group"><label for="gxgProveedor">Proveedor</label><input type="text" id="gxgProveedor" list="gxProvs" maxlength="100" autocomplete="off"></div>
+        <div class="form-group"><label for="gxgMonto">Monto total (Q)</label><input type="number" id="gxgMonto" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="gx-g2">
+        <div class="form-group"><label for="gxgFactura">No. de factura</label><input type="text" id="gxgFactura" maxlength="60" placeholder="Opcional"></div>
+        <div class="form-group"><label for="gxgVence">Vence (opcional)</label><input type="date" id="gxgVence"></div>
+      </div>
+      <div class="form-group"><label for="gxgFotoFactura">Foto de la factura</label><input type="file" id="gxgFotoFactura" accept="image/*,application/pdf"><div class="gx-foto-estado">Opcional. Si no la tienes ahora, la agregas después.</div></div>
+      <div class="form-group"><label for="gxgNotas">Notas</label><input type="text" id="gxgNotas" maxlength="300" placeholder="Opcional"></div>
+
+      <div class="gx-bloque" id="gxgDestinoBloque">
+        <h4>¿A quién se le reparte?</h4>
+        <div id="gxgSinDestino" class="gx-nota" style="display:none"></div>
+        <div id="gxgConDestino">
+          <div class="form-group"><label for="gxgNivel">Nivel</label><select id="gxgNivel" onchange="gxCambiaNivel()"></select></div>
+          <div id="gxgDestLote" style="display:none"><label class="cc-lbl" for="gxgLote">Lote</label><select id="gxgLote"></select></div>
+          <div id="gxgDestUbic" style="display:none"><label class="cc-lbl" for="gxgUbic">Ubicación</label><select id="gxgUbic"></select></div>
+          <div id="gxgDestVenta" style="display:none"><label class="cc-lbl" for="gxgVenta">Venta (camionada)</label><select id="gxgVenta"></select><div class="gx-foto-estado">El gasto se reparte entre los animales de esa venta.</div></div>
+          <div id="gxgDestGeneral" class="gx-nota" style="display:none">Se reparte en partes iguales entre todos los animales activos.</div>
+          <div id="gxgDestAnim" style="display:none">
+            <input type="search" id="gxgAnimBuscar" placeholder="Buscar por ID animal, arete de origen o lote…" oninput="gxBuscarAnimalesDebounce()" autocomplete="off">
+            <div id="gxgAnimRes" class="gx-res" style="display:none"></div>
+            <details style="margin-top:8px"><summary style="cursor:pointer; color:var(--apagado); font-size:13px">Pegar una lista (IDs o aretes)</summary>
+              <textarea id="gxgAnimLista" rows="3" placeholder="Uno por línea, o separados por coma"></textarea>
+              <button type="button" class="gx-btn-sec" style="margin-top:6px; padding:8px 12px; font-size:13px" onclick="gxAgregarLista()">Agregar lista</button>
+            </details>
+            <div class="gx-msg" id="gxgAnimMsg"></div>
+            <div class="cc-lbl" style="margin-top:8px" id="gxgAnimCuenta">Ningún animal elegido</div>
+            <div class="gx-sel-chips" id="gxgAnimSel"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gx-bloque">
+        <h4>Pago</h4>
+        <label class="gx-radio" style="margin-top:0"><input type="checkbox" id="gxgPagarAhora" onchange="gxTogglePagoAhora()"><span>Registrar un pago ahora</span></label>
+        <div id="gxgPagoCampos" style="display:none; margin-top:10px"></div>
+      </div>
+
+      <div class="gx-msg" id="gxgMsg"></div>
+      <div class="modal-botones">
+        <button type="button" class="btn-cancelar" onclick="gxCerrar('gxModalGasto')">Cancelar</button>
+        <button type="button" id="gxgGuardar" onclick="gxGuardarGasto()">Guardar gasto</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: registrar pago -->
+  <div class="modal-overlay" id="gxModalPago">
+    <div class="modal gx-modal">
+      <h2>Registrar pago</h2>
+      <div class="sub">Elige a quién le pagas y qué gasto abonas.</div>
+      <div class="form-group"><label for="gxpProveedor">Proveedor</label><select id="gxpProveedor" onchange="gxPagoCambiaProveedor()"></select></div>
+      <div id="gxpGastos"></div>
+      <div id="gxpCampos" style="margin-top:12px"></div>
+      <div class="gx-msg" id="gxpMsg"></div>
+      <div class="modal-botones">
+        <button type="button" class="btn-cancelar" onclick="gxCerrar('gxModalPago')">Cancelar</button>
+        <button type="button" id="gxpGuardar" onclick="gxGuardarPago()">Guardar pago</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: anular (doble confirmación con PIN) -->
+  <div class="modal-overlay" id="gxModalAnular">
+    <div class="modal gx-modal">
+      <h2 id="gxaTitulo">Anular</h2>
+      <div class="sub" id="gxaDetalle"></div>
+      <div class="u-aviso" style="margin-top:0">La anulación no se puede deshacer. El registro queda marcado como anulado y no se borra.</div>
+      <div class="form-group" style="margin-top:14px"><label for="gxaMotivo">Motivo</label><input type="text" id="gxaMotivo" maxlength="200" placeholder="¿Por qué se anula?"></div>
+      <div class="form-group"><label for="gxaPin">Tu PIN para confirmar</label><input type="password" id="gxaPin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••" style="max-width:140px; text-align:center; letter-spacing:.3em"></div>
+      <div class="gx-msg" id="gxaMsg"></div>
+      <div class="modal-botones">
+        <button type="button" class="btn-cancelar" onclick="gxCerrar('gxModalAnular')">No anular</button>
+        <button type="button" id="gxaConfirmar" class="gx-peligro" onclick="gxConfirmarAnular()">Anular definitivamente</button>
+      </div>
+    </div>
+  </div>
+
   <div class="bottom-nav">
     <div class="nav-item active" data-grupo="animales" onclick="irGrupo('animales')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5c.2 2.2 1.4 3.3 3.5 3.5"/><path d="M20 5c-.2 2.2-1.4 3.3-3.5 3.5"/><path d="M7.5 8.5h9l.8 6.2c.3 2.6-1.8 4.8-4.4 4.8h-1.8c-2.6 0-4.7-2.2-4.4-4.8l.8-6.2Z"/><circle cx="10" cy="15.5" r=".6"/><circle cx="14" cy="15.5" r=".6"/></svg></span><span>Animales</span></div>
     <div class="nav-item" data-grupo="alimentacion" onclick="irGrupo('alimentacion')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11h16l-1.5 8h-13L4 11Z"/><path d="M8 11c0-3 1.5-5 4-5s4 2 4 5"/></svg></span><span>Alimentación</span></div>
+    <div class="nav-item" data-grupo="administrativo" onclick="irGrupo('administrativo')"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h3"/></svg></span><span>Administrativo</span></div>
   </div>
 
   <script>
@@ -1692,10 +1886,11 @@
     // Franja de arriba = pestañas del grupo. Las pantallas (vista-...) no cambian por dentro.
     const GRUPOS = {
       animales:     { tabs: [['vista-lotes', 'Lotes'], ['vista-compras', 'Compras'], ['vista-ubicaciones', 'Ubicación'], ['vista-ventas', 'Ventas']] },
-      alimentacion: { tabs: [['vista-concentrado', 'Concentrado'], ['vista-alimentacion', 'Alimentación']] }
+      alimentacion: { tabs: [['vista-concentrado', 'Concentrado'], ['vista-alimentacion', 'Alimentación']] },
+      administrativo: { tabs: [['vista-gastos', 'Gastos']] }
     };
     const K_NAV = "vhpp_nav_v1";
-    let navEstado = { vista: 'vista-compras', ultima: { animales: 'vista-compras', alimentacion: 'vista-concentrado' } };
+    let navEstado = { vista: 'vista-compras', ultima: { animales: 'vista-compras', alimentacion: 'vista-concentrado', administrativo: 'vista-gastos' } };
 
     function grupoDeVista(vistaId) {
       for (const g in GRUPOS) if (GRUPOS[g].tabs.some(t => t[0] === vistaId)) return g;
@@ -1728,6 +1923,7 @@
       if (vistaId === 'vista-ubicaciones') cargarUbicaciones(false);
       if (vistaId === 'vista-concentrado') ccAlEntrar();
       if (vistaId === 'vista-alimentacion') acAlEntrar();
+      if (vistaId === 'vista-gastos') gxAlEntrar();
       if (typeof actualizarBarraUbic === 'function') actualizarBarraUbic();
     }
     function irGrupo(grupo) { cambiarVista(navEstado.ultima[grupo] || GRUPOS[grupo].tabs[0][0]); }
@@ -1745,6 +1941,425 @@
     document.addEventListener('click', ev => { const p = document.getElementById('usrPanel'); if (p && p.classList.contains('ver') && !ev.target.closest('.usr-menu')) p.classList.remove('ver'); });
     pintarPestanas('animales');
 
+
+    // ===================== MÓDULO ADMINISTRATIVO > GASTOS =====================
+    let GX = { gastos: [], cat: null, estado: 'abiertos', abiertos: {}, cargado: false, cargando: false,
+               animSel: [], idCapGasto: '', idCapPago: '', anular: null, pagoGasto: '', adjuntar: null, enviando: false };
+    let gxTimerBusca = null;
+
+    function gxEsc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function gxQ(n) { return 'Q ' + (Number(n) || 0).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    function gxFecha(iso) { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); return m ? m[3] + '/' + m[2] + '/' + m[1] : (iso || ''); }
+    function gxUuid() { try { if (crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {} return 'c' + Date.now() + '-' + Math.random().toString(36).slice(2, 10); }
+    function gxEl(id) { return document.getElementById(id); }
+    function gxMsg(id, texto, tipo) { const e = gxEl(id); if (!e) return; e.className = 'gx-msg' + (tipo ? ' ' + tipo : ''); e.textContent = texto || ''; }
+    function gxAbrir(id) { gxEl(id).style.display = 'flex'; }
+    function gxCerrar(id) { gxEl(id).style.display = 'none'; }
+    function gxOpts(lista, vacio) { return (vacio ? '<option value="">' + gxEsc(vacio) + '</option>' : '') + lista.map(x => '<option value="' + gxEsc(x) + '">' + gxEsc(x) + '</option>').join(''); }
+
+    function gxAlEntrar() { gxCargar(); }
+
+    function gxCargar() {
+      if (GX.cargando) return;
+      GX.cargando = true;
+      return fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'GASTOS_LISTAR' }) })
+        .then(r => r.json())
+        .then(d => {
+          GX.cargando = false;
+          if (d.error) { if (!d.sesionInvalida) gxEl('gxLista').innerHTML = '<div class="u-error">' + gxEsc(d.error) + '</div>'; return; }
+          GX.gastos = d.gastos || []; GX.cat = d.catalogos; GX.cargado = true;
+          gxEl('gxProvs').innerHTML = GX.cat.proveedores.map(p => '<option value="' + gxEsc(p) + '">').join('');
+          gxEl('gxBancos').innerHTML = GX.cat.bancos.map(p => '<option value="' + gxEsc(p) + '">').join('');
+          const pv = gxEl('gxProvFiltro'), cv = gxEl('gxCatFiltro'), pSel = pv.value, cSel = cv.value;
+          pv.innerHTML = gxOpts(GX.cat.proveedores, 'Todos los proveedores'); pv.value = GX.cat.proveedores.indexOf(pSel) >= 0 ? pSel : '';
+          cv.innerHTML = gxOpts(GX.cat.categorias, 'Todas las categorías'); cv.value = GX.cat.categorias.indexOf(cSel) >= 0 ? cSel : '';
+          gxPintar();
+        })
+        .catch(() => { GX.cargando = false; gxEl('gxLista').innerHTML = '<div class="u-error">No se pudo conectar. Revisa tu internet e intenta de nuevo.</div>'; });
+    }
+
+    function gxEstadoChip(e) { GX.estado = e; gxPintar(); }
+
+    function gxFiltrados() {
+      const q = gxEl('gxBuscar').value.trim().toLowerCase(), prov = gxEl('gxProvFiltro').value, cat = gxEl('gxCatFiltro').value;
+      const desde = gxEl('gxDesde').value, hasta = gxEl('gxHasta').value;
+      return GX.gastos.filter(g => {
+        if (GX.estado === 'abiertos' && !(g.estado === 'Pendiente' || g.estado === 'Parcial')) return false;
+        if (GX.estado === 'pagados' && g.estado !== 'Pagado') return false;
+        if (GX.estado === 'anulados' && g.estado !== 'Anulado') return false;
+        if (prov && g.proveedor !== prov) return false;
+        if (cat && g.categoria !== cat) return false;
+        if (desde && g.fecha < desde) return false;
+        if (hasta && g.fecha > hasta) return false;
+        if (q) {
+          const pag = g.pagos.map(p => [p.id, p.referencia, p.banco, p.monto].join(' ')).join(' ');
+          const txt = [g.id, g.proveedor, g.concepto, g.factura, g.categoria, g.monto, g.notas, pag].join(' ').toLowerCase();
+          if (txt.indexOf(q) < 0) return false;
+        }
+        return true;
+      });
+    }
+
+    function gxPintar() {
+      if (!GX.cargado) return;
+      const abiertos = GX.gastos.filter(g => g.estado === 'Pendiente' || g.estado === 'Parcial');
+      gxEl('gxResPorPagar').textContent = gxQ(abiertos.reduce((s, g) => s + g.saldo, 0));
+      gxEl('gxResAbiertos').textContent = abiertos.length;
+      gxEl('gxResFotos').textContent = GX.gastos.reduce((s, g) => s + g.pagos.filter(p => p.faltaFoto).length, 0);
+      const chips = [['abiertos', 'Por pagar'], ['pagados', 'Pagados'], ['anulados', 'Anulados'], ['todos', 'Todos']];
+      gxEl('gxChips').innerHTML = chips.map(c => '<button type="button" class="gx-chip' + (GX.estado === c[0] ? ' sel' : '') + '" onclick="gxEstadoChip(\'' + c[0] + '\')">' + c[1] + '</button>').join('');
+      const lista = gxFiltrados();
+      const cont = gxEl('gxLista');
+      if (!lista.length) { cont.innerHTML = '<div class="cc-vacio">' + (GX.gastos.length ? 'No hay gastos con esos filtros.' : 'Todavía no hay gastos registrados.') + '</div>'; return; }
+      const total = lista.reduce((s, g) => s + (g.estado === 'Anulado' ? 0 : g.monto), 0);
+      const saldo = lista.reduce((s, g) => s + g.saldo, 0);
+      cont.innerHTML = '<div class="gx-sub" style="margin:0 2px 10px">' + lista.length + ' gasto(s) · Total ' + gxQ(total) + ' · Saldo ' + gxQ(saldo) + '</div>' + lista.map(gxTarjeta).join('');
+    }
+
+    function gxTarjeta(g) {
+      const ab = !!GX.abiertos[g.id];
+      let h = '<div class="gx-item' + (g.anulado ? ' anul' : '') + '">';
+      h += '<div class="gx-cab" onclick="gxToggle(\'' + g.id + '\')"><div style="min-width:0"><div class="gx-prov">' + gxEsc(g.proveedor || '—') + '</div>' +
+        '<div class="gx-sub">' + gxFecha(g.fecha) + ' · ' + gxEsc(g.categoria) + '<br>' + gxEsc(g.concepto) + '</div></div>' +
+        '<div class="gx-der"><div class="gx-monto">' + gxQ(g.monto) + '</div>' + (g.saldo > 0 ? '<div class="gx-saldo">Saldo ' + gxQ(g.saldo) + '</div>' : '') +
+        '<span class="gx-tag ' + g.estado + '">' + g.estado + '</span>' + (g.faltaFoto ? '<span class="gx-tag foto">falta foto</span>' : '') + '</div></div>';
+      if (ab) h += gxDetalle(g);
+      return h + '</div>';
+    }
+
+    function gxDetalle(g) {
+      let h = '<div class="gx-det"><dl>';
+      h += '<dt>ID</dt><dd>' + gxEsc(g.id) + (g.usuario ? ' · ' + gxEsc(g.usuario) : '') + '</dd>';
+      if (g.factura || g.facturaUrl) h += '<dt>Factura</dt><dd>' + (g.facturaUrl ? '<a href="' + gxEsc(g.facturaUrl) + '" target="_blank" rel="noopener">' + gxEsc(g.factura || 'Ver foto') + ' (ver foto)</a>' : gxEsc(g.factura) + ' <span style="color:var(--apagado)">· sin foto</span>') + '</dd>';
+      else if (!g.anulado) h += '<dt>Factura</dt><dd style="color:var(--apagado)">Sin número ni foto</dd>';
+      if (g.vence) h += '<dt>Vence</dt><dd>' + gxFecha(g.vence) + '</dd>';
+      if (g.nivel) h += '<dt>Reparto</dt><dd>' + gxEsc(g.nivel) + (g.destino ? ' · ' + gxEsc(g.destino) : '') + ' <a href="#" onclick="gxVerAnimales(\'' + g.id + '\'); return false;">ver animales</a><div id="gxAn-' + g.id + '"></div></dd>';
+      else h += '<dt>Reparto</dt><dd style="color:var(--apagado)">No se reparte entre animales</dd>';
+      if (g.notas) h += '<dt>Notas</dt><dd>' + gxEsc(g.notas) + '</dd>';
+      if (g.anulado) h += '<dt>Anulado</dt><dd>' + gxEsc(g.motivo) + '</dd>';
+      h += '<dt>Pagado</dt><dd>' + gxQ(g.pagado) + ' de ' + gxQ(g.monto) + '</dd></dl>';
+      if (g.pagos.length) {
+        h += '<div class="cc-lbl" style="margin-bottom:4px">Pagos</div>';
+        h += g.pagos.map(p => '<div class="gx-pago' + (p.anulado ? ' anul' : '') + '"><div><b>' + gxQ(p.monto) + '</b> · ' + gxEsc(p.forma) + '<small>' + gxFecha(p.fecha) + ' · ' + gxEsc(p.id) +
+          (p.banco ? ' · ' + gxEsc(p.banco) : '') + (p.referencia ? ' · ' + gxEsc(p.referencia) : '') + (p.anulado ? ' · ANULADO: ' + gxEsc(p.motivo) : '') + '</small></div><div style="text-align:right">' +
+          (p.url ? '<a href="' + gxEsc(p.url) + '" target="_blank" rel="noopener">ver foto</a>' : (p.faltaFoto ? '<span class="gx-tag foto" style="margin:0">falta foto</span>' : '')) +
+          (!p.anulado ? '<div class="gx-btns" style="margin-top:6px; justify-content:flex-end">' + (!p.url ? '<button type="button" class="gx-btn-sec" onclick="gxAdjuntar(\'pago\',\'' + p.id + '\')">Adjuntar foto</button>' : '') + '<button type="button" class="gx-peligro" onclick="gxAnular(\'pago\',\'' + p.id + '\')">Anular</button></div>' : '') + '</div></div>').join('');
+      }
+      if (!g.anulado) {
+        h += '<div class="gx-btns">';
+        if (g.saldo > 0) h += '<button type="button" onclick="gxAbrirPago(\'' + g.id + '\')">Registrar pago</button>';
+        if (!g.facturaUrl) h += '<button type="button" class="gx-btn-sec" onclick="gxAdjuntar(\'gasto\',\'' + g.id + '\')">Adjuntar foto de factura</button>';
+        h += '<button type="button" class="gx-peligro" onclick="gxAnular(\'gasto\',\'' + g.id + '\')">Anular gasto</button></div>';
+      }
+      return h + '</div>';
+    }
+
+    function gxToggle(id) { if (GX.abiertos[id]) delete GX.abiertos[id]; else GX.abiertos[id] = true; gxPintar(); }
+
+    function gxVerAnimales(id) {
+      const cont = gxEl('gxAn-' + id); if (!cont) return;
+      cont.innerHTML = '<div class="gx-sub">Cargando…</div>';
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'GASTO_DETALLE', id: id }) }).then(r => r.json()).then(d => {
+        if (d.error) { cont.innerHTML = '<div class="u-error">' + gxEsc(d.error) + '</div>'; return; }
+        if (!d.cantidad) { cont.innerHTML = '<div class="gx-sub">' + gxEsc(d.nota || 'No hay animales en este destino por ahora.') + '</div>'; return; }
+        cont.innerHTML = '<div class="gx-sub" style="margin-top:6px">' + d.cantidad + ' animal(es) · ' + gxQ(d.porAnimal) + ' por animal (con los animales de hoy)</div>' +
+          '<div class="gx-sel-chips">' + d.animales.slice(0, 40).map(a => '<span style="padding:4px 10px">' + gxEsc(a.arete || '—') + ' / ' + gxEsc(a.idAnimal || '—') + '</span>').join('') + (d.cantidad > 40 ? '<span style="padding:4px 10px">+' + (d.cantidad - 40) + ' más</span>' : '') + '</div>';
+      }).catch(() => { cont.innerHTML = '<div class="u-error">No se pudo conectar.</div>'; });
+    }
+
+    // ---------- Fotos ----------
+    function gxArchivo(input) {
+      return new Promise((resolve, reject) => {
+        const f = input && input.files && input.files[0];
+        if (!f) { resolve(null); return; }
+        const leerCrudo = () => {
+          if (f.size > 6 * 1024 * 1024) { reject(new Error('El archivo pesa demasiado (máximo 6 MB).')); return; }
+          const fr = new FileReader();
+          fr.onload = () => resolve({ datos: String(fr.result).split(',')[1], tipo: f.type || 'image/jpeg' });
+          fr.onerror = () => reject(new Error('No se pudo leer el archivo.'));
+          fr.readAsDataURL(f);
+        };
+        if (f.type === 'application/pdf' || !/^image\//.test(f.type)) { leerCrudo(); return; }
+        const url = URL.createObjectURL(f), img = new Image();
+        img.onload = () => {
+          try {
+            const max = 1600, esc = Math.min(1, max / Math.max(img.width, img.height));
+            const c = document.createElement('canvas'); c.width = Math.round(img.width * esc); c.height = Math.round(img.height * esc);
+            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+            URL.revokeObjectURL(url);
+            resolve({ datos: c.toDataURL('image/jpeg', 0.82).split(',')[1], tipo: 'image/jpeg' });
+          } catch (e) { URL.revokeObjectURL(url); leerCrudo(); }
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); leerCrudo(); };
+        img.src = url;
+      });
+    }
+
+    function gxAdjuntar(tipo, id) { GX.adjuntar = { tipo: tipo, id: id }; const i = gxEl('gxArchivoAdjuntar'); i.value = ''; i.click(); }
+    function gxAdjuntarElegido(input) {
+      const ctx = GX.adjuntar; if (!ctx || !input.files.length) return;
+      gxArchivo(input).then(foto => {
+        if (!foto) return;
+        return fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'GASTOS_ADJUNTAR', tipo: ctx.tipo, id: ctx.id, foto: foto }) }).then(r => r.json()).then(d => {
+          if (d.error) { alert(d.error); return; }
+          return gxCargar();
+        });
+      }).catch(e => alert(e.message || 'No se pudo subir la foto.')).then(() => { input.value = ''; });
+    }
+
+    // ---------- Campos de pago (los usan "nuevo gasto" y "registrar pago") ----------
+    function gxCamposPago(p) {
+      return '<div class="gx-g2"><div class="form-group"><label for="' + p + 'Fecha">Fecha del pago</label><input type="date" id="' + p + 'Fecha"></div>' +
+        '<div class="form-group"><label for="' + p + 'Monto">Monto pagado (Q)</label><input type="number" id="' + p + 'Monto" inputmode="decimal" min="0" step="0.01" placeholder="0.00"></div></div>' +
+        '<div class="form-group"><label for="' + p + 'Forma">Forma de pago</label><select id="' + p + 'Forma" onchange="gxPagoForma(\'' + p + '\')">' + gxOpts(GX.cat.formasPago, 'Elige…') + '</select></div>' +
+        '<div class="gx-g2"><div class="form-group" id="' + p + 'BancoW" style="display:none"><label for="' + p + 'Banco">Banco</label><input type="text" id="' + p + 'Banco" list="gxBancos" maxlength="60" autocomplete="off"></div>' +
+        '<div class="form-group" id="' + p + 'RefW" style="display:none"><label for="' + p + 'Ref" id="' + p + 'RefL">Referencia</label><input type="text" id="' + p + 'Ref" maxlength="60"></div></div>' +
+        '<div class="form-group" id="' + p + 'FotoW" style="display:none"><label for="' + p + 'Foto" id="' + p + 'FotoL">Foto del comprobante</label><input type="file" id="' + p + 'Foto" accept="image/*,application/pdf"><div class="gx-foto-estado" id="' + p + 'FotoE"></div></div>' +
+        '<div class="form-group"><label for="' + p + 'Notas">Notas del pago</label><input type="text" id="' + p + 'Notas" maxlength="300" placeholder="Opcional"></div>';
+    }
+    function gxPagoForma(p) {
+      const f = gxEl(p + 'Forma').value, c = GX.cat;
+      const banco = c.formasBanco.indexOf(f) >= 0, ref = c.formasReferencia.indexOf(f) >= 0 || f === 'Transferencia';
+      gxEl(p + 'BancoW').style.display = banco ? '' : 'none';
+      gxEl(p + 'RefW').style.display = ref ? '' : 'none';
+      gxEl(p + 'RefL').textContent = f === 'Cheque' ? 'Número de cheque' : (f === 'Depósito' ? 'Número de boleta' : 'Referencia' + (f === 'Transferencia' ? ' (opcional)' : ''));
+      const fotoSi = f === 'Transferencia' || f === 'Tarjeta' || f === 'Depósito' || f === 'Cheque';
+      gxEl(p + 'FotoW').style.display = fotoSi ? '' : 'none';
+      gxEl(p + 'FotoL').textContent = f === 'Tarjeta' ? 'Foto del voucher' : (f === 'Cheque' ? 'Foto del cheque' : (f === 'Depósito' ? 'Foto de la boleta' : 'Foto del comprobante'));
+      gxEl(p + 'FotoE').textContent = c.formasFoto.indexOf(f) >= 0 ? 'Obligatoria, pero puedes guardar ahora y adjuntarla después.' : 'Opcional.';
+    }
+    function gxPagoIniciar(p, monto) {
+      gxEl(p + 'Fecha').value = ccIso(new Date()); gxEl(p + 'Monto').value = monto != null ? (Math.round(monto * 100) / 100) : '';
+      gxEl(p + 'Forma').value = ''; gxPagoForma(p);
+      ['Banco', 'Ref', 'Notas', 'Foto'].forEach(k => { gxEl(p + k).value = ''; });
+    }
+    // Devuelve el pago listo para enviar, o { error }
+    function gxLeerPago(p) {
+      const monto = parseFloat(gxEl(p + 'Monto').value), forma = gxEl(p + 'Forma').value;
+      if (!gxEl(p + 'Fecha').value) return { error: 'Elige la fecha del pago.' };
+      if (!(monto > 0)) return { error: 'Escribe el monto del pago.' };
+      if (!forma) return { error: 'Elige la forma de pago.' };
+      if (GX.cat.formasBanco.indexOf(forma) >= 0 && !gxEl(p + 'Banco').value.trim()) return { error: 'Escribe el banco.' };
+      if (GX.cat.formasReferencia.indexOf(forma) >= 0 && !gxEl(p + 'Ref').value.trim()) return { error: forma === 'Cheque' ? 'Escribe el número de cheque.' : 'Escribe el número de boleta.' };
+      return { fecha: gxEl(p + 'Fecha').value, monto: monto, forma: forma, banco: gxEl(p + 'Banco').value.trim(), referencia: gxEl(p + 'Ref').value.trim(), notas: gxEl(p + 'Notas').value.trim() };
+    }
+
+    // ---------- Nuevo gasto ----------
+    function gxNuevoGasto() {
+      if (!GX.cat) { gxCargar(); alert('Cargando datos… intenta de nuevo en un momento.'); return; }
+      GX.idCapGasto = gxUuid(); GX.animSel = [];
+      gxEl('gxgFecha').value = ccIso(new Date());
+      gxEl('gxgCategoria').innerHTML = gxOpts(GX.cat.categorias, 'Elige…');
+      ['Concepto', 'Proveedor', 'Monto', 'Factura', 'Vence', 'FotoFactura', 'Notas', 'AnimBuscar', 'AnimLista'].forEach(k => { gxEl('gxg' + k).value = ''; });
+      gxEl('gxgLote').innerHTML = gxOpts(GX.cat.lotes.map(l => l.id), 'Elige…');
+      Array.from(gxEl('gxgLote').options).forEach(o => { const l = GX.cat.lotes.find(x => x.id === o.value); if (l && l.nombre) o.textContent = l.id + ' — ' + l.nombre; });
+      gxEl('gxgUbic').innerHTML = gxOpts(GX.cat.ubicaciones, 'Elige…');
+      gxEl('gxgVenta').innerHTML = '<option value="">Elige…</option>' + GX.cat.ventas.map(v => '<option value="' + gxEsc(v.id) + '">' + gxEsc(v.id) + ' · ' + gxFecha(v.fecha) + ' · ' + gxEsc(v.cliente) + ' (' + v.cantidad + ')</option>').join('');
+      gxEl('gxgPagarAhora').checked = false; gxEl('gxgPagoCampos').style.display = 'none'; gxEl('gxgPagoCampos').innerHTML = '';
+      gxEl('gxgAnimRes').style.display = 'none'; gxEl('gxgAnimRes').innerHTML = '';
+      gxMsg('gxgMsg', ''); gxMsg('gxgAnimMsg', '');
+      gxCambiaCategoria(); gxPintarAnimSel();
+      gxEl('gxgGuardar').disabled = false; gxEl('gxgGuardar').textContent = 'Guardar gasto';
+      gxAbrir('gxModalGasto');
+    }
+
+    function gxCambiaCategoria() {
+      const c = gxEl('gxgCategoria').value, cat = GX.cat;
+      const sin = c && cat.sinDestino.indexOf(c) >= 0, soloVenta = cat.soloVenta.indexOf(c) >= 0;
+      const nota = gxEl('gxgSinDestino');
+      gxEl('gxgConDestino').style.display = (!c || sin) ? 'none' : '';
+      nota.style.display = (!c || sin) ? '' : 'none';
+      nota.textContent = !c ? 'Elige primero la categoría.' : (c === 'Compra de animales' ? 'La compra de animales no se reparte: es el costo propio de cada animal.'
+        : (c === 'Concentrado' || c === 'Flete de concentrado' ? 'El concentrado y su flete se reparten con su propio cálculo de alimentación, no aquí.' : 'Esta categoría no se reparte entre animales.'));
+      const niveles = soloVenta ? ['Venta'] : cat.niveles;
+      const actual = gxEl('gxgNivel').value;
+      gxEl('gxgNivel').innerHTML = gxOpts(niveles, soloVenta ? '' : 'Elige…');
+      gxEl('gxgNivel').value = niveles.indexOf(actual) >= 0 ? actual : (soloVenta ? 'Venta' : '');
+      gxCambiaNivel();
+    }
+    function gxCambiaNivel() {
+      const n = gxEl('gxgNivel').value;
+      gxEl('gxgDestLote').style.display = n === 'Lote' ? '' : 'none';
+      gxEl('gxgDestUbic').style.display = n === 'Ubicación' ? '' : 'none';
+      gxEl('gxgDestVenta').style.display = n === 'Venta' ? '' : 'none';
+      gxEl('gxgDestGeneral').style.display = n === 'General' ? '' : 'none';
+      gxEl('gxgDestAnim').style.display = n === 'Animales personalizados' ? '' : 'none';
+    }
+    function gxTogglePagoAhora() {
+      const on = gxEl('gxgPagarAhora').checked, cont = gxEl('gxgPagoCampos');
+      cont.style.display = on ? '' : 'none';
+      if (on) { cont.innerHTML = gxCamposPago('gxgp'); const m = parseFloat(gxEl('gxgMonto').value); gxPagoIniciar('gxgp', m > 0 ? m : null); gxEl('gxgpFecha').value = gxEl('gxgFecha').value || ccIso(new Date()); }
+      else cont.innerHTML = '';
+    }
+
+    // ---------- Animales personalizados ----------
+    function gxBuscarAnimalesDebounce() { clearTimeout(gxTimerBusca); gxTimerBusca = setTimeout(gxBuscarAnimales, 350); }
+    function gxBuscarAnimales() {
+      const q = gxEl('gxgAnimBuscar').value.trim(), res = gxEl('gxgAnimRes');
+      if (!q) { res.style.display = 'none'; return; }
+      res.style.display = ''; res.innerHTML = '<div class="gx-sub" style="padding:10px">Buscando…</div>';
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'GASTOS_BUSCAR_ANIMALES', texto: q }) }).then(r => r.json()).then(d => {
+        if (gxEl('gxgAnimBuscar').value.trim() !== q) return;
+        if (d.error) { res.innerHTML = '<div class="u-error">' + gxEsc(d.error) + '</div>'; return; }
+        gxPintarResultados(d.animales || [], d.total);
+      }).catch(() => { res.innerHTML = '<div class="u-error">No se pudo conectar.</div>'; });
+    }
+    function gxPintarResultados(animales, total) {
+      const res = gxEl('gxgAnimRes'); res.style.display = '';
+      if (!animales.length) { res.innerHTML = '<div class="gx-sub" style="padding:10px">No se encontró ningún animal activo con eso.</div>'; return; }
+      GX.ultimosResultados = animales;
+      res.innerHTML = animales.map((a, i) => '<label><input type="checkbox" ' + (GX.animSel.some(s => s.llave === a.llave) ? 'checked ' : '') + 'onchange="gxMarcarAnimal(' + i + ', this.checked)"><div><b>' + gxEsc(a.arete || '—') + ' / ' + gxEsc(a.idAnimal || '—') + '</b><small>' + gxEsc(a.lote) + ' · ' + gxEsc(a.ubicacion || 'sin ubicación') + '</small></div></label>').join('') +
+        (total > animales.length ? '<div class="gx-sub" style="padding:8px 10px">Hay ' + total + ' coincidencias; escribe más para afinar.</div>' : '');
+    }
+    function gxMarcarAnimal(i, marcado) {
+      const a = GX.ultimosResultados[i]; if (!a) return;
+      if (marcado) { if (!GX.animSel.some(s => s.llave === a.llave)) GX.animSel.push(a); }
+      else GX.animSel = GX.animSel.filter(s => s.llave !== a.llave);
+      gxPintarAnimSel();
+    }
+    function gxQuitarAnimal(llave) { GX.animSel = GX.animSel.filter(s => s.llave !== llave); gxPintarAnimSel(); if (GX.ultimosResultados && gxEl('gxgAnimRes').style.display !== 'none') gxPintarResultados(GX.ultimosResultados); }
+    function gxPintarAnimSel() {
+      gxEl('gxgAnimCuenta').textContent = GX.animSel.length ? GX.animSel.length + ' animal(es) elegido(s)' : 'Ningún animal elegido';
+      gxEl('gxgAnimSel').innerHTML = GX.animSel.map(a => '<span>' + gxEsc(a.arete || '—') + ' / ' + gxEsc(a.idAnimal || '—') + '<i onclick="gxQuitarAnimal(\'' + gxEsc(a.llave) + '\')" title="Quitar">×</i></span>').join('');
+    }
+    function gxAgregarLista() {
+      const txt = gxEl('gxgAnimLista').value.trim(); if (!txt) return;
+      gxMsg('gxgAnimMsg', 'Buscando…');
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'GASTOS_BUSCAR_ANIMALES', lista: txt }) }).then(r => r.json()).then(d => {
+        if (d.error) { gxMsg('gxgAnimMsg', d.error, 'err'); return; }
+        (d.encontrados || []).forEach(a => { if (!GX.animSel.some(s => s.llave === a.llave)) GX.animSel.push(a); });
+        gxPintarAnimSel();
+        let m = (d.encontrados || []).length + ' agregado(s).';
+        if ((d.noEncontrados || []).length) m += ' No encontré (o no están activos): ' + d.noEncontrados.slice(0, 15).join(', ') + (d.noEncontrados.length > 15 ? '…' : '') + '.';
+        const amb = d.ambiguos || [];
+        if (amb.length) {
+          m += ' Estos coinciden con varios animales, elígelos abajo: ' + amb.map(x => x.texto).join(', ') + '.';
+          GX.ultimosResultados = [].concat.apply([], amb.map(x => x.opciones)); gxPintarResultados(GX.ultimosResultados);
+        }
+        gxMsg('gxgAnimMsg', m, (d.noEncontrados || []).length || amb.length ? 'err' : 'ok');
+        if (!(d.noEncontrados || []).length && !amb.length) gxEl('gxgAnimLista').value = '';
+      }).catch(() => gxMsg('gxgAnimMsg', 'No se pudo conectar.', 'err'));
+    }
+
+    // ---------- Guardar gasto ----------
+    async function gxGuardarGasto() {
+      if (GX.enviando) return;
+      const cat = gxEl('gxgCategoria').value;
+      const dato = { accion: 'GASTO_REGISTRAR', idCaptura: GX.idCapGasto, fecha: gxEl('gxgFecha').value, categoria: cat, concepto: gxEl('gxgConcepto').value.trim(),
+        proveedor: gxEl('gxgProveedor').value.trim(), monto: parseFloat(gxEl('gxgMonto').value), vence: gxEl('gxgVence').value, factura: gxEl('gxgFactura').value.trim(), notas: gxEl('gxgNotas').value.trim() };
+      const err = m => { gxMsg('gxgMsg', m, 'err'); return null; };
+      if (!dato.fecha) return err('Elige la fecha.');
+      if (!cat) return err('Elige la categoría.');
+      if (!dato.concepto) return err('Escribe el concepto.');
+      if (!dato.proveedor) return err('Escribe el proveedor.');
+      if (!(dato.monto > 0)) return err('Escribe el monto total.');
+      if (GX.cat.sinDestino.indexOf(cat) < 0) {
+        const nivel = GX.cat.soloVenta.indexOf(cat) >= 0 ? 'Venta' : gxEl('gxgNivel').value;
+        if (!nivel) return err('Elige a quién se le reparte el gasto.');
+        dato.nivel = nivel;
+        if (nivel === 'Lote') { dato.destino = gxEl('gxgLote').value; if (!dato.destino) return err('Elige el lote.'); }
+        else if (nivel === 'Ubicación') { dato.destino = gxEl('gxgUbic').value; if (!dato.destino) return err('Elige la ubicación.'); }
+        else if (nivel === 'Venta') { dato.destino = gxEl('gxgVenta').value; if (!dato.destino) return err('Elige la venta.'); }
+        else if (nivel === 'Animales personalizados') { dato.destino = GX.animSel.map(a => a.llave); if (!dato.destino.length) return err('Elige al menos un animal.'); }
+      }
+      let pago = null;
+      if (gxEl('gxgPagarAhora').checked) {
+        pago = gxLeerPago('gxgp'); if (pago.error) return err(pago.error);
+        if (pago.monto > dato.monto + 0.005) return err('El pago no puede ser mayor que el monto del gasto.');
+      }
+      GX.enviando = true; const btn = gxEl('gxgGuardar'); btn.disabled = true; btn.textContent = 'Guardando…'; gxMsg('gxgMsg', '');
+      try {
+        dato.facturaFoto = await gxArchivo(gxEl('gxgFotoFactura'));
+        if (pago) { pago.foto = await gxArchivo(gxEl('gxgpFoto')); dato.pago = pago; }
+        const d = await fetch(API_URL, { method: 'POST', body: JSON.stringify(dato) }).then(r => r.json());
+        if (d.error) { gxMsg('gxgMsg', d.error, 'err'); btn.disabled = false; btn.textContent = 'Guardar gasto'; GX.enviando = false; return; }
+        GX.enviando = false;
+        gxCerrar('gxModalGasto');
+        if (d.avisoPago) alert(d.avisoPago);
+        if (d.id) GX.abiertos[d.id] = true;
+        if (GX.estado === 'pagados' || GX.estado === 'anulados') GX.estado = 'abiertos';
+        gxEl('gxBuscar').value = '';
+        await gxCargar();
+      } catch (e) {
+        GX.enviando = false; btn.disabled = false; btn.textContent = 'Guardar gasto';
+        gxMsg('gxgMsg', (e && e.message && !/fetch|network/i.test(e.message)) ? e.message : 'No se pudo conectar. Revisa tu internet e intenta de nuevo (no se duplicará).', 'err');
+      }
+    }
+
+    // ---------- Registrar pago ----------
+    function gxAbrirPago(gastoId) {
+      if (!GX.cat) { gxCargar(); alert('Cargando datos… intenta de nuevo en un momento.'); return; }
+      const abiertos = GX.gastos.filter(g => g.saldo > 0 && !g.anulado);
+      if (!abiertos.length) { alert('No hay gastos con saldo pendiente.'); return; }
+      GX.idCapPago = gxUuid(); GX.pagoGasto = gastoId || '';
+      const provs = Array.from(new Set(abiertos.map(g => g.proveedor))).sort((a, b) => a.localeCompare(b));
+      const sel = gxEl('gxpProveedor'); sel.innerHTML = gxOpts(provs, 'Elige el proveedor…');
+      const g0 = gastoId ? abiertos.find(g => g.id === gastoId) : null;
+      sel.value = g0 ? g0.proveedor : '';
+      gxEl('gxpCampos').innerHTML = gxCamposPago('gxpp'); gxPagoIniciar('gxpp', null);
+      gxMsg('gxpMsg', ''); gxEl('gxpGuardar').disabled = false; gxEl('gxpGuardar').textContent = 'Guardar pago';
+      gxPagoCambiaProveedor(gastoId);
+      gxAbrir('gxModalPago');
+    }
+    function gxPagoCambiaProveedor(preselec) {
+      const prov = gxEl('gxpProveedor').value, cont = gxEl('gxpGastos');
+      if (typeof preselec !== 'string') GX.pagoGasto = '';
+      if (!prov) { cont.innerHTML = ''; return; }
+      const lista = GX.gastos.filter(g => g.proveedor === prov && g.saldo > 0 && !g.anulado).sort((a, b) => a.fecha < b.fecha ? -1 : 1);
+      if (!GX.pagoGasto || !lista.some(g => g.id === GX.pagoGasto)) GX.pagoGasto = lista.length === 1 ? lista[0].id : '';
+      cont.innerHTML = '<div class="cc-lbl">Gasto que abonas</div>' + lista.map(g => '<label class="gx-radio' + (GX.pagoGasto === g.id ? ' sel' : '') + '"><input type="radio" name="gxpG" value="' + g.id + '"' + (GX.pagoGasto === g.id ? ' checked' : '') + ' onchange="gxPagoElegirGasto(\'' + g.id + '\')"><div><b>' + gxQ(g.saldo) + '</b> de ' + gxQ(g.monto) + '<br><span style="color:var(--apagado)">' + gxFecha(g.fecha) + ' · ' + gxEsc(g.concepto) + (g.factura ? ' · Fact. ' + gxEsc(g.factura) : '') + '</span></div></label>').join('');
+      if (GX.pagoGasto) { const g = lista.find(x => x.id === GX.pagoGasto); if (g && !gxEl('gxppMonto').value) gxEl('gxppMonto').value = g.saldo; }
+    }
+    function gxPagoElegirGasto(id) {
+      GX.pagoGasto = id; const g = GX.gastos.find(x => x.id === id);
+      if (g) gxEl('gxppMonto').value = g.saldo;
+      document.querySelectorAll('#gxpGastos .gx-radio').forEach(l => l.classList.toggle('sel', l.querySelector('input').value === id));
+    }
+    async function gxGuardarPago() {
+      if (GX.enviando) return;
+      if (!gxEl('gxpProveedor').value) { gxMsg('gxpMsg', 'Elige el proveedor.', 'err'); return; }
+      if (!GX.pagoGasto) { gxMsg('gxpMsg', 'Elige el gasto que vas a abonar.', 'err'); return; }
+      const g = GX.gastos.find(x => x.id === GX.pagoGasto);
+      const pago = gxLeerPago('gxpp'); if (pago.error) { gxMsg('gxpMsg', pago.error, 'err'); return; }
+      if (g && pago.monto > g.saldo + 0.005) { gxMsg('gxpMsg', 'El pago (' + gxQ(pago.monto) + ') es mayor que el saldo (' + gxQ(g.saldo) + ').', 'err'); return; }
+      GX.enviando = true; const btn = gxEl('gxpGuardar'); btn.disabled = true; btn.textContent = 'Guardando…'; gxMsg('gxpMsg', '');
+      try {
+        pago.foto = await gxArchivo(gxEl('gxppFoto'));
+        const d = await fetch(API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ accion: 'PAGO_REGISTRAR', idCaptura: GX.idCapPago, gastoId: GX.pagoGasto }, pago)) }).then(r => r.json());
+        GX.enviando = false;
+        if (d.error) { gxMsg('gxpMsg', d.error, 'err'); btn.disabled = false; btn.textContent = 'Guardar pago'; return; }
+        gxCerrar('gxModalPago'); GX.abiertos[GX.pagoGasto] = true;
+        await gxCargar();
+      } catch (e) {
+        GX.enviando = false; btn.disabled = false; btn.textContent = 'Guardar pago';
+        gxMsg('gxpMsg', (e && e.message && !/fetch|network/i.test(e.message)) ? e.message : 'No se pudo conectar. Intenta de nuevo (no se duplicará).', 'err');
+      }
+    }
+
+    // ---------- Anular ----------
+    function gxAnular(tipo, id) {
+      GX.anular = { tipo: tipo, id: id };
+      let detalle = '';
+      if (tipo === 'gasto') { const g = GX.gastos.find(x => x.id === id); detalle = g ? g.id + ' · ' + g.proveedor + ' · ' + gxQ(g.monto) + ' · ' + g.concepto : id; gxEl('gxaTitulo').textContent = 'Anular gasto'; }
+      else { let p = null; GX.gastos.forEach(g => g.pagos.forEach(x => { if (x.id === id) p = x; })); detalle = p ? p.id + ' · ' + gxQ(p.monto) + ' · ' + p.forma + ' · ' + gxFecha(p.fecha) : id; gxEl('gxaTitulo').textContent = 'Anular pago'; }
+      gxEl('gxaDetalle').textContent = detalle;
+      gxEl('gxaMotivo').value = ''; gxEl('gxaPin').value = ''; gxMsg('gxaMsg', '');
+      gxEl('gxaConfirmar').disabled = false; gxEl('gxaConfirmar').textContent = 'Anular definitivamente';
+      gxAbrir('gxModalAnular');
+    }
+    function gxConfirmarAnular() {
+      if (!GX.anular || GX.enviando) return;
+      const motivo = gxEl('gxaMotivo').value.trim(), pin = gxEl('gxaPin').value.trim();
+      if (motivo.length < 3) { gxMsg('gxaMsg', 'Escribe el motivo.', 'err'); return; }
+      if (!/^\d{4}$/.test(pin)) { gxMsg('gxaMsg', 'Escribe tu PIN de 4 números.', 'err'); return; }
+      GX.enviando = true; const btn = gxEl('gxaConfirmar'); btn.disabled = true; btn.textContent = 'Anulando…';
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: GX.anular.tipo === 'gasto' ? 'GASTO_ANULAR' : 'PAGO_ANULAR', id: GX.anular.id, motivo: motivo, pin: pin }) })
+        .then(r => r.json()).then(d => {
+          GX.enviando = false;
+          if (d.error) { gxMsg('gxaMsg', d.error, 'err'); btn.disabled = false; btn.textContent = 'Anular definitivamente'; gxEl('gxaPin').value = ''; return; }
+          gxCerrar('gxModalAnular'); return gxCargar();
+        }).catch(() => { GX.enviando = false; btn.disabled = false; btn.textContent = 'Anular definitivamente'; gxMsg('gxaMsg', 'No se pudo conectar. Intenta de nuevo.', 'err'); });
+    }
 
     // ===================== MÓDULO CONCENTRADO =====================
     const CC_TIPOS = ['Desarrollo', 'Etapa 1', 'Etapa 2', 'Etapa 3'];
