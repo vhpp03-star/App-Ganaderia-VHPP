@@ -272,6 +272,7 @@
     .gx-tag.Pendiente { background:rgba(245,181,68,.12); color:var(--ambar); border:1px solid #7A5A1E; }
     .gx-tag.Parcial { background:rgba(141,187,245,.10); color:#8DBBF5; border:1px solid #2B5B8E; }
     .gx-tag.Pagado { background:rgba(110,231,183,.1); color:#6EE7B7; border:1px solid #2F7D5B; }
+    .gx-tag.Sobrepagado { background:rgba(252,165,165,.12); color:#FCA5A5; border:1px solid #B91C1C; }
     .gx-tag.Anulado { background:transparent; color:var(--apagado); border:1px dashed #2F443A; }
     .gx-tag.foto { background:rgba(252,165,165,.10); color:#FCA5A5; border:1px solid #7F3A3A; margin-left:5px; }
     .gx-det { border-top:1px solid var(--borde); padding:12px 14px 14px; background:var(--superficie-2); font-size:14px; }
@@ -1984,7 +1985,7 @@
       const q = gxEl('gxBuscar').value.trim().toLowerCase(), prov = gxEl('gxProvFiltro').value, cat = gxEl('gxCatFiltro').value;
       const desde = gxEl('gxDesde').value, hasta = gxEl('gxHasta').value;
       return GX.gastos.filter(g => {
-        if (GX.estado === 'abiertos' && !(g.estado === 'Pendiente' || g.estado === 'Parcial')) return false;
+        if (GX.estado === 'abiertos' && !(g.estado === 'Pendiente' || g.estado === 'Parcial' || g.estado === 'Sobrepagado')) return false;
         if (GX.estado === 'pagados' && g.estado !== 'Pagado') return false;
         if (GX.estado === 'anulados' && g.estado !== 'Anulado') return false;
         if (prov && g.proveedor !== prov) return false;
@@ -2003,7 +2004,7 @@
     function gxPintar() {
       if (!GX.cargado) return;
       const abiertos = GX.gastos.filter(g => g.estado === 'Pendiente' || g.estado === 'Parcial');
-      gxEl('gxResPorPagar').textContent = gxQ(abiertos.reduce((s, g) => s + g.saldo, 0));
+      gxEl('gxResPorPagar').textContent = gxQ(abiertos.reduce((s, g) => s + Math.max(0, g.saldo), 0));
       gxEl('gxResAbiertos').textContent = abiertos.length;
       gxEl('gxResFotos').textContent = GX.gastos.reduce((s, g) => s + g.pagos.filter(p => p.faltaFoto).length, 0);
       const chips = [['abiertos', 'Por pagar'], ['pagados', 'Pagados'], ['anulados', 'Anulados'], ['todos', 'Todos']];
@@ -2012,7 +2013,7 @@
       const cont = gxEl('gxLista');
       if (!lista.length) { cont.innerHTML = '<div class="cc-vacio">' + (GX.gastos.length ? 'No hay gastos con esos filtros.' : 'Todavía no hay gastos registrados.') + '</div>'; return; }
       const total = lista.reduce((s, g) => s + (g.estado === 'Anulado' ? 0 : g.monto), 0);
-      const saldo = lista.reduce((s, g) => s + g.saldo, 0);
+      const saldo = lista.reduce((s, g) => s + Math.max(0, g.saldo), 0);
       cont.innerHTML = '<div class="gx-sub" style="margin:0 2px 10px">' + lista.length + ' gasto(s) · Total ' + gxQ(total) + ' · Saldo ' + gxQ(saldo) + '</div>' + lista.map(gxTarjeta).join('');
     }
 
@@ -2021,8 +2022,8 @@
       let h = '<div class="gx-item' + (g.anulado ? ' anul' : '') + '">';
       h += '<div class="gx-cab" onclick="gxToggle(\'' + g.id + '\')"><div style="min-width:0"><div class="gx-prov">' + gxEsc(g.proveedor || '—') + '</div>' +
         '<div class="gx-sub">' + gxFecha(g.fecha) + ' · ' + gxEsc(g.categoria) + '<br>' + gxEsc(g.concepto) + '</div></div>' +
-        '<div class="gx-der"><div class="gx-monto">' + gxQ(g.monto) + '</div>' + (g.saldo > 0 ? '<div class="gx-saldo">Saldo ' + gxQ(g.saldo) + '</div>' : '') +
-        '<span class="gx-tag ' + g.estado + '">' + g.estado + '</span>' + (g.faltaFoto ? '<span class="gx-tag foto">falta foto</span>' : '') + '</div></div>';
+        '<div class="gx-der"><div class="gx-monto">' + gxQ(g.monto) + '</div>' + (g.saldo > 0 ? '<div class="gx-saldo">Saldo ' + gxQ(g.saldo) + '</div>' : '') + (g.sobrepago > 0 ? '<div class="gx-saldo" style="color:#FCA5A5">Pagado de más ' + gxQ(g.sobrepago) + '</div>' : '') +
+        '<span class="gx-tag ' + g.estado + '">' + (g.estado === 'Sobrepagado' ? 'Pagado de más' : g.estado) + '</span>' + (g.proveedor === 'Por definir' ? '<span class="gx-tag foto">proveedor por definir</span>' : '') + (g.faltaFoto ? '<span class="gx-tag foto">falta foto</span>' : '') + '</div></div>';
       if (ab) h += gxDetalle(g);
       return h + '</div>';
     }
@@ -2033,7 +2034,8 @@
       if (g.factura || g.facturaUrl) h += '<dt>Factura</dt><dd>' + (g.facturaUrl ? '<a href="' + gxEsc(g.facturaUrl) + '" target="_blank" rel="noopener">' + gxEsc(g.factura || 'Ver foto') + ' (ver foto)</a>' : gxEsc(g.factura) + ' <span style="color:var(--apagado)">· sin foto</span>') + '</dd>';
       else if (!g.anulado) h += '<dt>Factura</dt><dd style="color:var(--apagado)">Sin número ni foto</dd>';
       if (g.vence) h += '<dt>Vence</dt><dd>' + gxFecha(g.vence) + '</dd>';
-      if (g.nivel) h += '<dt>Reparto</dt><dd>' + gxEsc(g.nivel) + (g.destino ? ' · ' + gxEsc(g.destino) : '') + ' <a href="#" onclick="gxVerAnimales(\'' + g.id + '\'); return false;">ver animales</a><div id="gxAn-' + g.id + '"></div></dd>';
+      if (g.origen === 'Compra' && g.destino) h += '<dt>Lote</dt><dd>' + gxEsc(g.destino) + ' · costo propio de cada animal <a href="#" onclick="gxVerAnimales(\'' + g.id + '\'); return false;">ver animales</a><div id="gxAn-' + g.id + '"></div></dd>';
+      else if (g.nivel) h += '<dt>Reparto</dt><dd>' + gxEsc(g.nivel) + (g.destino ? ' · ' + gxEsc(g.destino) : '') + ' <a href="#" onclick="gxVerAnimales(\'' + g.id + '\'); return false;">ver animales</a><div id="gxAn-' + g.id + '"></div></dd>';
       else h += '<dt>Reparto</dt><dd style="color:var(--apagado)">No se reparte entre animales</dd>';
       if (g.notas) h += '<dt>Notas</dt><dd>' + gxEsc(g.notas) + '</dd>';
       if (g.anulado) h += '<dt>Anulado</dt><dd>' + gxEsc(g.motivo) + '</dd>';
@@ -2047,6 +2049,7 @@
       }
       if (!g.anulado) {
         h += '<div class="gx-btns">';
+        if (g.origen === 'Compra') h += '<button type="button" class="gx-btn-sec" onclick="gxEditarProveedor(\'' + g.id + '\')">Editar proveedor</button>';
         if (g.saldo > 0) h += '<button type="button" onclick="gxAbrirPago(\'' + g.id + '\')">Registrar pago</button>';
         if (!g.facturaUrl) h += '<button type="button" class="gx-btn-sec" onclick="gxAdjuntar(\'gasto\',\'' + g.id + '\')">Adjuntar foto de factura</button>';
         h += '<button type="button" class="gx-peligro" onclick="gxAnular(\'gasto\',\'' + g.id + '\')">Anular gasto</button></div>';
@@ -2061,10 +2064,25 @@
       cont.innerHTML = '<div class="gx-sub">Cargando…</div>';
       fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'GASTO_DETALLE', id: id }) }).then(r => r.json()).then(d => {
         if (d.error) { cont.innerHTML = '<div class="u-error">' + gxEsc(d.error) + '</div>'; return; }
+        if (d.propio) {
+          cont.innerHTML = '<div class="gx-sub" style="margin-top:6px">' + d.cantidad + ' animal(es) · costo total ' + gxQ(d.total) + ' (cada animal con su propio costo)</div>' +
+            '<div class="gx-sel-chips">' + d.animales.slice(0, 40).map(a => '<span style="padding:4px 10px">' + gxEsc(a.arete || '—') + ' / ' + gxEsc(a.idAnimal || '—') + ' · ' + gxQ(a.costo) + '</span>').join('') + (d.cantidad > 40 ? '<span style="padding:4px 10px">+' + (d.cantidad - 40) + ' más</span>' : '') + '</div>';
+          return;
+        }
         if (!d.cantidad) { cont.innerHTML = '<div class="gx-sub">' + gxEsc(d.nota || 'No hay animales en este destino por ahora.') + '</div>'; return; }
         cont.innerHTML = '<div class="gx-sub" style="margin-top:6px">' + d.cantidad + ' animal(es) · ' + gxQ(d.porAnimal) + ' por animal (con los animales de hoy)</div>' +
           '<div class="gx-sel-chips">' + d.animales.slice(0, 40).map(a => '<span style="padding:4px 10px">' + gxEsc(a.arete || '—') + ' / ' + gxEsc(a.idAnimal || '—') + '</span>').join('') + (d.cantidad > 40 ? '<span style="padding:4px 10px">+' + (d.cantidad - 40) + ' más</span>' : '') + '</div>';
       }).catch(() => { cont.innerHTML = '<div class="u-error">No se pudo conectar.</div>'; });
+    }
+
+    function gxEditarProveedor(id) {
+      const g = GX.gastos.find(x => x.id === id); if (!g) return;
+      const nuevo = prompt('Proveedor de este gasto:', g.proveedor === 'Por definir' ? '' : g.proveedor);
+      if (nuevo === null || !nuevo.trim()) return;
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion: 'GASTO_EDITAR_PROVEEDOR', id: id, proveedor: nuevo.trim() }) }).then(r => r.json()).then(d => {
+        if (d.error) { alert(d.error); return; }
+        return gxCargar();
+      }).catch(() => alert('No se pudo conectar. Intenta de nuevo.'));
     }
 
     // ---------- Fotos ----------
