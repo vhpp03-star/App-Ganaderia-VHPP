@@ -1512,12 +1512,18 @@
       tbody.innerHTML = resultadosVentaGlobal.map((r, idx) => {
         if (modoVenta === 'rectificar') {
           const a = r.animal;
-          return `<tr>
-            <td>${a.arete || '—'}</td><td>${a.idAnimal || '—'}</td><td>${a.sexo || '—'}</td><td>—</td><td>—</td>
+          const nu = r.nuevo; // animal elegido para reemplazar (si hay)
+          const mostrado = nu || a;
+          const accion = nu
+            ? `<button class="btn-eliminar" onclick="deshacerCambioAnimal(${idx})" style="font-size:11px;">Deshacer</button>`
+            : `<button onclick="toggleCambioAnimal(${idx})" style="background-color:#B7791F;font-size:11px;padding:4px 8px;">Cambiar animal</button>`;
+          return `<tr${nu ? ' style="background:rgba(246,173,85,0.12);"' : ''}>
+            <td>${mostrado.arete || '—'}</td><td>${mostrado.idAnimal || '—'}</td><td>${mostrado.sexo || '—'}</td><td>${mostrado.loteId || '—'}</td><td>${nu ? '—' : (a.pesoCompra || '—')}</td>
             <td><input type="number" value="${a.peso}" oninput="actualizarValorVenta(${idx}, 'peso', this.value)"></td>
             <td><input type="number" value="${a.precio}" oninput="actualizarValorVenta(${idx}, 'precio', this.value)"></td>
-            <td style="color:#2F855A;">Editable</td><td>—</td>
-          </tr>`;
+            <td style="color:${nu ? '#B7791F' : '#2F855A'};">${nu ? 'Cambio pendiente' : 'Editable'}</td><td>${accion}</td>
+          </tr>` + (nu ? `<tr><td colspan="9" style="color:#B7791F;font-size:12px;">Reemplaza a: arete ${a.arete || '—'}, ID ${a.idAnimal || '—'}, ${a.loteId || ''} — ese animal volverá a Activo.</td></tr>` : '') +
+          `<tr id="filaBuscadorCambio_${idx}" style="display:none;"><td colspan="9"><div id="buscadorCambio_${idx}"></div></td></tr>`;
         }
 
         if (r.estado === 'encontrado') {
@@ -1785,8 +1791,45 @@
         .catch(() => alert('Error de red.'));
     }
 
+    // --- Rectificar: cambiar el animal de una fila ---
+    function toggleCambioAnimal(idx) {
+      const fila = document.getElementById(`filaBuscadorCambio_${idx}`);
+      const mostrar = fila.style.display === 'none';
+      fila.style.display = mostrar ? '' : 'none';
+      if (!mostrar) return;
+      document.getElementById(`buscadorCambio_${idx}`).innerHTML =
+        `<input type="text" placeholder="Escribe lote, arete o ID del animal correcto (ej. Lote-008, 92)..." oninput="filtrarCambioAnimal(${idx}, this.value)">
+         <div id="resultadosCambio_${idx}" style="margin-top:6px;max-height:180px;overflow-y:auto;"></div>`;
+      todosAnimalesCache = null; // siempre fresco: así no aparece como Activo uno ya vendido
+      obtenerTodosAnimales(() => filtrarCambioAnimal(idx, ''));
+    }
+    function filtrarCambioAnimal(idx, texto) {
+      const t = texto.toLowerCase().trim();
+      const enOrden = new Set(resultadosVentaGlobal.map(r => Number(r.nuevo ? r.nuevo.filaSheet : r.animal.filaCompra)));
+      const res = (todosAnimalesCache || []).filter(a => (a.estadoAnimal || '') === 'Activo' && !enOrden.has(a.filaSheet) && (
+        t === '' || (a.loteId || '').toLowerCase().includes(t) || (a.arete || '').toString().toLowerCase().includes(t) ||
+        (a.idAnimal || '').toString().toLowerCase().includes(t))).slice(0, 25);
+      const cont = document.getElementById(`resultadosCambio_${idx}`);
+      if (!cont) return;
+      if (res.length === 0) { cont.innerHTML = '<em>Sin resultados (solo aparecen animales Activos)</em>'; return; }
+      cont.innerHTML = res.map(a =>
+        `<label style="display:block;margin:3px 0;"><input type="radio" name="camb_${idx}" onclick="elegirCambioAnimal(${idx}, ${a.filaSheet})"> ${a.loteId} — Arete:${a.arete || '—'} ID:${a.idAnimal || '—'}, ${a.sexo || '—'}${a.caracteristicas ? ', ' + a.caracteristicas : ''}</label>`).join('');
+    }
+    function elegirCambioAnimal(idx, filaSheet) {
+      const a = (todosAnimalesCache || []).find(x => x.filaSheet === filaSheet);
+      if (!a) return;
+      resultadosVentaGlobal[idx].nuevo = { filaSheet: a.filaSheet, arete: a.arete, idAnimal: a.idAnimal, sexo: a.sexo, loteId: a.loteId };
+      renderizarTablaVenta();
+    }
+    function deshacerCambioAnimal(idx) {
+      resultadosVentaGlobal[idx].nuevo = null;
+      renderizarTablaVenta();
+    }
+
     function guardarRectificacionVenta() {
-      const cambios = resultadosVentaGlobal.map(r => ({ filaVenta: r.animal.filaVenta, peso: r.animal.peso, precio: r.animal.precio }));
+      const hayCambioAnimal = resultadosVentaGlobal.filter(r => r.nuevo);
+      if (hayCambioAnimal.length > 0 && !confirm('Vas a cambiar ' + hayCambioAnimal.length + ' animal(es) de la orden ' + idVentaRectificando + '.\nEl animal equivocado volverá a Activo y el elegido quedará como Vendido. ¿Continuar?')) return;
+      const cambios = resultadosVentaGlobal.map(r => ({ filaVenta: r.animal.filaVenta, peso: r.animal.peso, precio: r.animal.precio, nuevaFilaCompra: r.nuevo ? r.nuevo.filaSheet : null }));
       const boton = document.getElementById('btnConfirmarVenta');
       boton.innerText = 'Guardando...'; boton.disabled = true;
 
