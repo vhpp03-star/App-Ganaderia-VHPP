@@ -3388,7 +3388,9 @@
           html += `<div style="color:#C53030;margin:4px 0;">⚠️ ${r.anomalia}</div>`;
         }
 
-        if (r.estado === 'encontrado') {
+        if (esDuplicadoIngreso(idx)) {
+          html += `<div style="color:#C53030;">⚠️ Este animal ya quedó asignado a otra línea de esta lista. Esta línea se omite (revisa si repetiste el dato).</div>`;
+        } else if (r.estado === 'encontrado') {
           html += `<div style="color:#2F855A;">✅ Encontrado — se completará:</div><ul style="margin:4px 0 4px 18px;">`;
           r.cambios.forEach(c => html += `<li>${c.campo}: ${c.valor}</li>`);
           html += `</ul>`;
@@ -3402,7 +3404,10 @@
             html += r.aproximado
               ? `<div style="color:#B7791F;">⚠️ No hay uno exactamente igual, pero hay un posible match (difiere en ceros). Confírmalo:</div>`
               : `<div style="color:#B7791F;">⚠️ Varios animales posibles, elige uno:</div>`;
-            r.candidatos.forEach((c, ci) => {
+            const ocupadas = filasOcupadasIngreso(idx);
+            const libres = r.candidatos.filter(c => !ocupadas.has(Number(c.filaSheet)));
+            if (libres.length === 0) html += `<div style="color:#C53030;">Todos los posibles ya fueron asignados a otras líneas.</div>`;
+            libres.forEach((c, ci) => {
               html += `<label style="display:block;margin:3px 0;"><input type="radio" name="sel_${idx}" onclick="seleccionarCandidato(${idx}, ${c.filaSheet})"> ${c.loteId} — ${r.aproximado ? 'arete ' + (c.arete || '—') + ', ID ' + (c.idAnimal || '—') + ', ' : ''}${c.sexo || '—'}, ${c.caracteristicas || '(sin rasgos)'}, comprado ${c.fechaCompra || '—'}</label>`;
             });
           }
@@ -3423,7 +3428,34 @@
       actualizarBotonAplicarIngreso();
     }
 
+    // Animales ya tomados por OTRAS líneas de esta misma pegada (automáticos o elegidos): no vuelven a ofrecerse.
+    function filasOcupadasIngreso(idxActual) {
+      const usados = new Set();
+      resultadosIngresoGlobal.forEach((r, i) => {
+        if (i === idxActual) return;
+        if (r.decisionFila) usados.add(Number(r.decisionFila));
+        else if ((r.estado === 'encontrado' || r.estado === 'sin_cambios') && r.filaSheet && !esDuplicadoIngreso(i)) usados.add(Number(r.filaSheet));
+      });
+      return usados;
+    }
+    // Dos líneas que apuntan automáticamente al mismo animal: la primera se queda con él, la segunda se marca.
+    function esDuplicadoIngreso(idx) {
+      const r = resultadosIngresoGlobal[idx];
+      if (!r || !(r.estado === 'encontrado' || r.estado === 'sin_cambios') || !r.filaSheet) return false;
+      for (let i = 0; i < idx; i++) {
+        const o = resultadosIngresoGlobal[i];
+        if (o.decisionFila && Number(o.decisionFila) === Number(r.filaSheet)) return true;
+        if ((o.estado === 'encontrado' || o.estado === 'sin_cambios') && o.filaSheet && Number(o.filaSheet) === Number(r.filaSheet)) return true;
+      }
+      return false;
+    }
+
     function seleccionarCandidato(idx, filaSheet) {
+      if (filasOcupadasIngreso(idx).has(Number(filaSheet))) {
+        alert('Ese animal ya está asignado a otra línea de esta misma lista.');
+        mostrarResultadosIngreso();
+        return;
+      }
       resultadosIngresoGlobal[idx].decisionFila = filaSheet;
       mostrarResultadosIngreso();
     }
@@ -3447,7 +3479,9 @@
 
     function filtrarBuscadorManual(idx, texto) {
       const t = texto.toLowerCase();
+      const ocupadasM = filasOcupadasIngreso(idx);
       const resultados = (todosAnimalesCache || []).filter(a => {
+        if (ocupadasM.has(Number(a.filaSheet))) return false;
         return (a.loteId || '').toLowerCase().includes(t) ||
                (a.arete || '').toString().toLowerCase().includes(t) ||
                (a.idAnimal || '').toString().toLowerCase().includes(t) ||
@@ -3468,6 +3502,7 @@
     }
 
     function _lineaResuelta(r) {
+      if (esDuplicadoIngreso(resultadosIngresoGlobal.indexOf(r))) return true;
       return r.estado === 'encontrado' || r.estado === 'sin_cambios' || !!r.decisionFila;
     }
 
@@ -3485,7 +3520,7 @@
 
     function aplicarCambiosIngreso() {
       const items = resultadosIngresoGlobal
-        .filter(r => r.estado === 'encontrado' || r.decisionFila)
+        .filter((r, i) => (r.estado === 'encontrado' || r.decisionFila) && !esDuplicadoIngreso(i))
         .map(r => ({ filaSheet: r.filaSheet || r.decisionFila, linea: r.linea }));
 
       if (items.length === 0) { cerrarModalIngreso(); return; }
