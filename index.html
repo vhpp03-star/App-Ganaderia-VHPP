@@ -3283,8 +3283,14 @@
       const lineas = [];
       texto.trim().split('\n').forEach(l => {
         if (!l.trim()) return;
+        // Ignorar basura: cercas de código (```), marcadores y líneas sin forma de dato
+        if (/^[\s`'"._\-~*#>|]+$/.test(l) || /^\s*```/.test(l)) return;
         let cols = l.split(',');
         if (cols.length < 5) cols = l.split('\t');
+        if (cols.length < 5) return;
+        const c0 = (cols[0] || '').trim(), c1 = (cols[1] || '').trim();
+        const vacio = v => !v || /^(n\/?a|-|—)$/i.test(v);
+        if (vacio(c0) && vacio(c1)) return;
         lineas.push({
           areteOrigen: (cols[0] || '').trim(),
           idInterno: (cols[1] || '').trim(),
@@ -3350,9 +3356,11 @@
             const elegido = r.candidatos.find(c => c.filaSheet === r.decisionFila);
             html += `<div style="color:#2F855A;">✅ Asignado a ${elegido.loteId} (${elegido.sexo}, ${elegido.caracteristicas || 'sin rasgos'})</div>`;
           } else {
-            html += `<div style="color:#B7791F;">⚠️ Varios animales posibles, elige uno:</div>`;
+            html += r.aproximado
+              ? `<div style="color:#B7791F;">⚠️ No hay uno exactamente igual, pero hay un posible match (difiere en ceros). Confírmalo:</div>`
+              : `<div style="color:#B7791F;">⚠️ Varios animales posibles, elige uno:</div>`;
             r.candidatos.forEach((c, ci) => {
-              html += `<label style="display:block;margin:3px 0;"><input type="radio" name="sel_${idx}" onclick="seleccionarCandidato(${idx}, ${c.filaSheet})"> ${c.loteId} — ${c.sexo || '—'}, ${c.caracteristicas || '(sin rasgos)'}, comprado ${c.fechaCompra || '—'}</label>`;
+              html += `<label style="display:block;margin:3px 0;"><input type="radio" name="sel_${idx}" onclick="seleccionarCandidato(${idx}, ${c.filaSheet})"> ${c.loteId} — ${r.aproximado ? 'arete ' + (c.arete || '—') + ', ID ' + (c.idAnimal || '—') + ', ' : ''}${c.sexo || '—'}, ${c.caracteristicas || '(sin rasgos)'}, comprado ${c.fechaCompra || '—'}</label>`;
             });
           }
         } else if (r.estado === 'ninguno') {
